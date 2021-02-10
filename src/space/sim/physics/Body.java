@@ -13,7 +13,7 @@ public class Body {
   /**
    * Vector to store the current gravitational forces acting on the body.
    */
-  public ArrayList<Vector3D> gravityForces;
+  public ArrayList<Vector3D> gravityForces = new ArrayList<>();
 
   /**
    * Vector to store the body's position.
