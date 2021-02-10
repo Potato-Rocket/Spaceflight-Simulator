@@ -1,4 +1,7 @@
+package space.sim.physics;
+
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
@@ -66,6 +69,18 @@ public class Vector3D {
   }
 
   /**
+   * Returns the hypotenuse of a right triangle with legs <b>a</b> and <b>b</b>. Uses the
+   * pythagorean theorem to find the output: <code>hypotenuse = sqrt(a^2 + b^2)</code>
+   *
+   * @param a length of leg <b>a</b>
+   * @param b length of leg <b>b</b>
+   * @return Returns the hypotenuse.
+   */
+  public static BigDecimal hypotenuse(BigDecimal a, BigDecimal b) {
+    return a.pow(2).add(b.pow(2)).sqrt(new MathContext(32, RoundingMode.DOWN));
+  }
+
+  /**
    * Gets the differences between the corresponding components of two vectors.
    * Subtracts the second vector from the first vector. Returned as an array of values.
    * <p>
@@ -90,8 +105,8 @@ public class Vector3D {
    */
   public BigDecimal distanceTo(Vector3D vector) {
     BigDecimal[] compare = compareTo(vector);
-    BigDecimal horizontal = StaticFunctions.hypotenuse(compare[0], compare[1]);
-    return StaticFunctions.hypotenuse(horizontal, compare[2]);
+    BigDecimal horizontal = hypotenuse(compare[0], compare[1]);
+    return hypotenuse(horizontal, compare[2]);
   }
 
   /**
@@ -112,6 +127,12 @@ public class Vector3D {
         divide(hypotenuse, RoundingMode.DOWN));
   }
 
+  /**
+   * Sets the scale of each <code>BigDecimal</code> value to a given number of digits. This
+   * eliminates unnecessary degrees of precision.
+   *
+   * @param scale the decimal place limit
+   */
   public void fixScale(int scale) {
     x = x.setScale(scale, RoundingMode.DOWN);
     y = y.setScale(scale, RoundingMode.DOWN);
@@ -130,7 +151,7 @@ public class Vector3D {
   /**
    * Formats the vector into a <code>String</code>.
    * <p>
-   * eg. <code>"Vector(x=0.0, y=0.0, z=0.0)"</code>
+   * eg. <code>"Vector(x=0.00, y=0.00, z=0.00)"</code>
    *
    * @return Returns a string expressing the vector.
    */

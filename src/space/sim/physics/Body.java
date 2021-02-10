@@ -1,3 +1,5 @@
+package space.sim.physics;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -10,8 +12,8 @@ public class Body {
 
   /** Universal gravitational constant. */
   public static final BigDecimal G = new BigDecimal("0.00000000006674");
-  /** The list of bodies */
-  private static ArrayList<Body> bodies = new ArrayList<>();
+  /** The array of all bodies. */
+  public static ArrayList<Body> bodies = new ArrayList<>();
 
   /** Vector to store the body's position. */
   private Vector3D position;
@@ -30,7 +32,8 @@ public class Body {
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their
-   * corresponding fields and generates an id for the body.
+   * corresponding fields and generates an id and gravity forces array for the body. Adds another
+   * vector to each body's gravity force array.
    *
    * @param position initial position of the body
    * @param velocity initial velocity of the body
@@ -55,7 +58,7 @@ public class Body {
 
   /**
    * Class constructor with mass and name specified by user. Sets position and velocity to
-   * (0.0, 0.0, 0.0)  as a default.
+   * <code>(0.00, 0.00, 0.00)</code>  as a default.
    *
    * @param mass initial mass of the body
    * @param name name of the body
@@ -65,16 +68,34 @@ public class Body {
   }
 
   /**
-   * Class constructor without user specifications. Mass is set to 1.0 and name is set to "Body"
+   * Class constructor without user specifications. Mass is set to 1.0 and name is set to Body
    * as a default.
    */
   public Body() {
-    new Body(BigDecimal.ONE, "Body");
+    new Body(BigDecimal.ONE, "space.sim.physics.Body");
+  }
+
+  /**
+   * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
+   * based on the mass and the gravity forces currently acting on the body. The velocity is
+   * updated based on the acceleration and the position is updated based on the velocity.
+   */
+  private void update() {
+    acceleration = new Vector3D();
+    for (Vector3D f : gravityForces) {
+      acceleration.addVector(f.scaleVector(BigDecimal.ONE.setScale(32, RoundingMode.DOWN).
+          divide(mass, RoundingMode.DOWN)));
+      f.fixScale(32);
+    }
+    acceleration.fixScale(32);
+    velocity.addVector(acceleration);
+    position.addVector(velocity);
   }
 
   /**
    * Calculates the gravitational pull between this body and another body. Uses their relative
-   * positions and masses as well as the gravitational constant to calculate this.
+   * positions and masses as well as the gravitational constant to calculate this. Does not
+   * calculate for a comparison between a body and itself.
    *
    * @param body second body
    */
@@ -90,29 +111,27 @@ public class Body {
     }
   }
 
-  private void update() {
-    acceleration = new Vector3D();
-    for (Vector3D f : gravityForces) {
-      acceleration.addVector(f.scaleVector(BigDecimal.ONE.setScale(32, RoundingMode.DOWN).
-          divide(mass, RoundingMode.DOWN)));
-      f.fixScale(32);
-    }
-    acceleration.fixScale(32);
-    velocity.addVector(acceleration);
-    position.addVector(velocity);
-  }
-
+  /**
+   * Updates every body. Runs the update function for each body to update the motion. Then
+   * updates the gravitational forces between each body and every other body.
+   */
   public static void updateAll() {
+    for (Body body : bodies) {
+      body.update();
+    }
     for (Body body : bodies) {
       for (Body other : bodies) {
         body.setGravityForce(other);
       }
     }
-    for (Body body : bodies) {
-      body.update();
-    }
   }
 
+  /**
+   * Returns information about every body in a <code>String</code>. Runs the verbose toString method
+   * for each body in the bodies array and appends them into one <code>String</code>.
+   *
+   * @return Returns the concatenated <code>String</code> containing info about every body.
+   */
   public static String allToString() {
     StringBuilder string = new StringBuilder();
     for (Body body : bodies) {
@@ -123,14 +142,11 @@ public class Body {
 
   /**
    * Formats the body's attributes into a <code>String</code>.
-   * <p>
-   * eg. <code>Body(pos=Vector(0.0, 0.0, 0.0), vel=Vector(0.0, 0.0, 0.0), mass=1.0,
-   * name="Body", id=1)</code>
    *
    * @return Returns a string representing the body's attributes.
    */
   public String toString(boolean verbose) {
-    String string = "Body " + (id + 1) + ": " + name;
+    String string = "space.sim.physics.Body " + (id + 1) + ": " + name;
     if (verbose) {
       string += "\nMass = " + mass +
           "\nPosition = " + position +
@@ -141,6 +157,12 @@ public class Body {
     return string;
   }
 
+  /**
+   * Runs the <code>toString</code> method with the <code>verbose</code> option set to
+   * <code>false</code>.
+   *
+   * @return Returns a string representing the body.
+   */
   public String toString() {
     return toString(false);
   }
