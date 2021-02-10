@@ -5,11 +5,17 @@
  */
 public class Vector3D {
 
-  /** <b>x</b> component of the vector. */
+  /**
+   * <b>x</b> component of the vector.
+   */
   private double x;
-  /** <b>y</b> component of the vector .*/
+  /**
+   * <b>y</b> component of the vector .
+   */
   private double y;
-  /** <b>z</b> component of the vector. */
+  /**
+   * <b>z</b> component of the vector.
+   */
   private double z;
 
   /**
@@ -25,7 +31,9 @@ public class Vector3D {
     this.z = z;
   }
 
-  /** Class constructor. Sets values to (0.0, 0.0, 0.0) as a default. */
+  /**
+   * Class constructor. Sets values to (0.0, 0.0, 0.0) as a default.
+   */
   public Vector3D() {
     new Vector3D(0, 0, 0);
   }
@@ -36,9 +44,9 @@ public class Vector3D {
    * @param vector second vector
    */
   public void addVector(Vector3D vector) {
-    x += vector.getX();
-    y += vector.getY();
-    z += vector.getZ();
+    x += vector.x;
+    y += vector.y;
+    z += vector.z;
   }
 
   /**
@@ -46,38 +54,10 @@ public class Vector3D {
    * function is used to scale a vector.
    *
    * @param factor factor to multiply with the vector
+   * @return Returns a vector containing the scaled vector.
    */
-  public void multiplyVector(double factor) {
-    x *= factor;
-    y *= factor;
-    z *= factor;
-  }
-
-  /**
-   * Gets the <b>x</b> component.
-   *
-   * @return Returns the <b>x</b> component of the vector.
-   */
-  public double getX() {
-    return x;
-  }
-
-  /**
-   * Gets the <b>y</b> component.
-   *
-   * @return Returns the <b>y</b> component of the vector.
-   */
-  public double getY() {
-    return y;
-  }
-
-  /**
-   * Gets the <b>z</b> component.
-   *
-   * @return Returns the <b>z</b> component of the vector.
-   */
-  public double getZ() {
-    return z;
+  public Vector3D scaleVector(double factor) {
+    return new Vector3D(x *= factor, y *= factor, z *= factor);
   }
 
   /**
@@ -90,7 +70,7 @@ public class Vector3D {
    * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
    */
   public double[] compareTo(Vector3D vector) {
-    return new double[]{x - vector.getX(), y - vector.getY(), z - vector.getZ()};
+    return new double[]{x - vector.x, y - vector.y, z - vector.z};
   }
 
   /**
@@ -104,9 +84,26 @@ public class Vector3D {
    * @return Returns the 3D distance between the two vectors.
    */
   public double distanceTo(Vector3D vector) {
-    double[] compare = this.compareTo(vector);
+    double[] compare = compareTo(vector);
     double horizontal = Math.hypot(compare[0], compare[1]);
     return Math.hypot(horizontal, compare[2]);
+  }
+
+  /**
+   * Gets a vector representing the angle to another vector in 3D space. First it calls
+   * <code>compareTo</code> to find the distances on each axis. Then it calls
+   * <code>distanceTo</code> to find the hypotenuse of those angles. Finally, it creates a new
+   * vector using the results from <code>compareTo</code> and puts it on a unit scale using the
+   * hypotenuse.
+   *
+   * @param vector other vector
+   * @return Returns a vector on a unit scale to represent angle.
+   */
+  public Vector3D angleTo(Vector3D vector) {
+    double hypotenuse = distanceTo(vector);
+    double[] compare = compareTo(vector);
+    Vector3D nonScaled = new Vector3D(compare[0], compare[1], compare[2]);
+    return nonScaled.scaleVector(1 / hypotenuse);
   }
 
   /**
@@ -127,7 +124,7 @@ public class Vector3D {
    * <code>false</code> otherwise.
    */
   public boolean equals(Vector3D vector) {
-    return vector.getX() == x && vector.getY() == y && vector.getZ() == z;
+    return vector.x == x && vector.y == y && vector.z == z;
   }
 
   /**

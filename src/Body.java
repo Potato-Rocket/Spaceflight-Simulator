@@ -76,7 +76,8 @@ public class Body {
     if (id != body.id) {
       double r = position.distanceTo(body.position);
       double f = G * (mass * body.mass / Math.pow(r, 2));
-      gravityForces.set(body.id, new Vector3D(0, 0, -1 * f));
+      Vector3D angle = position.angleTo(body.position);
+      gravityForces.set(body.id, angle.scaleVector(f));
     } else {
       gravityForces.set(id, new Vector3D());
     }
@@ -85,7 +86,7 @@ public class Body {
   private void update() {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
-      acceleration.addVector(f);
+      acceleration.addVector(f.scaleVector(1 / mass));
     }
     velocity.addVector(acceleration);
     position.addVector(velocity);
