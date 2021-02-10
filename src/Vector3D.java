@@ -135,7 +135,9 @@ public class Vector3D {
    * @return Returns a string expressing the vector.
    */
   public String toString() {
-    return "Vector(x=" + x + ", y=" + y + ", z=" + z + ")";
+    return "Vector(x=" + x.setScale(2, RoundingMode.DOWN) +
+        ", y=" + y.setScale(2, RoundingMode.DOWN) +
+        ", z=" + z.setScale(2, RoundingMode.DOWN) + ")";
   }
 
 }
