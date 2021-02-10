@@ -1,3 +1,5 @@
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
@@ -7,7 +9,10 @@ import java.util.ArrayList;
 public class Body {
 
   /** Universal gravitational constant. */
-  private final double G = 6.674 * Math.pow(10, -11);
+  public static final BigDecimal G = new BigDecimal("0.00000000006674");
+  /** The list of bodies */
+  private static ArrayList<Body> bodies = new ArrayList<>();
+
   /** Vector to store the body's position. */
   private Vector3D position;
   /** Vector to store the body's velocity. */
@@ -17,13 +22,11 @@ public class Body {
   /** Vector to store the body's total acceleration. */
   private Vector3D acceleration;
   /** The body's mass. */
-  private double mass;
+  private BigDecimal mass;
   /** The body's name. */
   private String name;
   /** The body's identification number. */
   private int id;
-  /** The list of bodies */
-  private static ArrayList<Body> bodies = new ArrayList<>(0);
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their
@@ -34,14 +37,17 @@ public class Body {
    * @param mass initial mass of the body
    * @param name name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, double mass, String name) {
+  public Body(Vector3D position, Vector3D velocity, BigDecimal mass, String name) {
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
     this.name = name;
     id = bodies.size();
     bodies.add(this);
-    gravityForces = new ArrayList<>(bodies.size() - 1);
+    gravityForces = new ArrayList<>();
+    for (int i = 0; i < id; i++) {
+      gravityForces.add(new Vector3D());
+    }
     for (Body body : bodies) {
       body.gravityForces.add(new Vector3D());
     }
@@ -54,7 +60,7 @@ public class Body {
    * @param mass initial mass of the body
    * @param name name of the body
    */
-  public Body(double mass, String name) {
+  public Body(BigDecimal mass, String name) {
     new Body(new Vector3D(), new Vector3D(), mass, name);
   }
 
@@ -63,7 +69,7 @@ public class Body {
    * as a default.
    */
   public Body() {
-    new Body(1, "Body");
+    new Body(BigDecimal.ONE, "Body");
   }
 
   /**
@@ -74,8 +80,9 @@ public class Body {
    */
   private void setGravityForce(Body body) {
     if (id != body.id) {
-      double r = position.distanceTo(body.position);
-      double f = G * (mass * body.mass / Math.pow(r, 2));
+      BigDecimal r = position.distanceTo(body.position);
+      BigDecimal f = G.multiply(mass.multiply(body.mass).setScale(32, RoundingMode.DOWN).
+          divide(r.pow(2), RoundingMode.DOWN));
       Vector3D angle = position.angleTo(body.position);
       gravityForces.set(body.id, angle.scaleVector(f));
     } else {
@@ -86,8 +93,11 @@ public class Body {
   private void update() {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
-      acceleration.addVector(f.scaleVector(1 / mass));
+      acceleration.addVector(f.scaleVector(BigDecimal.ONE.setScale(32, RoundingMode.DOWN).
+          divide(mass, RoundingMode.DOWN)));
+      f.fixScale(32);
     }
+    acceleration.fixScale(32);
     velocity.addVector(acceleration);
     position.addVector(velocity);
   }
@@ -103,6 +113,14 @@ public class Body {
     }
   }
 
+  public static String allToString() {
+    StringBuilder string = new StringBuilder();
+    for (Body body : bodies) {
+      string.append(body.toString(true)).append("\n\n");
+    }
+    return String.valueOf(string);
+  }
+
   /**
    * Formats the body's attributes into a <code>String</code>.
    * <p>
@@ -111,9 +129,20 @@ public class Body {
    *
    * @return Returns a string representing the body's attributes.
    */
+  public String toString(boolean verbose) {
+    String string = "Body " + (id + 1) + ": " + name;
+    if (verbose) {
+      string += "\nMass = " + mass +
+          "\nPosition = " + position +
+          "\nVelocity = " + velocity +
+          "\nAcceleration = " + acceleration +
+          "\nForces = " + gravityForces;
+    }
+    return string;
+  }
+
   public String toString() {
-    return "Body(pos=" + position + ", vel=" + velocity + ", mass=" + mass + ", name=" + name +
-        ", id=" + id + ")";
+    return toString(false);
   }
 
 }

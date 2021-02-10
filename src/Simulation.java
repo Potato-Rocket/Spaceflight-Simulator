@@ -1,15 +1,20 @@
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 public class Simulation {
 
-  public static void main(String[] args) {
-    ArrayList<Body> bodies = new ArrayList<>();
-    new Body(1000000, "Main");
-    new Body(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0), 1,
-        "Satellite");
+  public static final BigDecimal EARTH_MASS = new BigDecimal("5972200000000000000000000");
+  public static final BigDecimal LUNAR_MASS = new BigDecimal("73420000000000000000000");
 
-    for (int x = 0; x < 100; x++) {
+  public static void main(String[] args) throws InterruptedException {
+    new Body(LUNAR_MASS, "Moon");
+    new Body(new Vector3D(BigDecimal.ZERO, BigDecimal.ZERO, new BigDecimal("100000")),
+        new Vector3D(), new BigDecimal("100"), "Object");
+
+    while (true) {
       Body.updateAll();
+      System.out.println(Body.allToString());
+      TimeUnit.SECONDS.sleep(1);
     }
   }
 
