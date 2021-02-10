@@ -3,7 +3,7 @@
  * component. Each component can be accessed individually through their getter methods.
  * However, the power of this class lies in its methods for comparing one vector to another.
  */
-public class Vector {
+public class Vector3D {
 
   /** <b>x</b> component of the vector. */
   private double x;
@@ -19,15 +19,15 @@ public class Vector {
    * @param y initial <b>y</b> value
    * @param z initial <b>z</b> value
    */
-  public Vector(double x, double y, double z) {
+  public Vector3D(double x, double y, double z) {
     this.x = x;
     this.y = y;
     this.z = z;
   }
 
   /** Class constructor. Sets values to (0.0, 0.0, 0.0) as a default. */
-  public Vector() {
-    new Vector(0, 0, 0);
+  public Vector3D() {
+    new Vector3D(0, 0, 0);
   }
 
   /**
@@ -35,7 +35,7 @@ public class Vector {
    *
    * @param vector second vector
    */
-  public void addVector(Vector vector) {
+  public void addVector(Vector3D vector) {
     x += vector.getX();
     y += vector.getY();
     z += vector.getZ();
@@ -89,7 +89,7 @@ public class Vector {
    * @param vector second vector
    * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
    */
-  public double[] compareTo(Vector vector) {
+  public double[] compareTo(Vector3D vector) {
     return new double[]{x - vector.getX(), y - vector.getY(), z - vector.getZ()};
   }
 
@@ -103,7 +103,7 @@ public class Vector {
    * @param vector second vector
    * @return Returns the 3D distance between the two vectors.
    */
-  public double distanceTo(Vector vector) {
+  public double distanceTo(Vector3D vector) {
     double[] compare = this.compareTo(vector);
     double horizontal = Math.hypot(compare[0], compare[1]);
     return Math.hypot(horizontal, compare[2]);
@@ -114,8 +114,8 @@ public class Vector {
    *
    * @return Returns the copied vector.
    */
-  public Vector copy() {
-    return new Vector(x, y, z);
+  public Vector3D copy() {
+    return new Vector3D(x, y, z);
   }
 
   /**
@@ -126,7 +126,7 @@ public class Vector {
    * @return <code>true</code> if the vectors contain equal values;
    * <code>false</code> otherwise.
    */
-  public boolean equals(Vector vector) {
+  public boolean equals(Vector3D vector) {
     return vector.getX() == x && vector.getY() == y && vector.getZ() == z;
   }
 

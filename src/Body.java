@@ -1,15 +1,20 @@
+import java.util.ArrayList;
+
 /**
  * Stores and updates physical information about a body. Updates information such as position
  * and velocity as time passes and as forces are applied to the body.
  */
 public class Body {
 
+  /** Universal gravitational constant. */
+  private final double G = 6.674 * Math.pow(10, -11);
+
   /** Vector to store the body's position. */
-  private Vector position;
+  private Vector3D position;
   /** Vector to store the body's velocity. */
-  private Vector velocity;
-  /** Vector to store the current forces acting on the body. */
-  private Vector force;
+  private Vector3D velocity;
+  /** Vector to store the current force acting on the body. */
+  private ArrayList<Vector3D> forces;
   /** The body's mass. */
   private double mass;
   /** The body's name. */
@@ -28,25 +33,42 @@ public class Body {
    * @param mass initial mass of the body
    * @param name name of the body
    */
-  public Body(Vector position, Vector velocity, double mass, String name) {
+  public Body(Vector3D position, Vector3D velocity, double mass, String name) {
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
     this.name = name;
-    force = new Vector();
     count++;
     id = count;
   }
 
-  /**
-   * Modifies the position and velocity based on current forces and simulation time passed since
-   * previous update.
-   *
-   * @param time simulation time passed since previous simulation update
-   */
-  public void update(double time) {
-    Vector scaled = velocity.copy();
-    scaled.multiplyVector(time);
-    this.position.addVector(scaled);
+  public Body(double mass, String name) {
+    new Body(new Vector3D(), new Vector3D(), mass, name);
   }
+
+  public Body() {
+    new Body(0, "");
+  }
+
+  public void createForces() {
+    forces = new ArrayList<>(count);
+  }
+
+  public Vector3D getPosition() {
+    return position;
+  }
+
+  public double getMass() {
+    return mass;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setGravityForce(Body body) {
+    double r = this.position.distanceTo(body.getPosition());
+    double f = G * (this.mass * body.getMass() / Math.pow(r, 2));
+  }
+
 }
