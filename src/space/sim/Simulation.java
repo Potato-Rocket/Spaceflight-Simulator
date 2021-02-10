@@ -1,16 +1,15 @@
 package space.sim;
 
-import space.sim.physics.Body;
-import space.sim.physics.Vector3D;
+import space.sim.physics.Physics;
 
-import java.math.BigDecimal;
-
+/**
+ * Top level runner class. Dictates initial body creation as well as physics updates and graphics
+ * renderings
+ */
 public class Simulation {
 
-  public static final BigDecimal EARTH_MASS = new BigDecimal("5972200000000000000000000");
-
   public static void main(String[] args) {
-
+    Physics.createBodies();
   }
 
 }
