@@ -1,5 +1,7 @@
 package space.sim.physics;
 
+import space.sim.Vector3D;
+
 import java.util.ArrayList;
 
 public class Physics {
@@ -14,7 +16,9 @@ public class Physics {
    */
   private static final String[][] genData = {
       {"0", "0", "0", "0", "0", "0", "1000000", "Body One"},
-      {"500", "0", "0", "0", "700", "0", "10000", "Body Two"},};
+      {"200", "0", "0", "0", "100", "0", "10000", "Body Two"},
+      {"0", "500", "0", "0", "0", "500", "10000", "Body Three"},
+      {"0", "0", "300", "200", "0", "0", "1000", "Body Four"}};
 
   /**
    * The array of all bodies.

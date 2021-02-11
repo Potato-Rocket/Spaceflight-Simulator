@@ -1,5 +1,7 @@
 package space.sim.physics;
 
+import space.sim.Vector3D;
+
 import java.util.ArrayList;
 
 /**

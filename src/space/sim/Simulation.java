@@ -1,6 +1,6 @@
 package space.sim;
 
-import space.sim.graphics.GUI;
+import space.sim.graphics.DrawSpace;
 import space.sim.physics.Physics;
 
 /**
@@ -9,16 +9,16 @@ import space.sim.physics.Physics;
  */
 public class Simulation {
 
-  public static final double FRAME_RATE = 30;
+  public static final double FRAME_RATE = 60;
 
   public static void main(String[] args) throws InterruptedException {
-    GUI gui = new GUI();
+    DrawSpace drawSpace = new DrawSpace();
     Physics.createBodies();
     int delay = (int) (1000 / FRAME_RATE);
     while (true) {
       Thread.sleep(delay);
       Physics.updateBodies(delay);
-      gui.update(gui.getGraphics());
+      drawSpace.update(drawSpace.getGraphics());
     }
   }
 
