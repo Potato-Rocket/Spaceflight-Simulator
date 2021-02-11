@@ -2,7 +2,6 @@ package space.sim.graphics;
 
 import space.sim.physics.Body;
 import space.sim.physics.Physics;
-import space.sim.physics.Vector3D;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -36,6 +35,12 @@ public class Draw {
     }
     double factor = min / (minBounds * 2);
     g.scale(factor, factor);
+
+    g.setColor(Color.GREEN);
+    for (Body body : Physics.bodyArray) {
+      drawTrail(body);
+    }
+
     g.setColor(Color.WHITE);
     for (int x = 0; x < w; x += tickDistance) {
       g.drawLine(x, tickDistance / 10, x, tickDistance / -10);
@@ -48,6 +53,26 @@ public class Draw {
     }
     for (int y = 0; y > -h; y -= tickDistance) {
       g.drawLine(tickDistance / 10, y, tickDistance / -10, y);
+    }
+    for (Body body : Physics.bodyArray) {
+      drawBody(body, factor);
+    }
+  }
+
+  private static void drawBody(Body body, double factor) {
+    double[] pos = body.getPosition().getValues();
+    int size = (int) body.getRadius();
+    if (size / factor < 1) {
+      size = (int) (1 / factor);
+    }
+    g.fillOval((int) pos[0] - size, (int) pos[1] - size, size * 2, size * 2);
+  }
+
+  private static void drawTrail(Body body) {
+    for (int i = body.trail.size() - 1; i > 0; i--) {
+      double[] pos1 = body.trail.get(i).getValues();
+      double[] pos2 = body.trail.get(i - 1).getValues();
+      g.drawLine((int) pos1[0], (int) pos1[1], (int) pos2[0], (int) pos2[1]);
     }
   }
 

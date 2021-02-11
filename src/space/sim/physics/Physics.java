@@ -1,7 +1,5 @@
 package space.sim.physics;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class Physics {
@@ -9,15 +7,15 @@ public class Physics {
   /**
    * Universal gravitational constant.
    */
-  public static final double G = 1;
+  public static final double G = 0.01;
 
   /**
    * The 2D array to store information about how to generate bodies.
    */
   private static final String[][] genData = {
-      {"500", "1000", "0", "0", "0", "0", "10000", "10", "Body One"},
-      {"-500", "0", "0", "0", "0", "0", "10000", "10", "Body Two"},
-      {"0", "-1000", "0", "0", "0", "0", "10000", "10", "Body Three"}};
+      {"0", "0", "0", "0", "0", "0", "10000", "40", "Body One"},
+      {"0", "500", "0", "100", "0", "0", "1000", "20", "Body Two"},
+      {"0", "-500", "0", "-150", "0", "0", "100", "10", "Body Three"}};
 
   /**
    * The array of all bodies.
@@ -37,7 +35,7 @@ public class Physics {
    * Updates every body. Runs the update function for each body to update the motion. Then
    * updates the gravitational forces between each body and every other body.
    */
-  public static void updateBodies() {
+  public static void updateBodies(int millis) {
     for (Body body : bodyArray) {
       body.gravityForces.clear();
       for (Body other : bodyArray) {
@@ -45,7 +43,7 @@ public class Physics {
       }
     }
     for (Body body : bodyArray) {
-      body.update();
+      body.update(millis);
     }
   }
 
@@ -61,7 +59,7 @@ public class Physics {
   public static Vector3D findGravityForce(Body body, Body other) {
     if (body.getId() != other.getId()) {
       double r = body.getPosition().distanceTo(other.getPosition());
-      double f = G * (body.getMass() * other.getMass() / Math.pow(r, 2));
+      double f = G * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
       Vector3D angle = body.getPosition().angleTo(other.getPosition());
       return angle.scaleVector(f);
     }

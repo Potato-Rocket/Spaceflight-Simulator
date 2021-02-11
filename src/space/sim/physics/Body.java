@@ -12,6 +12,10 @@ public class Body {
    * Vector to store the current gravitational forces acting on the body.
    */
   public ArrayList<Vector3D> gravityForces = new ArrayList<>();
+  /**
+   * Stores the position vectors to render the trail.
+   */
+  public ArrayList<Vector3D> trail = new ArrayList<>();
 
   /**
    * Vector to store the body's position.
@@ -42,9 +46,13 @@ public class Body {
    */
   private int id;
   /**
-   * The number of bodies that have been generated/
+   * The number of bodies that have been generated.
    */
   private static int count = 0;
+  /**
+   * The number of seconds the trail remains on screen.
+   * */
+  private static final double TRAIL_LENGTH = 5;
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their
@@ -65,20 +73,29 @@ public class Body {
     this.name = name;
     id = count;
     count++;
+    trail.add(position.copy());
   }
 
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
-   * updated based on the acceleration and the position is updated based on the velocity.
+   * updated based on the acceleration and the position is updated based on the velocity. Shifts
+   * the trail and inserts the updated position at the start.
    */
-  public void update() {
+  public void update(int millis) {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
       acceleration.addVector(f.scaleVector(1 / mass));
     }
-    velocity.addVector(acceleration);
-    position.addVector(velocity);
+    velocity.addVector(acceleration.scaleVector((double) millis / 1000));
+    position.addVector(velocity.scaleVector((double) millis / 1000));
+    if (trail.size() < (TRAIL_LENGTH / (millis / 1000.0))) {
+      trail.add(new Vector3D());
+    }
+    for (int i = trail.size() - 1; i > 0; i--) {
+      trail.set(i, trail.get(i - 1));
+    }
+    trail.set(0, position.copy());
   }
 
   /**
