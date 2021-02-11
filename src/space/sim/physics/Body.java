@@ -32,6 +32,10 @@ public class Body {
    */
   private BigDecimal mass;
   /**
+   * The body's radius.
+   */
+  private BigDecimal radius;
+  /**
    * The body's name.
    */
   private String name;
@@ -54,10 +58,12 @@ public class Body {
    * @param mass     initial mass of the body
    * @param name     name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, BigDecimal mass, String name) {
+  public Body(Vector3D position, Vector3D velocity, BigDecimal mass,
+              BigDecimal radius, String name) {
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
+    this.radius = radius;
     this.name = name;
     id = count;
     count++;
@@ -81,21 +87,30 @@ public class Body {
   }
 
   /**
-   * Getter method for the body's identification number.
-   *
-   * @return Returns the body's id.
-   */
-  public int getId() {
-    return id;
-  }
-
-  /**
    * Getter method for the body's position.
    *
    * @return Returns the body's position.
    */
   public Vector3D getPosition() {
     return position;
+  }
+
+  /**
+   * Getter method for the body's velocity.
+   *
+   * @return Returns the body's velocity.
+   */
+  public Vector3D getVelocity() {
+    return velocity;
+  }
+
+  /**
+   * Getter method for the body's acceleration.
+   *
+   * @return Returns the acceleration.
+   */
+  public Vector3D getAcceleration() {
+    return acceleration;
   }
 
   /**
@@ -108,6 +123,33 @@ public class Body {
   }
 
   /**
+   * Getter method for the body's radius.
+   *
+   * @return Returns the body's radius.
+   */
+  public BigDecimal getRadius() {
+    return radius;
+  }
+
+  /**
+   * Getter method for the body's name.
+   *
+   * @return Returns the body's name.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Getter method for the body's identification number.
+   *
+   * @return Returns the body's id.
+   */
+  public int getId() {
+    return id;
+  }
+
+  /**
    * Formats the body's attributes into a <code>String</code>.
    *
    * @return Returns a string representing the body's attributes.
@@ -116,6 +158,7 @@ public class Body {
     String string = "Body " + (id + 1) + ": " + name;
     if (verbose) {
       string += "\nMass = " + mass +
+          "\nRadius = " + radius +
           "\nPosition = " + position +
           "\nVelocity = " + velocity +
           "\nAcceleration = " + acceleration +

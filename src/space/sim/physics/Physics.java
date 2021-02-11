@@ -15,9 +15,9 @@ public class Physics {
    * The 2D array to store information about how to generate bodies.
    */
   private static final String[][] genData = {
-      {"500", "1000", "0", "0", "0", "0", "10000", "Body One"},
-      {"-500", "0", "0", "0", "0", "0", "10000", "Body Two"},
-      {"0", "-1000", "0", "0", "0", "0", "10000", "Body Three"}};
+      {"500", "1000", "0", "0", "0", "0", "10000", "10", "Body One"},
+      {"-500", "0", "0", "0", "0", "0", "10000", "10", "Body Two"},
+      {"0", "-1000", "0", "0", "0", "0", "10000", "10", "Body Three"}};
 
   /**
    * The array of all bodies.
@@ -29,7 +29,7 @@ public class Physics {
       bodyArray.add(new Body(
           new Vector3D(new BigDecimal(line[0]), new BigDecimal(line[1]), new BigDecimal(line[2])),
           new Vector3D(new BigDecimal(line[3]), new BigDecimal(line[4]), new BigDecimal(line[5])),
-          new BigDecimal(line[6]), line[7]));
+          new BigDecimal(line[6]), new BigDecimal(line[7]), line[8]));
     }
   }
 
@@ -79,7 +79,7 @@ public class Physics {
     for (Body body : bodyArray) {
       string.append(body.toString(true)).append("\n\n");
     }
-    System.out.println(String.valueOf(string));
+    System.out.println(string);
   }
 
 }
