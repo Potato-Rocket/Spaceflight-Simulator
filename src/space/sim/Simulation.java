@@ -1,5 +1,6 @@
 package space.sim;
 
+import space.sim.graphics.GUI;
 import space.sim.physics.Physics;
 
 /**
@@ -8,11 +9,13 @@ import space.sim.physics.Physics;
  */
 public class Simulation {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
+    GUI gui = new GUI();
     Physics.createBodies();
-    for (int t = 0; t < 100; t++) {
+    while (true) {
+      Thread.sleep((int) 1000 / 10);
       Physics.updateBodies();
-      Physics.printAll();
+      gui.update(gui.getGraphics());
     }
   }
 
