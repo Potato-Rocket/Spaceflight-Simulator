@@ -52,7 +52,7 @@ public class Body {
   /**
    * The number of seconds the trail remains on screen.
    * */
-  private static final double TRAIL_LENGTH = 5;
+  private static final double TRAIL_LENGTH = 10;
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their
@@ -64,12 +64,11 @@ public class Body {
    * @param mass     initial mass of the body
    * @param name     name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, double mass,
-              double radius, String name) {
+  public Body(Vector3D position, Vector3D velocity, double mass, String name) {
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
-    this.radius = radius;
+    this.radius = Math.cbrt((3 * mass) / (4 * Math.PI));
     this.name = name;
     id = count;
     count++;

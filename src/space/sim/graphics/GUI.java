@@ -13,6 +13,7 @@ public class GUI extends JFrame {
 
   public void paint(Graphics g) {
     Draw.drawAll(g, getWidth(), getHeight());
+    revalidate();
   }
 
 }

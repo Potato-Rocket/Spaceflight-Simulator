@@ -18,7 +18,7 @@ public class Draw {
     w = width;
     h = height;
     g.fillRect(0, 0, width, height);
-    drawBodies(1000, 100);
+    drawBodies(1000, 250);
   }
 
   private static void drawBodies(double minBounds, int tickDistance) {
@@ -36,7 +36,6 @@ public class Draw {
     double factor = min / (minBounds * 2);
     g.scale(factor, factor);
 
-    g.setColor(Color.GREEN);
     for (Body body : Physics.bodyArray) {
       drawTrail(body);
     }
@@ -69,9 +68,11 @@ public class Draw {
   }
 
   private static void drawTrail(Body body) {
+    double increment = 256.0 / body.trail.size();
     for (int i = body.trail.size() - 1; i > 0; i--) {
       double[] pos1 = body.trail.get(i).getValues();
       double[] pos2 = body.trail.get(i - 1).getValues();
+      g.setColor(new Color(0, 255 - (int) (increment * i), 0));
       g.drawLine((int) pos1[0], (int) pos1[1], (int) pos2[0], (int) pos2[1]);
     }
   }

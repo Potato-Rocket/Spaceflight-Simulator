@@ -7,15 +7,14 @@ public class Physics {
   /**
    * Universal gravitational constant.
    */
-  public static final double G = 0.01;
+  public static final double G = 0.001;
 
   /**
    * The 2D array to store information about how to generate bodies.
    */
   private static final String[][] genData = {
-      {"0", "0", "0", "0", "0", "0", "10000", "40", "Body One"},
-      {"0", "500", "0", "100", "0", "0", "1000", "20", "Body Two"},
-      {"0", "-500", "0", "-150", "0", "0", "100", "10", "Body Three"}};
+      {"0", "0", "0", "0", "0", "0", "1000000", "Body One"},
+      {"500", "0", "0", "0", "700", "0", "10000", "Body Two"},};
 
   /**
    * The array of all bodies.
@@ -27,7 +26,7 @@ public class Physics {
       bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
               Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
               Double.parseDouble(line[4]), Double.parseDouble(line[5])),
-              Double.parseDouble(line[6]), Double.parseDouble(line[7]), line[8]));
+              Double.parseDouble(line[6]), line[7]));
     }
   }
 
