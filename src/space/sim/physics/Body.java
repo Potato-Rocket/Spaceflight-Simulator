@@ -1,7 +1,5 @@
 package space.sim.physics;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
@@ -30,11 +28,11 @@ public class Body {
   /**
    * The body's mass.
    */
-  private BigDecimal mass;
+  private double mass;
   /**
    * The body's radius.
    */
-  private BigDecimal radius;
+  private double radius;
   /**
    * The body's name.
    */
@@ -58,8 +56,8 @@ public class Body {
    * @param mass     initial mass of the body
    * @param name     name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, BigDecimal mass,
-              BigDecimal radius, String name) {
+  public Body(Vector3D position, Vector3D velocity, double mass,
+              double radius, String name) {
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
@@ -77,11 +75,8 @@ public class Body {
   public void update() {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
-      acceleration.addVector(f.scaleVector(BigDecimal.ONE.setScale(32, RoundingMode.DOWN).
-          divide(mass, RoundingMode.DOWN)));
-      f.fixScale(32);
+      acceleration.addVector(f.scaleVector(1 / mass));
     }
-    acceleration.fixScale(32);
     velocity.addVector(acceleration);
     position.addVector(velocity);
   }
@@ -118,7 +113,7 @@ public class Body {
    *
    * @return Returns the body's mass.
    */
-  public BigDecimal getMass() {
+  public double getMass() {
     return mass;
   }
 
@@ -127,7 +122,7 @@ public class Body {
    *
    * @return Returns the body's radius.
    */
-  public BigDecimal getRadius() {
+  public double getRadius() {
     return radius;
   }
 

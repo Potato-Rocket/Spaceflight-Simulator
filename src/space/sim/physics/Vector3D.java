@@ -1,9 +1,5 @@
 package space.sim.physics;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-
 /**
  * Stores a 3D vector, containing an <b>x</b> component,  a <b>y</b> component, and a <b>z</b>
  * component. Each component can be accessed individually through their getter methods.
@@ -14,15 +10,15 @@ public class Vector3D {
   /**
    * <b>x</b> component of the vector.
    */
-  private BigDecimal x;
+  private double x;
   /**
    * <b>y</b> component of the vector .
    */
-  private BigDecimal y;
+  private double y;
   /**
    * <b>z</b> component of the vector.
    */
-  private BigDecimal z;
+  private double z;
 
   /**
    * Class constructor specifying initial values.
@@ -31,7 +27,7 @@ public class Vector3D {
    * @param y initial <b>y</b> value
    * @param z initial <b>z</b> value
    */
-  public Vector3D(BigDecimal x, BigDecimal y, BigDecimal z) {
+  public Vector3D(double x, double y, double z) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -41,9 +37,18 @@ public class Vector3D {
    * Class constructor. Sets values to (0.0, 0.0, 0.0) as a default.
    */
   public Vector3D() {
-    this.x = BigDecimal.ZERO;
-    this.y = BigDecimal.ZERO;
-    this.z = BigDecimal.ZERO;
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+  }
+
+  /**
+   * Gets all the values in the vector.
+   *
+   * @return Returns each value of the vector in an array.
+   */
+  public double[] getValues() {
+    return new double[] {x, y, z};
   }
 
   /**
@@ -52,9 +57,9 @@ public class Vector3D {
    * @param vector second vector
    */
   public void addVector(Vector3D vector) {
-    x = x.add(vector.x);
-    y = y.add(vector.y);
-    z = z.add(vector.z);
+    x = x + vector.x;
+    y = y + vector.y;
+    z = z + vector.z;
   }
 
   /**
@@ -64,20 +69,8 @@ public class Vector3D {
    * @param factor factor to multiply with the vector
    * @return Returns a vector containing the scaled vector.
    */
-  public Vector3D scaleVector(BigDecimal factor) {
-    return new Vector3D(x.multiply(factor), y.multiply(factor), z.multiply(factor));
-  }
-
-  /**
-   * Returns the hypotenuse of a right triangle with legs <b>a</b> and <b>b</b>. Uses the
-   * pythagorean theorem to find the output: <code>hypotenuse = sqrt(a^2 + b^2)</code>
-   *
-   * @param a length of leg <b>a</b>
-   * @param b length of leg <b>b</b>
-   * @return Returns the hypotenuse.
-   */
-  public static BigDecimal hypotenuse(BigDecimal a, BigDecimal b) {
-    return a.pow(2).add(b.pow(2)).sqrt(new MathContext(32, RoundingMode.DOWN));
+  public Vector3D scaleVector(double factor) {
+    return new Vector3D(x * factor, y * factor, z * factor);
   }
 
   /**
@@ -89,8 +82,8 @@ public class Vector3D {
    * @param vector second vector
    * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
    */
-  public BigDecimal[] compareTo(Vector3D vector) {
-    return new BigDecimal[]{vector.x.subtract(x), vector.y.subtract(y), vector.z.subtract(z)};
+  public double[] compareTo(Vector3D vector) {
+    return new double[]{vector.x - x, vector.y - y, vector.z - z};
   }
 
   /**
@@ -103,10 +96,10 @@ public class Vector3D {
    * @param vector second vector
    * @return Returns the 3D distance between the two vectors.
    */
-  public BigDecimal distanceTo(Vector3D vector) {
-    BigDecimal[] compare = compareTo(vector);
-    BigDecimal horizontal = hypotenuse(compare[0], compare[1]);
-    return hypotenuse(horizontal, compare[2]);
+  public double distanceTo(Vector3D vector) {
+    double[] compare = compareTo(vector);
+    double horizontal = Math.hypot(compare[0], compare[1]);
+    return Math.hypot(horizontal, compare[2]);
   }
 
   /**
@@ -120,27 +113,14 @@ public class Vector3D {
    * @return Returns a vector on a unit scale to represent angle.
    */
   public Vector3D angleTo(Vector3D vector) {
-    BigDecimal hypotenuse = distanceTo(vector);
-    BigDecimal[] compare = compareTo(vector);
+    double hypotenuse = distanceTo(vector);
+    double[] compare = compareTo(vector);
     Vector3D nonScaled = new Vector3D(compare[0], compare[1], compare[2]);
-    return nonScaled.scaleVector(BigDecimal.ONE.setScale(32, RoundingMode.DOWN).
-        divide(hypotenuse, RoundingMode.DOWN));
+    return nonScaled.scaleVector(hypotenuse);
   }
 
   /**
-   * Sets the scale of each <code>BigDecimal</code> value to a given number of digits. This
-   * eliminates unnecessary degrees of precision.
-   *
-   * @param scale the decimal place limit
-   */
-  public void fixScale(int scale) {
-    x = x.setScale(scale, RoundingMode.DOWN);
-    y = y.setScale(scale, RoundingMode.DOWN);
-    z = z.setScale(scale, RoundingMode.DOWN);
-  }
-
-  /**
-   * Create a new <code>Vector</code> with identical values.
+   * Create a new <code>Vector3D</code> with identical values.
    *
    * @return Returns the copied vector.
    */
@@ -156,9 +136,7 @@ public class Vector3D {
    * @return Returns a string expressing the vector.
    */
   public String toString() {
-    return "Vector(x=" + x.setScale(2, RoundingMode.DOWN) +
-        ", y=" + y.setScale(2, RoundingMode.DOWN) +
-        ", z=" + z.setScale(2, RoundingMode.DOWN) + ")";
+    return "Vector(x=" + x + ", y=" + y + ", z=" + z + ")";
   }
 
 }

@@ -13,8 +13,7 @@ public class Simulation {
     GUI gui = new GUI();
     Physics.createBodies();
     while (true) {
-      Thread.sleep((int) 1000 / 10);
-      Physics.updateBodies();
+      Thread.sleep(1000);
       gui.update(gui.getGraphics());
     }
   }

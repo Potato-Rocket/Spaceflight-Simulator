@@ -9,7 +9,7 @@ public class Physics {
   /**
    * Universal gravitational constant.
    */
-  public static final BigDecimal G = new BigDecimal("1");
+  public static final double G = 1;
 
   /**
    * The 2D array to store information about how to generate bodies.
@@ -26,10 +26,10 @@ public class Physics {
 
   public static void createBodies() {
     for (String[] line : genData) {
-      bodyArray.add(new Body(
-          new Vector3D(new BigDecimal(line[0]), new BigDecimal(line[1]), new BigDecimal(line[2])),
-          new Vector3D(new BigDecimal(line[3]), new BigDecimal(line[4]), new BigDecimal(line[5])),
-          new BigDecimal(line[6]), new BigDecimal(line[7]), line[8]));
+      bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
+              Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
+              Double.parseDouble(line[4]), Double.parseDouble(line[5])),
+              Double.parseDouble(line[6]), Double.parseDouble(line[7]), line[8]));
     }
   }
 
@@ -60,10 +60,8 @@ public class Physics {
    */
   public static Vector3D findGravityForce(Body body, Body other) {
     if (body.getId() != other.getId()) {
-      BigDecimal r = body.getPosition().distanceTo(other.getPosition());
-      BigDecimal f = G.multiply(body.getMass().multiply(other.getMass()).setScale(32,
-          RoundingMode.DOWN).
-          divide(r.pow(2), RoundingMode.DOWN));
+      double r = body.getPosition().distanceTo(other.getPosition());
+      double f = G * (body.getMass() * other.getMass() / Math.pow(r, 2));
       Vector3D angle = body.getPosition().angleTo(other.getPosition());
       return angle.scaleVector(f);
     }
