@@ -4,6 +4,7 @@ import space.sim.Vector3D;
 
 import java.util.ArrayList;
 
+//TODO: Make class non-static
 public class Physics {
 
   /**
@@ -11,6 +12,7 @@ public class Physics {
    */
   public static final double G = 0.001;
 
+  //TODO: Add configuration file reading to input the body data
   /**
    * The 2D array to store information about how to generate bodies.
    */
@@ -34,6 +36,7 @@ public class Physics {
     }
   }
 
+  //TODO: Add code to merge bodies' masses and inertia if they collide
   /**
    * Updates every body. Runs the update function for each body to update the motion. Then
    * updates the gravitational forces between each body and every other body.

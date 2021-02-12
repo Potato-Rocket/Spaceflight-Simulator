@@ -7,6 +7,7 @@ package space.sim;
  */
 public class Vector3D {
 
+  //TODO: Add getter methods for each individual component
   /**
    * <b>x</b> component of the vector.
    */

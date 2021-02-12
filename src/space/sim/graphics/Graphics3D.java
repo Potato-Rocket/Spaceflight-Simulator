@@ -25,6 +25,7 @@ public class Graphics3D {
     g.drawLine((int) coords1[0], (int) coords1[1], (int) coords2[0], (int) coords2[1]);
   }
 
+  //TODO: Return the relative z depth
   private double[] convertPoint(Vector3D point) {
     double[] coords = point.getValues();
     double x = coords[0] * Math.cos(rot) + coords[2] * Math.sin(rot);

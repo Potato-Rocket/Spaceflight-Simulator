@@ -11,6 +11,7 @@ public class Simulation {
 
   public static final double FRAME_RATE = 60;
 
+  //TODO: Add user inputs before creating the window and bodies
   public static void main(String[] args) throws InterruptedException {
     DrawSpace drawSpace = new DrawSpace();
     Physics.createBodies();
