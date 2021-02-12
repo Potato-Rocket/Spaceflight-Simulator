@@ -5,6 +5,7 @@ import space.sim.physics.Physics;
 import javax.swing.JFrame;
 import java.awt.*;
 
+//TODO: Add javadoc comments to graphics classes
 public class DrawSpace extends JFrame {
 
   public DrawSpace() {

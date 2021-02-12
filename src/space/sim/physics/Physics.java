@@ -24,10 +24,8 @@ public class Physics {
 
   public Physics() {
     genData = new String[][] {
-      {"0", "0", "0", "0", "0", "0", "1000000", "Body One"},
-      {"300", "0", "0", "0", "500", "0", "1000", "Body Two"},
-      {"0", "500", "0", "0", "0", "700", "1000", "Body Three"},
-      {"0", "0", "700", "1000", "0", "0", "1000", "Body Four"}};
+      {"0", "0", "-500", "0", "0", "0", "10000", "Body One"},
+      {"0", "0", "500", "0", "0", "0", "10000", "Body Two"}};
     createBodies();
   }
 
@@ -40,7 +38,6 @@ public class Physics {
     }
   }
 
-  //TODO: Add code to merge bodies' masses and inertia if they collide
   /**
    * Updates every body. Runs the update function for each body to update the motion. Then
    * updates the gravitational forces between each body and every other body.
@@ -55,8 +52,25 @@ public class Physics {
     for (Body body : bodyArray) {
       body.update(millis);
     }
+    printAll();
+    for (int i = 0; i < bodyArray.size(); i++) {
+      Body body = bodyArray.get(i);
+      for (int j = 0; j < bodyArray.size(); j++) {
+        Body other = bodyArray.get(j);
+        if (body.getId() != other.getId()) {
+          double distance = body.getPosition().distanceTo(other.getPosition());
+          double limit = body.getRadius() + other.getRadius();
+          if (body.getMass() >= other.getMass() && distance < limit) {
+            body.collision(other.getPosition(), other.getVelocity(), other.getMass());
+            bodyArray.remove(other);
+            j--;
+          }
+        }
+      }
+    }
   }
 
+  //FIXME: Gravity force does not scale with distance for some reason.
   /**
    * Calculates the gravitational pull between this body and another body. Uses their relative
    * positions and masses as well as the gravitational constant to calculate this. Does not

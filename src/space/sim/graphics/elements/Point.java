@@ -16,11 +16,11 @@ public class Point {
 
   public void draw(Graphics2D g) {
     g.setColor(Color.WHITE);
-    g.fillOval((int) (position.getX() - size), (int) (position.getY() - size), size * 2, size * 2);
+    g.fillOval((int) (position.getY() - size), (int) (position.getZ() - size), size * 2, size * 2);
   }
 
   public double getDepth() {
-    return position.getZ();
+    return position.getX();
   }
 
 }

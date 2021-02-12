@@ -3,6 +3,8 @@ package space.sim.physics;
 import space.sim.Vector3D;
 
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 /**
  * Stores and updates physical information about a body. Updates information such as position
@@ -100,6 +102,24 @@ public class Body {
   }
 
   /**
+   * Modifies this body's attributes based on collision information. Adjusts the position and
+   * velocity based on the other body's position and velocity scaled to the bodies' relative
+   * masses. The masses are then merged.
+   *
+   * @param pos other body's position
+   * @param vel other body's velocity
+   * @param mass other body's mass
+   */
+  public void collision(Vector3D pos, Vector3D vel, double mass) {
+    System.out.println(id);
+    double scale = mass / this.mass;
+    velocity.addVector(vel.scaleVector(scale));
+    double[] offset = position.compareTo(pos);
+    position.addVector(new Vector3D(offset[0], offset[1], offset[2]).scaleVector(scale * 0.5));
+    this.mass += mass;
+  }
+
+  /**
    * Getter method for the body's position.
    *
    * @return Returns the body's position.
@@ -118,15 +138,6 @@ public class Body {
   }
 
   /**
-   * Getter method for the body's acceleration.
-   *
-   * @return Returns the acceleration.
-   */
-  public Vector3D getAcceleration() {
-    return acceleration;
-  }
-
-  /**
    * Getter method for the body's mass.
    *
    * @return Returns the body's mass.
@@ -142,15 +153,6 @@ public class Body {
    */
   public double getRadius() {
     return radius;
-  }
-
-  /**
-   * Getter method for the body's name.
-   *
-   * @return Returns the body's name.
-   */
-  public String getName() {
-    return name;
   }
 
   /**

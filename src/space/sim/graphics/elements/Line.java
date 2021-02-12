@@ -18,14 +18,14 @@ public class Line {
 
   public void draw(Graphics2D g) {
     g.setColor(color);
-    g.drawLine((int) point1.getX(), (int) point1.getY(), (int) point2.getX(), (int) point2.getY());
+    g.drawLine((int) point1.getY(), (int) point1.getZ(), (int) point2.getY(), (int) point2.getZ());
   }
 
   public double getDepth() {
-    if (point1.getZ() < point2.getZ()) {
-      return point1.getZ();
+    if (point1.getX() < point2.getX()) {
+      return point1.getX();
     }
-    return point2.getZ();
+    return point2.getX();
   }
 
 }
