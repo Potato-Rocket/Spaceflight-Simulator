@@ -11,7 +11,7 @@ public abstract class Graphics3D {
   private static double rot = 0;
   private static double angle = 0;
   private static final double MIN_ANGLE = Math.toRadians(-90);
-  private static final double MAX_ANGLE = Math.toRadians(-90);
+  private static final double MAX_ANGLE = Math.toRadians(90);
 
   public Graphics3D() {
   }
@@ -24,22 +24,21 @@ public abstract class Graphics3D {
     return new Line(convertPoint(point1), convertPoint(point2), c);
   }
 
-  public static double getRot() {
-    return rot;
-  }
-
   public static void changeRot(double rot) {
     Graphics3D.rot += rot;
   }
 
-  public static double getAngle() {
-    return angle;
+  public static void changeAngle(double a) {
+    angle += a;
+    if (angle > MAX_ANGLE) {
+      angle = MAX_ANGLE;
+    }
+    if (angle < MIN_ANGLE) {
+      angle = MIN_ANGLE;
+    }
   }
 
-  public static void changeAngle(double angle) {
-    Graphics3D.angle += angle;
-  }
-
+  //FIXME: Reevaluate to ensure it is functioning as intended
   private static Vector3D convertPoint(Vector3D point) {
     double x = point.getX() * Math.cos(rot) + point.getZ() * Math.sin(rot);
     double y = point.getY() * Math.cos(angle) + point.getZ() * Math.sin(angle);
