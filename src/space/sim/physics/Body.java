@@ -3,8 +3,6 @@ package space.sim.physics;
 import space.sim.Vector3D;
 
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 /**
  * Stores and updates physical information about a body. Updates information such as position
@@ -20,6 +18,15 @@ public class Body {
    * Stores the position vectors to render the trail.
    */
   public ArrayList<Vector3D> trail = new ArrayList<>();
+
+  /**
+   * The number of seconds the trail remains on screen.
+   * */
+  private static final double TRAIL_LENGTH = 1;
+  /**
+   * The ratio between real time and simulation time.
+   */
+  private static final double TIME_SCALE = 10;
 
   /**
    * Vector to store the body's position.
@@ -53,10 +60,8 @@ public class Body {
    * The number of bodies that have been generated.
    */
   private static int count = 0;
-  /**
-   * The number of seconds the trail remains on screen.
-   * */
-  private static final double TRAIL_LENGTH = 1;
+
+
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their
@@ -86,13 +91,14 @@ public class Body {
    * the trail and inserts the updated position at the start.
    */
   public void update(int millis) {
+    millis *= TIME_SCALE;
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
       acceleration.addVector(f.scaleVector(1 / mass));
     }
     velocity.addVector(acceleration.scaleVector((double) millis / 1000));
     position.addVector(velocity.scaleVector((double) millis / 1000));
-    if (trail.size() < (TRAIL_LENGTH / (millis / 1000.0))) {
+    if (trail.size() < ((TRAIL_LENGTH * TIME_SCALE) / (millis / 1000.0))) {
       trail.add(new Vector3D());
     }
     for (int i = trail.size() - 1; i > 0; i--) {
@@ -111,7 +117,6 @@ public class Body {
    * @param mass other body's mass
    */
   public void collision(Vector3D pos, Vector3D vel, double mass) {
-    System.out.println(id);
     double scale = mass / this.mass;
     velocity.addVector(vel.scaleVector(scale));
     double[] offset = position.compareTo(pos);

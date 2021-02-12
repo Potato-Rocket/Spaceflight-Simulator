@@ -134,7 +134,7 @@ public class Vector3D {
     double hypotenuse = distanceTo(vector);
     double[] compare = compareTo(vector);
     Vector3D nonScaled = new Vector3D(compare[0], compare[1], compare[2]);
-    return nonScaled.scaleVector(hypotenuse);
+    return nonScaled.scaleVector(1/ hypotenuse);
   }
 
   /**

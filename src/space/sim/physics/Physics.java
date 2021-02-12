@@ -9,7 +9,7 @@ public class Physics {
   /**
    * Universal gravitational constant.
    */
-  public static final double G = 0.001;
+  public static final double G = 1;
 
   //TODO: Add configuration file reading to input the body data
   /**
@@ -24,8 +24,8 @@ public class Physics {
 
   public Physics() {
     genData = new String[][] {
-      {"0", "0", "-500", "0", "0", "0", "10000", "Body One"},
-      {"0", "0", "500", "0", "0", "0", "10000", "Body Two"}};
+      {"0", "0", "0", "0", "0", "0", "1000000", "Body One"},
+      {"0", "0", "500", "0", "50", "0", "1000", "Body Two"}};
     createBodies();
   }
 
@@ -52,7 +52,6 @@ public class Physics {
     for (Body body : bodyArray) {
       body.update(millis);
     }
-    printAll();
     for (int i = 0; i < bodyArray.size(); i++) {
       Body body = bodyArray.get(i);
       for (int j = 0; j < bodyArray.size(); j++) {
@@ -70,7 +69,6 @@ public class Physics {
     }
   }
 
-  //FIXME: Gravity force does not scale with distance for some reason.
   /**
    * Calculates the gravitational pull between this body and another body. Uses their relative
    * positions and masses as well as the gravitational constant to calculate this. Does not

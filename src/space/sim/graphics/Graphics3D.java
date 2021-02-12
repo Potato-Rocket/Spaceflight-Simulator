@@ -38,23 +38,19 @@ public abstract class Graphics3D {
     }
   }
 
-  //FIXME: Reevaluate and fix the Y and Z conversion
   private static Vector3D convertPoint(Vector3D point) {
-//    //Yaw
     double x =
-        point.getX() * (Math.cos(yaw)) + point.getY() * (-Math.sin(yaw)) + point.getZ() * (0);
+        point.getX() * (Math.cos(yaw) * Math.cos(pitch)) +
+        point.getY() * (-Math.sin(yaw)) +
+        point.getZ() * (Math.cos(yaw) * Math.sin(pitch));
     double y =
-        point.getX() * (Math.sin(yaw)) + point.getY() * (Math.cos(yaw)) + point.getZ() * (0);
+        point.getX() * (Math.sin(yaw) * Math.cos(pitch)) +
+        point.getY() * (Math.cos(yaw)) +
+        point.getZ() * (Math.sin(yaw) * Math.sin(pitch));
     double z =
-        point.getX() * (0) + point.getY() * (0) + point.getZ() * (1);
-
-//    //Pitch
-//    double x =
-//        point.getX() * (Math.cos(pitch)) + point.getY() * (0) + point.getZ() * (Math.sin(pitch));
-//    double y =
-//        point.getX() * (0) + point.getY() * (1) + point.getZ() * (0);
-//    double z =
-//        point.getX() * (-Math.sin(pitch)) + point.getY() * (0) + point.getZ() * (Math.cos(pitch));
+        point.getX() * (-Math.sin(pitch)) +
+        point.getY() * (0) +
+        point.getZ() * (Math.cos(pitch));
 
     return new Vector3D(x, y, z);
   }
