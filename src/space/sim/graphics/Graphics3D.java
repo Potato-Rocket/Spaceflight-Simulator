@@ -1,32 +1,46 @@
 package space.sim.graphics;
 
 import space.sim.Vector3D;
+import space.sim.graphics.elements.Point;
+import space.sim.graphics.elements.Line;
 
 import java.awt.*;
 
-public class Graphics3D {
+public abstract class Graphics3D {
 
-  private Graphics2D g;
-  private static double rot = 1;
+  private static double rot = 0;
   private static double angle = 0;
+  private static final double MIN_ANGLE = Math.toRadians(-90);
+  private static final double MAX_ANGLE = Math.toRadians(-90);
 
-  public Graphics3D(Graphics2D g) {
-    this.g = g;
+  public Graphics3D() {
   }
 
-  public void point(Vector3D position, int size) {
-    Vector3D coords = convertPoint(position);
-    g.fillOval((int) (coords.getX() - size), (int) (coords.getY() - size), size * 2, size * 2);
+  public static Point point(Vector3D position, int size) {
+    return new Point(convertPoint(position), size);
   }
 
-  public void line(Vector3D point1, Vector3D point2) {
-    Vector3D coords1 = convertPoint(point1);
-    Vector3D coords2 = convertPoint(point2);
-    g.drawLine((int) coords1.getX(), (int) coords1.getY(), (int) coords2.getX(),
-        (int) coords2.getY());
+  public static Line line(Vector3D point1, Vector3D point2, Color c) {
+    return new Line(convertPoint(point1), convertPoint(point2), c);
   }
 
-  private Vector3D convertPoint(Vector3D point) {
+  public static double getRot() {
+    return rot;
+  }
+
+  public static void changeRot(double rot) {
+    Graphics3D.rot += rot;
+  }
+
+  public static double getAngle() {
+    return angle;
+  }
+
+  public static void changeAngle(double angle) {
+    Graphics3D.angle += angle;
+  }
+
+  private static Vector3D convertPoint(Vector3D point) {
     double x = point.getX() * Math.cos(rot) + point.getZ() * Math.sin(rot);
     double y = point.getY() * Math.cos(angle) + point.getZ() * Math.sin(angle);
     double z = point.getZ() * Math.cos(rot) + point.getZ() * Math.sin(angle);

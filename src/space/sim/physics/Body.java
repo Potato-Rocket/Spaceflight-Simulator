@@ -54,7 +54,7 @@ public class Body {
   /**
    * The number of seconds the trail remains on screen.
    * */
-  private static final double TRAIL_LENGTH = 10;
+  private static final double TRAIL_LENGTH = 1;
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their

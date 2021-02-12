@@ -10,10 +10,10 @@ public class Line {
   private Vector3D point2;
   private Color color;
 
-  public Line(Vector3D point1, Vector3D point2, Color color) {
+  public Line(Vector3D point1, Vector3D point2, Color c) {
     this.point1 = point1;
     this.point2 = point2;
-    this.color = color;
+    color = c;
   }
 
   public void draw(Graphics2D g) {
