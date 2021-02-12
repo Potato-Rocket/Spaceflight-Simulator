@@ -9,17 +9,18 @@ import space.sim.physics.Physics;
  */
 public class Simulation {
 
-  public static final double FRAME_RATE = 10;
+  public static final double FRAME_RATE = 60;
 
   //TODO: Add user inputs before creating the window and bodies
   public static void main(String[] args) throws InterruptedException {
     DrawSpace drawSpace = new DrawSpace();
-    Physics.createBodies();
+    Physics physics = new Physics();
+
     int delay = (int) (1000 / FRAME_RATE);
     while (true) {
       Thread.sleep(delay);
-      Physics.updateBodies(delay);
-      drawSpace.update(drawSpace.getGraphics());
+      physics.updateBodies(delay);
+      drawSpace.paint(drawSpace.getGraphics(), physics);
     }
   }
 

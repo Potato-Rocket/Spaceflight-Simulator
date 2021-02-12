@@ -9,13 +9,15 @@ public class Draw {
 
   private Graphics2D g2d;
   private Graphics3D g3d;
+  private Physics p;
   private int w;
   private int h;
   private double scale;
 
-  Draw(Graphics graphics, int width, int height) {
+  Draw(Graphics graphics, Physics physics, int width, int height) {
     g2d = (Graphics2D) graphics;
     g3d = new Graphics3D(g2d);
+    p = physics;
     w = width;
     h = height;
   }
@@ -44,7 +46,7 @@ public class Draw {
     //  - Create classes for a line and a point
     //  - Sort items by z depth
     //  - Add method to actually render everything
-    for (Body body : Physics.bodyArray) {
+    for (Body body : p.bodyArray) {
       drawBody(body);
     }
   }
@@ -62,6 +64,7 @@ public class Draw {
   private void drawTrail(Body body) {
     double increment = 256.0 / body.trail.size();
     for (int i = body.trail.size() - 1; i > 0; i--) {
+      //FIXME: Use alpha rather than darkness
       g2d.setColor(new Color(0, 255 - (int) (increment * i), 0));
       g3d.line(body.trail.get(i), body.trail.get(i - 1));
     }
