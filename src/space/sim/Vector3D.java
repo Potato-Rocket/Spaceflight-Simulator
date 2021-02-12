@@ -7,7 +7,6 @@ package space.sim;
  */
 public class Vector3D {
 
-  //TODO: Add getter methods for each individual component
   /**
    * <b>x</b> component of the vector.
    */
@@ -50,6 +49,33 @@ public class Vector3D {
    */
   public double[] getValues() {
     return new double[] {x, y, z};
+  }
+
+  /**
+   * Getter method for the <b>x</b> component.
+   *
+   * @return Returns the <b>x</b> component.
+   */
+  public double getX() {
+    return x;
+  }
+
+  /**
+   * Getter method for the <b>y</b> component.
+   *
+   * @return Returns the <b>y</b> component.
+   */
+  public double getY() {
+    return y;
+  }
+
+  /**
+   * Getter method for the <b>z</b> component.
+   *
+   * @return Returns the <b>z</b> component.
+   */
+  public double getZ() {
+    return z;
   }
 
   /**

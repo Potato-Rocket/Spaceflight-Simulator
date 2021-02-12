@@ -27,9 +27,8 @@ public class Graphics3D {
 
   //TODO: Return the relative z depth
   private double[] convertPoint(Vector3D point) {
-    double[] coords = point.getValues();
-    double x = coords[0] * Math.cos(rot) + coords[2] * Math.sin(rot);
-    double y = coords[1] * Math.cos(angle) + coords[2] * Math.sin(angle);
+    double x = point.getX() * Math.cos(rot) + point.getZ() * Math.sin(rot);
+    double y = point.getY() * Math.cos(angle) + point.getZ() * Math.sin(angle);
     return new double[] {x, y};
   }
 
