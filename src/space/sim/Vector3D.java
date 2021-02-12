@@ -43,15 +43,6 @@ public class Vector3D {
   }
 
   /**
-   * Gets all the values in the vector.
-   *
-   * @return Returns each value of the vector in an array.
-   */
-  public double[] getValues() {
-    return new double[] {x, y, z};
-  }
-
-  /**
    * Getter method for the <b>x</b> component.
    *
    * @return Returns the <b>x</b> component.

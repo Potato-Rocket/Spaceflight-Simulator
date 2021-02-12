@@ -43,7 +43,6 @@ public class Draw {
     g2d.scale(scale, scale);
 
     //TODO: Use a draw queue to sort lines and points by depth
-    //  - Create classes for a line and a point
     //  - Sort items by z depth
     //  - Add method to actually render everything
     for (Body body : p.bodyArray) {

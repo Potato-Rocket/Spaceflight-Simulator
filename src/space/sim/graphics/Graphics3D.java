@@ -14,9 +14,9 @@ public class Graphics3D {
     this.g = g;
   }
 
-  public void point(Vector3D position, int rad) {
+  public void point(Vector3D position, int size) {
     Vector3D coords = convertPoint(position);
-    g.fillOval((int) (coords.getX() - rad), (int) (coords.getY() - rad), rad * 2, rad * 2);
+    g.fillOval((int) (coords.getX() - size), (int) (coords.getY() - size), size * 2, size * 2);
   }
 
   public void line(Vector3D point1, Vector3D point2) {
