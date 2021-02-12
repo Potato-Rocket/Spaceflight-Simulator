@@ -9,7 +9,7 @@ import java.awt.*;
 public abstract class Graphics3D {
 
   private static double yaw = 0;
-  private static double pitch = 0;
+  private static double tilt = 0;
   private static final double MIN_PITCH = Math.toRadians(-90);
   private static final double MAX_PITCH = Math.toRadians(90);
 
@@ -28,31 +28,41 @@ public abstract class Graphics3D {
     yaw += angle;
   }
 
-  public static void changePitch(double angle) {
-    pitch += angle;
-    if (pitch > MAX_PITCH) {
-      pitch = MAX_PITCH;
+  public static void changeTilt(double angle) {
+    tilt += angle;
+    if (tilt > MAX_PITCH) {
+      tilt = MAX_PITCH;
     }
-    if (pitch < MIN_PITCH) {
-      pitch = MIN_PITCH;
+    if (tilt < MIN_PITCH) {
+      tilt = MIN_PITCH;
     }
   }
 
   private static Vector3D convertPoint(Vector3D point) {
+    double pitch = tilt * cos(yaw);
+    double roll = tilt * sin(yaw);
     double x =
-        point.getX() * (Math.cos(yaw) * Math.cos(pitch)) +
-        point.getY() * (-Math.sin(yaw)) +
-        point.getZ() * (Math.cos(yaw) * Math.sin(pitch));
+        point.getX() * (cos(yaw) * cos(pitch)) +
+        point.getY() * (cos(yaw) * sin(pitch) * sin(roll) - sin(yaw) * cos(roll)) +
+        point.getZ() * (cos(yaw) * sin(pitch) * cos(roll) + sin(yaw) * sin(roll));
     double y =
-        point.getX() * (Math.sin(yaw) * Math.cos(pitch)) +
-        point.getY() * (Math.cos(yaw)) +
-        point.getZ() * (Math.sin(yaw) * Math.sin(pitch));
+        point.getX() * (sin(yaw) * cos(pitch)) +
+        point.getY() * (sin(yaw) * sin(pitch) * sin(roll) + cos(yaw) * cos(roll)) +
+        point.getZ() * (sin(yaw) * sin(pitch) * cos(roll) - cos(yaw) * sin(roll));
     double z =
-        point.getX() * (-Math.sin(pitch)) +
-        point.getY() * (0) +
-        point.getZ() * (Math.cos(pitch));
+        point.getX() * (-sin(pitch)) +
+        point.getY() * (cos(pitch) * sin(roll)) +
+        point.getZ() * (cos(pitch) * cos(roll));
 
     return new Vector3D(x, y, z);
+  }
+
+  private static double sin(double theta) {
+    return Math.sin(theta);
+  }
+
+  private static double cos(double theta) {
+    return Math.cos(theta);
   }
 
 }

@@ -1,5 +1,6 @@
 package space.sim.graphics;
 
+import space.sim.Vector3D;
 import space.sim.physics.Body;
 import space.sim.physics.Physics;
 import space.sim.graphics.elements.Point;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 
 public class Draw {
 
-  private static final boolean TRANSPARENCY = true;
+  private static final boolean TRANSPARENCY = false;
 
   private Graphics2D g2d;
   private Physics p;
@@ -46,6 +47,19 @@ public class Draw {
     }
     scale = min / (minBounds * 2);
     g2d.scale(scale, scale);
+
+    Graphics3D.line(new Vector3D(minBounds / 2, 0, 0), new Vector3D(0, 0, 0),
+        new Color(255, 0, 0)).draw(g2d);
+    Graphics3D.line(new Vector3D(minBounds / -2, 0, 0), new Vector3D(0, 0, 0),
+        new Color(95, 0, 0)).draw(g2d);
+    Graphics3D.line(new Vector3D(0, minBounds / 2, 0), new Vector3D(0, 0, 0),
+        new Color(0, 255, 0)).draw(g2d);
+    Graphics3D.line(new Vector3D(0, minBounds / -2, 0), new Vector3D(0, 0, 0),
+        new Color(0, 95, 0)).draw(g2d);
+    Graphics3D.line(new Vector3D(0, 0, minBounds / 2), new Vector3D(0, 0, 0),
+        new Color(0, 0, 255)).draw(g2d);
+    Graphics3D.line(new Vector3D(0, 0, minBounds / -2), new Vector3D(0, 0, 0),
+        new Color(0, 0, 95)).draw(g2d);
 
     elements.clear();
     for (Body body : p.bodyArray) {

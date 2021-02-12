@@ -22,7 +22,7 @@ public class Body {
   /**
    * The number of seconds the trail remains on screen.
    * */
-  private static final double TRAIL_LENGTH = 1;
+  private static final double TRAIL_LENGTH = 10;
   /**
    * The ratio between real time and simulation time.
    */
@@ -84,6 +84,7 @@ public class Body {
     trail.add(position.copy());
   }
 
+  //TODO: Have trail only add a point when it has changed direction a certain amount
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
@@ -98,7 +99,7 @@ public class Body {
     }
     velocity.addVector(acceleration.scaleVector((double) millis / 1000));
     position.addVector(velocity.scaleVector((double) millis / 1000));
-    if (trail.size() < ((TRAIL_LENGTH * TIME_SCALE) / (millis / 1000.0))) {
+    if (trail.size() < ((TRAIL_LENGTH) / (millis / 1000.0))) {
       trail.add(new Vector3D());
     }
     for (int i = trail.size() - 1; i > 0; i--) {

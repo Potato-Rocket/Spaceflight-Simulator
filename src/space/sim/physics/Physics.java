@@ -11,7 +11,7 @@ public class Physics {
    */
   public static final double G = 1;
 
-  //TODO: Add configuration file reading to input the body data
+  //TODO: Add configuration file reading to input the body data.
   /**
    * The 2D array to store information about how to generate bodies.
    */
@@ -25,7 +25,7 @@ public class Physics {
   public Physics() {
     genData = new String[][] {
       {"0", "0", "0", "0", "0", "0", "1000000", "Body One"},
-      {"0", "0", "500", "0", "50", "0", "1000", "Body Two"}};
+      {"500", "0", "0", "0", "50", "0", "1000", "Body Two"}};
     createBodies();
   }
 
@@ -58,8 +58,7 @@ public class Physics {
         Body other = bodyArray.get(j);
         if (body.getId() != other.getId()) {
           double distance = body.getPosition().distanceTo(other.getPosition());
-          double limit = body.getRadius() + other.getRadius();
-          if (body.getMass() >= other.getMass() && distance < limit) {
+          if (body.getMass() >= other.getMass() && distance < body.getRadius()) {
             body.collision(other.getPosition(), other.getVelocity(), other.getMass());
             bodyArray.remove(other);
             j--;
