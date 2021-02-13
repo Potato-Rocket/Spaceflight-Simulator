@@ -1,6 +1,6 @@
 package space.sim.graphics;
 
-import space.sim.Vector3D;
+import space.sim.physics.Vector3D;
 import space.sim.physics.Body;
 import space.sim.physics.Physics;
 import space.sim.graphics.elements.Point;
@@ -51,15 +51,15 @@ public class Draw {
     elements.add(Graphics3D.line(new Vector3D(minBounds / 2, 0, 0), new Vector3D(0, 0, 0),
         new Color(255, 0, 0)));
     elements.add(Graphics3D.line(new Vector3D(minBounds / -2, 0, 0), new Vector3D(0, 0, 0),
-        new Color(95, 0, 0)));
+        new Color(63, 0, 0)));
     elements.add(Graphics3D.line(new Vector3D(0, minBounds / 2, 0), new Vector3D(0, 0, 0),
         new Color(0, 255, 0)));
     elements.add(Graphics3D.line(new Vector3D(0, minBounds / -2, 0), new Vector3D(0, 0, 0),
-        new Color(0, 95, 0)));
+        new Color(0, 63, 0)));
     elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / 2), new Vector3D(0, 0, 0),
         new Color(0, 0, 255)));
     elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / -2), new Vector3D(0, 0, 0),
-        new Color(0, 0, 95)));
+        new Color(0, 0, 63)));
     render();
 
     elements.clear();

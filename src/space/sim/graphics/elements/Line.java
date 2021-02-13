@@ -1,6 +1,6 @@
 package space.sim.graphics.elements;
 
-import space.sim.Vector3D;
+import space.sim.physics.Vector3D;
 
 import java.awt.*;
 

@@ -1,18 +1,15 @@
 package space.sim.graphics;
 
-import space.sim.Vector3D;
+import space.sim.physics.Vector3D;
 import space.sim.graphics.elements.Point;
 import space.sim.graphics.elements.Line;
 
 import java.awt.*;
 
-public abstract class Graphics3D {
+public class Graphics3D {
 
-  private static double yaw = 0;
-  private static double tilt = 0;
-
-  public Graphics3D() {
-  }
+  private static double yaw;
+  private static double tilt;
 
   public static Point point(Vector3D position, int size) {
     return new Point(convertPoint(position), size);
@@ -49,19 +46,6 @@ public abstract class Graphics3D {
     double finalX = yawX * Math.cos(tilt) + yawZ * Math.sin(tilt);
     double finalY = yawY;
     double finalZ = yawZ * Math.cos(tilt) - yawX * Math.sin(tilt);
-
-//    double x =
-//        point.getX() * (cos(yaw) * cos(pitch)) +
-//        point.getY() * (cos(yaw) * sin(pitch) * sin(roll) - sin(yaw) * cos(roll)) +
-//        point.getZ() * (cos(yaw) * sin(pitch) * cos(roll) + sin(yaw) * sin(roll));
-//    double y =
-//        point.getX() * (sin(yaw) * cos(pitch)) +
-//        point.getY() * (sin(yaw) * sin(pitch) * sin(roll) + cos(yaw) * cos(roll)) +
-//        point.getZ() * (sin(yaw) * sin(pitch) * cos(roll) - cos(yaw) * sin(roll));
-//    double z =
-//        point.getX() * (-sin(pitch)) +
-//        point.getY() * (cos(pitch) * sin(roll)) +
-//        point.getZ() * (cos(pitch) * cos(roll));
 
     return new Vector3D(finalX, finalY, finalZ);
   }

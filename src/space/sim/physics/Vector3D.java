@@ -1,4 +1,4 @@
-package space.sim;
+package space.sim.physics;
 
 /**
  * Stores a 3D vector, containing an <b>x</b> component,  a <b>y</b> component, and a <b>z</b>

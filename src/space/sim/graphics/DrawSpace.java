@@ -1,5 +1,7 @@
 package space.sim.graphics;
 
+import space.sim.interaction.Interaction;
+import space.sim.interaction.Rotation;
 import space.sim.physics.Physics;
 
 import javax.swing.JFrame;
