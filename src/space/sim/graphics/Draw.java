@@ -30,7 +30,6 @@ public class Draw {
 
   public void drawAll(double minBounds) {
     g2d.fillRect(0, 0, w, h);
-    g2d.setColor(Color.WHITE);
     g2d.translate(w / 2, h / 2);
     g2d.drawLine(-10, 0, 10, 0);
     g2d.drawLine(0, -10, 0, 10);
@@ -48,30 +47,36 @@ public class Draw {
     scale = min / (minBounds * 2);
     g2d.scale(scale, scale);
 
-    Graphics3D.line(new Vector3D(minBounds / 2, 0, 0), new Vector3D(0, 0, 0),
-        new Color(255, 0, 0)).draw(g2d);
-    Graphics3D.line(new Vector3D(minBounds / -2, 0, 0), new Vector3D(0, 0, 0),
-        new Color(95, 0, 0)).draw(g2d);
-    Graphics3D.line(new Vector3D(0, minBounds / 2, 0), new Vector3D(0, 0, 0),
-        new Color(0, 255, 0)).draw(g2d);
-    Graphics3D.line(new Vector3D(0, minBounds / -2, 0), new Vector3D(0, 0, 0),
-        new Color(0, 95, 0)).draw(g2d);
-    Graphics3D.line(new Vector3D(0, 0, minBounds / 2), new Vector3D(0, 0, 0),
-        new Color(0, 0, 255)).draw(g2d);
-    Graphics3D.line(new Vector3D(0, 0, minBounds / -2), new Vector3D(0, 0, 0),
-        new Color(0, 0, 95)).draw(g2d);
+    elements.clear();
+    elements.add(Graphics3D.line(new Vector3D(minBounds / 2, 0, 0), new Vector3D(0, 0, 0),
+        new Color(255, 0, 0)));
+    elements.add(Graphics3D.line(new Vector3D(minBounds / -2, 0, 0), new Vector3D(0, 0, 0),
+        new Color(95, 0, 0)));
+    elements.add(Graphics3D.line(new Vector3D(0, minBounds / 2, 0), new Vector3D(0, 0, 0),
+        new Color(0, 255, 0)));
+    elements.add(Graphics3D.line(new Vector3D(0, minBounds / -2, 0), new Vector3D(0, 0, 0),
+        new Color(0, 95, 0)));
+    elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / 2), new Vector3D(0, 0, 0),
+        new Color(0, 0, 255)));
+    elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / -2), new Vector3D(0, 0, 0),
+        new Color(0, 0, 95)));
+    render();
 
     elements.clear();
     for (Body body : p.bodyArray) {
       drawBody(body);
     }
     render();
+
+    g2d.setColor(Color.WHITE);
+    g2d.drawLine((int) (10 / scale), 0, (int) (-10 / scale), 0);
+    g2d.drawLine(0, (int) (10 / scale), 0, (int) (-10 / scale));
   }
 
   private void drawBody(Body body) {
     int size = (int) body.getRadius();
-    if (size / scale < 1) {
-      size = (int) (1 / scale);
+    if (size / scale < 2) {
+      size = (int) (2 / scale);
     }
     drawTrail(body);
     elements.add(Graphics3D.point(body.getPosition(), size));

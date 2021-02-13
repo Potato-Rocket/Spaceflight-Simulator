@@ -23,9 +23,7 @@ public class Physics {
   public ArrayList<Body> bodyArray = new ArrayList<>();
 
   public Physics() {
-    genData = new String[][] {
-      {"0", "0", "0", "0", "0", "0", "1000000", "Body One"},
-      {"500", "0", "0", "0", "50", "0", "1000", "Body Two"}};
+    genData = new String[][] {};
     createBodies();
   }
 

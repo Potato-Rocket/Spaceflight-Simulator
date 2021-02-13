@@ -22,11 +22,11 @@ public class Body {
   /**
    * The number of seconds the trail remains on screen.
    * */
-  private static final double TRAIL_LENGTH = 10;
+  public static final double TRAIL_LENGTH = 100;
   /**
    * The ratio between real time and simulation time.
    */
-  private static final double TIME_SCALE = 10;
+  public static final double TIME_SCALE = 10;
 
   /**
    * Vector to store the body's position.
@@ -99,7 +99,7 @@ public class Body {
     }
     velocity.addVector(acceleration.scaleVector((double) millis / 1000));
     position.addVector(velocity.scaleVector((double) millis / 1000));
-    if (trail.size() < ((TRAIL_LENGTH) / (millis / 1000.0))) {
+    if (trail.size() < TRAIL_LENGTH) {
       trail.add(new Vector3D());
     }
     for (int i = trail.size() - 1; i > 0; i--) {

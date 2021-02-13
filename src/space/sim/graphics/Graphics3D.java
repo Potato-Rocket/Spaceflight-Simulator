@@ -10,8 +10,6 @@ public abstract class Graphics3D {
 
   private static double yaw = 0;
   private static double tilt = 0;
-  private static final double MIN_PITCH = Math.toRadians(-90);
-  private static final double MAX_PITCH = Math.toRadians(90);
 
   public Graphics3D() {
   }
@@ -26,43 +24,46 @@ public abstract class Graphics3D {
 
   public static void changeYaw(double angle) {
     yaw += angle;
+    yaw = yaw % (Math.PI * 2);
+    if (yaw < 0) {
+      yaw += Math.PI * 2;
+    }
   }
 
   public static void changeTilt(double angle) {
     tilt += angle;
-    if (tilt > MAX_PITCH) {
-      tilt = MAX_PITCH;
+    if (tilt > Math.PI / 2) {
+      tilt = Math.PI / 2;
     }
-    if (tilt < MIN_PITCH) {
-      tilt = MIN_PITCH;
+    if (tilt < Math.PI / -2) {
+      tilt = Math.PI / -2;
     }
   }
 
   private static Vector3D convertPoint(Vector3D point) {
-    double pitch = tilt * cos(yaw);
-    double roll = tilt * sin(yaw);
-    double x =
-        point.getX() * (cos(yaw) * cos(pitch)) +
-        point.getY() * (cos(yaw) * sin(pitch) * sin(roll) - sin(yaw) * cos(roll)) +
-        point.getZ() * (cos(yaw) * sin(pitch) * cos(roll) + sin(yaw) * sin(roll));
-    double y =
-        point.getX() * (sin(yaw) * cos(pitch)) +
-        point.getY() * (sin(yaw) * sin(pitch) * sin(roll) + cos(yaw) * cos(roll)) +
-        point.getZ() * (sin(yaw) * sin(pitch) * cos(roll) - cos(yaw) * sin(roll));
-    double z =
-        point.getX() * (-sin(pitch)) +
-        point.getY() * (cos(pitch) * sin(roll)) +
-        point.getZ() * (cos(pitch) * cos(roll));
 
-    return new Vector3D(x, y, z);
-  }
+    double yawX = point.getX() * Math.cos(yaw) - point.getY() * Math.sin(yaw);
+    double yawY = point.getX() * Math.sin(yaw) + point.getY() * Math.cos(yaw);
+    double yawZ = point.getZ();
 
-  private static double sin(double theta) {
-    return Math.sin(theta);
-  }
+    double finalX = yawX * Math.cos(tilt) + yawZ * Math.sin(tilt);
+    double finalY = yawY;
+    double finalZ = yawZ * Math.cos(tilt) - yawX * Math.sin(tilt);
 
-  private static double cos(double theta) {
-    return Math.cos(theta);
+//    double x =
+//        point.getX() * (cos(yaw) * cos(pitch)) +
+//        point.getY() * (cos(yaw) * sin(pitch) * sin(roll) - sin(yaw) * cos(roll)) +
+//        point.getZ() * (cos(yaw) * sin(pitch) * cos(roll) + sin(yaw) * sin(roll));
+//    double y =
+//        point.getX() * (sin(yaw) * cos(pitch)) +
+//        point.getY() * (sin(yaw) * sin(pitch) * sin(roll) + cos(yaw) * cos(roll)) +
+//        point.getZ() * (sin(yaw) * sin(pitch) * cos(roll) - cos(yaw) * sin(roll));
+//    double z =
+//        point.getX() * (-sin(pitch)) +
+//        point.getY() * (cos(pitch) * sin(roll)) +
+//        point.getZ() * (cos(pitch) * cos(roll));
+
+    return new Vector3D(finalX, finalY, finalZ);
   }
 
 }
