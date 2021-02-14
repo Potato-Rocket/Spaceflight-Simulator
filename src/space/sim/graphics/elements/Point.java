@@ -1,5 +1,6 @@
 package space.sim.graphics.elements;
 
+import space.sim.graphics.Draw;
 import space.sim.graphics.Graphics3D;
 import space.sim.physics.Vector3D;
 
@@ -30,10 +31,10 @@ public class Point {
    * @param position 3D position of the point
    * @param size size of the point
    */
-  public Point(Vector3D position, int size) {
+  public Point(Vector3D position, double size) {
     this.position = position;
-    this.converted = Graphics3D.convertPoint(position);
-    this.size = size;
+    this.converted = Graphics3D.convertPoint(position).scaleVector(Draw.getScale());
+    this.size = (int) (size * Draw.getScale());
   }
 
   /**

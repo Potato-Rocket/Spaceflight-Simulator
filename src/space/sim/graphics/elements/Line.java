@@ -1,5 +1,6 @@
 package space.sim.graphics.elements;
 
+import space.sim.graphics.Draw;
 import space.sim.graphics.Graphics3D;
 import space.sim.physics.Vector3D;
 
@@ -42,8 +43,8 @@ public class Line {
   public Line(Vector3D point1, Vector3D point2, Color c) {
     this.point1 = point1;
     this.point2 = point2;
-    converted1 = Graphics3D.convertPoint(point1);
-    converted2 = Graphics3D.convertPoint(point2);
+    converted1 = Graphics3D.convertPoint(point1).scaleVector(Draw.getScale());
+    converted2 = Graphics3D.convertPoint(point2).scaleVector(Draw.getScale());
     color = c;
   }
 

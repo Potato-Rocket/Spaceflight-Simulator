@@ -27,7 +27,7 @@ public class Draw {
   /**
    * Stores the scale factor between the virtual units and the pixels on screen.
    */
-  public static double scale = 1;
+  private static double scale = 1;
   /**
    * Stores element objects to draw.
    */
@@ -88,17 +88,10 @@ public class Draw {
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
     int min = h;
-    double aspectRatio = (double) w / h;
     if (h > w) {
       min = w;
-      w = (int) minBounds;
-      h = (int) (minBounds / aspectRatio);
-    } else {
-      h = (int) minBounds;
-      w = (int) (minBounds * aspectRatio);
     }
     scale = min / (minBounds * 2);
-    g2d.scale(scale, scale);
     //Draws the 3D axes
     elements.clear();
     elements.add(new Line(new Vector3D(minBounds / 2, 0, 0),
@@ -120,8 +113,8 @@ public class Draw {
     render();
     //Draws the 2D crosshair
     g2d.setColor(Color.WHITE);
-    g2d.drawLine((int) (10 / scale), 0, (int) (-10 / scale), 0);
-    g2d.drawLine(0, (int) (10 / scale), 0, (int) (-10 / scale));
+    g2d.drawLine(10, 0, -10, 0);
+    g2d.drawLine(0, 10, 0, -10);
   }
 
   /**
@@ -135,6 +128,15 @@ public class Draw {
     } else {
       minBounds /= SCALE_FACTOR;
     }
+  }
+
+  /**
+   * Getter method for the current drawing scale factor.
+   *
+   * @return Returns the drawing scale.
+   */
+  public static double getScale() {
+    return scale;
   }
 
   /**
