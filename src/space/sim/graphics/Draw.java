@@ -25,6 +25,10 @@ public class Draw {
   private static final double SCALE_FACTOR = 1.1;
 
   /**
+   * Stores the scale factor between the virtual units and the pixels on screen.
+   */
+  public static double scale = 1;
+  /**
    * Stores element objects to draw.
    */
   private static ArrayList<Object> elements = new ArrayList<>();
@@ -37,10 +41,6 @@ public class Draw {
    * Stores the <code>Graphics2D</code> object used to create all graphics.
    */
   private Graphics2D g2d;
-  /**
-   * Stores the scale factor between the virtual units and the pixels on screen.
-   */
-  private double scale;
   /**
    * Stores the frame width.
    */
@@ -64,6 +64,8 @@ public class Draw {
     h = height;
   }
 
+  //FIXME: Replace Graphics2D scaling with scaling when drawing. This will make things less weird
+  // at really close or far zooming levels, as well as facilitating future graphics additions.
   /**
    * Draws everything. Operates in the following order:
    * <ol>
@@ -86,14 +88,14 @@ public class Draw {
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
     int min = h;
-    double ratio = (double) w / h;
+    double aspectRatio = (double) w / h;
     if (h > w) {
       min = w;
       w = (int) minBounds;
-      h = (int) (minBounds / ratio);
+      h = (int) (minBounds / aspectRatio);
     } else {
       h = (int) minBounds;
-      w = (int) (minBounds * ratio);
+      w = (int) (minBounds * aspectRatio);
     }
     scale = min / (minBounds * 2);
     g2d.scale(scale, scale);

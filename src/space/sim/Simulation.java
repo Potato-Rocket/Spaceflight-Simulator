@@ -6,7 +6,6 @@ import space.sim.physics.Physics;
 import java.time.Instant;
 
 //TODO: Long term list of features to add:
-//  - Zooming in and out with the scroll wheel
 //  - Scale indicators with unit scale readout
 //  - Scale bodies chromatically to differentiate them
 //  - Properties setup for simulation settings
