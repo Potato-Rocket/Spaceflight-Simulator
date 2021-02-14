@@ -2,43 +2,50 @@ package space.sim.physics;
 
 import java.util.ArrayList;
 
+/**
+ * Static class to handle all body interactions.
+ */
 public class Physics {
 
   /**
    * Universal gravitational constant.
    */
-  public static final double G = 1;
-
-  //TODO: Add configuration file reading to input the body data.
+  private static final double G = 1;
   /**
    * The 2D array to store information about how to generate bodies.
    */
-  private String[][] genData;
+  private static final String[][] GEN_DATA = {
+      {"500", "0", "0", "0", "10", "0", "1000000", "Star 1"},
+      {"-500", "0", "0", "0", "-10", "0", "1000000", "Star 2"}
+  };
 
   /**
    * The array of all bodies.
    */
-  public ArrayList<Body> bodyArray = new ArrayList<>();
+  private static ArrayList<Body> bodyArray = new ArrayList<>();
 
-  public Physics() {
-    genData = new String[][] {};
-    createBodies();
-  }
-
-  private void createBodies() {
-    for (String[] line : genData) {
+  /**
+   * Populates the array of bodies based on the generation data.
+   */
+  public static void createBodies() {
+    for (String[] line : GEN_DATA) {
       bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
-              Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
-              Double.parseDouble(line[4]), Double.parseDouble(line[5])),
-              Double.parseDouble(line[6]), line[7]));
+          Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
+          Double.parseDouble(line[4]), Double.parseDouble(line[5])),
+          Double.parseDouble(line[6]), line[7]));
     }
   }
 
   /**
-   * Updates every body. Runs the update function for each body to update the motion. Then
-   * updates the gravitational forces between each body and every other body.
+   * Updates every body in the body array. Runs the update function for each body to update the
+   * motion, then updates the gravitational forces between each body and every other body.
+   * Finally, it checks for collisions between every body. If two bodies have collided it runs
+   * the collision function on the larger one and removes the smaller one.
+   *
+   * @param millis time passed in milliseconds
    */
-  public void updateBodies(int millis) {
+  public static void updateBodies(int millis) {
+    printAll();
     for (Body body : bodyArray) {
       body.gravityForces.clear();
       for (Body other : bodyArray) {
@@ -65,6 +72,27 @@ public class Physics {
   }
 
   /**
+   * Returns information about every body in a <code>String</code>. Runs the verbose toString method
+   * for each body in the bodies array and appends them into one <code>String</code>.
+   */
+  public static void printAll() {
+    StringBuilder string = new StringBuilder();
+    for (Body body : bodyArray) {
+      string.append(body.toString(true)).append("\n\n");
+    }
+    System.out.println(string);
+  }
+
+  /**
+   * Getter method for the <code>ArrayList</code> of bodies.
+   *
+   * @return Returns the <code>ArrayList</code> of bodies.
+   */
+  public static ArrayList<Body> getBodyArray() {
+    return bodyArray;
+  }
+
+  /**
    * Calculates the gravitational pull between this body and another body. Uses their relative
    * positions and masses as well as the gravitational constant to calculate this. Does not
    * calculate for a comparison between a body and itself.
@@ -73,7 +101,7 @@ public class Physics {
    * @param other other body
    * @return Returns the gravitational force between the two bodies
    */
-  private Vector3D findGravityForce(Body body, Body other) {
+  private static Vector3D findGravityForce(Body body, Body other) {
     if (body.getId() != other.getId()) {
       double r = body.getPosition().distanceTo(other.getPosition());
       double f = G * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
@@ -81,18 +109,6 @@ public class Physics {
       return angle.scaleVector(f);
     }
     return new Vector3D();
-  }
-
-  /**
-   * Returns information about every body in a <code>String</code>. Runs the verbose toString method
-   * for each body in the bodies array and appends them into one <code>String</code>.
-   */
-  public void printAll() {
-    StringBuilder string = new StringBuilder();
-    for (Body body : bodyArray) {
-      string.append(body.toString(true)).append("\n\n");
-    }
-    System.out.println(string);
   }
 
 }

@@ -9,31 +9,76 @@ import space.sim.graphics.elements.Line;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Class to create all the drawings and graphics. Runs the 3D transformation code and
+ * organises the 3D elements before drawing them.
+ */
 public class Draw {
 
-  private static final boolean TRANSPARENCY = false;
+  /**
+   * Stores whether or not to render the trails with transparency.
+   */
+  private static final boolean TRANSPARENCY = true;
 
-  private Graphics2D g2d;
-  private Physics p;
-  private int w;
-  private int h;
-  private double scale;
-
+  /**
+   * Stores element objects to draw.
+   */
   private static ArrayList<Object> elements = new ArrayList<>();
 
-  Draw(Graphics graphics, Physics physics, int width, int height) {
+  /**
+   * Stores the <code>Graphics2D</code> object used to create all graphics.
+   */
+  private Graphics2D g2d;
+  /**
+   * Stores the scale factor between the virtual units and the pixels on screen.
+   */
+  private double scale;
+  /**
+   * Stores the frame width.
+   */
+  private int w;
+  /**
+   * Stores the frame height.
+   */
+  private int h;
+
+  /**
+   * Class constructor. Takes the <code>Graphics</code> object provided by the <code>paint</code>
+   * method in the <code>drawSpace</code> class as well as the frame's width and height.
+   *
+   * @param graphics current <code>Graphics</code> object
+   * @param width width of the frame
+   * @param height height of the frame
+   */
+  public Draw(Graphics graphics, int width, int height) {
     g2d = (Graphics2D) graphics;
-    p = physics;
     w = width;
     h = height;
   }
 
+  /**
+   * Draws everything. Operates in the following order:
+   * <ol>
+   *   <li>Fills the background with black.</li>
+   *   <li>Scales and transforms the <code>Graphics</code> object's coordinate system as required
+   *   by the defined scale of the view and the 3D origin point.
+   *   </li>
+   *   <li>3D axes to aid with orientation. The X-axis is red, the Y-axis is green, and the
+   *   Z-axis is blue. The axes' positive sections appear brighter than their negative
+   *   sections.</li>
+   *   <li>Draws the physical bodies and their trails. Uses the <code>Graphics3D</code> class
+   *   to get the <code>Line</code> and <code>Point</code> objects describing the elements to
+   *   be rendered. These objects are added to an array which sorts the elements by their
+   *   apparent depth before finally rendering them on the screen.</li>
+   *   <li>Adds a 2D crosshair at the center of the screen.</li>
+   * </ol>
+   *
+   * @param minBounds simulated units to fit on the screen
+   */
   public void drawAll(double minBounds) {
     g2d.fillRect(0, 0, w, h);
+    //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
-    g2d.drawLine(-10, 0, 10, 0);
-    g2d.drawLine(0, -10, 0, 10);
-
     int min = h;
     double ratio = (double) w / h;
     if (h > w) {
@@ -46,7 +91,7 @@ public class Draw {
     }
     scale = min / (minBounds * 2);
     g2d.scale(scale, scale);
-
+    //Draws the 3D axes
     elements.clear();
     elements.add(Graphics3D.line(new Vector3D(minBounds / 2, 0, 0), new Vector3D(0, 0, 0),
         new Color(255, 0, 0)));
@@ -60,40 +105,21 @@ public class Draw {
         new Color(0, 0, 255)));
     elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / -2), new Vector3D(0, 0, 0),
         new Color(0, 0, 63)));
-    render();
-
-    elements.clear();
-    for (Body body : p.bodyArray) {
+    //Draws the bodies and their respective trails
+    for (Body body : Physics.getBodyArray()) {
       drawBody(body);
     }
     render();
-
+    //Draws the 2D crosshair
     g2d.setColor(Color.WHITE);
     g2d.drawLine((int) (10 / scale), 0, (int) (-10 / scale), 0);
     g2d.drawLine(0, (int) (10 / scale), 0, (int) (-10 / scale));
   }
 
-  private void drawBody(Body body) {
-    int size = (int) body.getRadius();
-    if (size / scale < 2) {
-      size = (int) (2 / scale);
-    }
-    drawTrail(body);
-    elements.add(Graphics3D.point(body.getPosition(), size));
-  }
-
-  private void drawTrail(Body body) {
-    for (int i = body.trail.size() - 1; i > 0; i--) {
-      Color c;
-      if (TRANSPARENCY) {
-        c = new Color(0, 255, 0, 255 - (int) (255.0 / body.trail.size() * i));
-      } else {
-        c = new Color(0, 255 - (int) (255.0 / body.trail.size() * i), 0);
-      }
-      elements.add(Graphics3D.line(body.trail.get(i), body.trail.get(i - 1), c));
-    }
-  }
-
+  /**
+   * Sorts the elements array by depth before running the <code>draw</code> function on each
+   * element.
+   */
   private void render() {
     Object[] elementArray = elements.toArray();
     quickSort(elementArray, 0, elementArray.length - 1);
@@ -106,32 +132,86 @@ public class Draw {
     }
   }
 
-  public void quickSort(Object[] arr, int begin, int end) {
+  /**
+   * Adds a <code>Point</code> object to the elements array. Uses the given body's position and
+   * size to generate the new object using <code>Graphics3D</code>.
+   *
+   * @param body body to draw
+   */
+  private void drawBody(Body body) {
+    int size = (int) body.getRadius();
+    if (size / scale < 2) {
+      size = (int) (2 / scale);
+    }
+    drawTrail(body);
+    elements.add(Graphics3D.point(body.getPosition(), size));
+  }
+
+  /**
+   * Adds <code>Line</code> objects to the elements array. Uses the given body's trail data to
+   * generate a line for each trail segment using <code>Graphics3D</code>.
+   *
+   * @param body body to draw the trail for
+   */
+  private void drawTrail(Body body) {
+    for (int i = body.trail.size() - 1; i > 0; i--) {
+      Color c;
+      double fade = 1.0 - (1.0 / body.trail.size() * i);
+      if (TRANSPARENCY) {
+        c = new Color(255, 255, 0, (int) (255 * fade));
+      } else {
+        c = new Color( (int) (255 * fade),  (int) (255 * fade), 0);
+      }
+      elements.add(Graphics3D.line(body.trail.get(i), body.trail.get(i - 1), c));
+    }
+  }
+
+  /**
+   * Runs the quicksort sorting algorithm on an array of elements. This sorts by depth and is a
+   * recursive algorithm.
+   * <p>
+   * Information on the quicksort algorithm can be found here on Wikipedia:
+   * <a href="https://en.wikipedia.org/wiki/Quicksort">Quicksort</a>
+   *
+   * @param arr array to sort
+   * @param begin beginning index of the range to compare
+   * @param end ending index of the range to compare
+   */
+  private void quickSort(Object[] arr, int begin, int end) {
     if (begin < end) {
-      int partitionIndex = partition(arr, begin, end);
+      double pivot = getDepth(arr[end]);
+      int i = (begin-1);
+      for (int j = begin; j < end; j++) {
+        if (getDepth(arr[j]) <= pivot) {
+          i++;
+          Object swapTemp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = swapTemp;
+        }
+      }
+      Object swapTemp = arr[i+1];
+      arr[i+1] = arr[end];
+      arr[end] = swapTemp;
+      int partitionIndex = i+1;
       quickSort(arr, begin, partitionIndex-1);
       quickSort(arr, partitionIndex+1, end);
     }
   }
 
-  private int partition(Object[] arr, int begin, int end) {
-    double pivot = getDepth(arr[end]);
-    int i = (begin-1);
-    for (int j = begin; j < end; j++) {
-      if (getDepth(arr[j]) <= pivot) {
-        i++;
-        Object swapTemp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = swapTemp;
-      }
-    }
-    Object swapTemp = arr[i+1];
-    arr[i+1] = arr[end];
-    arr[end] = swapTemp;
-    return i+1;
-  }
-
-  public double getDepth(Object e) {
+  /**
+   * Gets the relative depth of any 3D element. Functions by determining  the element type, then
+   * calling its <code>getDepth</code> method.
+   * <p>
+   * Functions for:
+   * <ul>
+   *   <li>Any <code>Point</code> object.</li>
+   *   <li>Any <code>Line</code> object.</li>
+   * </ul>
+   *
+   * @param e object to get the depth of
+   * @return Returns the relative depth of the object.
+   */
+  private double getDepth(Object e) {
     if (e instanceof Point) {
       return ((Point) e).getDepth();
     } else if (e instanceof Line) {

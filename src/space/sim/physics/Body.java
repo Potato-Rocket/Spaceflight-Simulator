@@ -9,6 +9,15 @@ import java.util.ArrayList;
 public class Body {
 
   /**
+   * The number of seconds the trail remains on screen.
+   * */
+  public static final double TRAIL_LENGTH = 100;
+  /**
+   * The ratio between real time and simulation time.
+   */
+  public static final double TIME_SCALE = 10;
+
+  /**
    * Vector to store the current gravitational forces acting on the body.
    */
   public ArrayList<Vector3D> gravityForces = new ArrayList<>();
@@ -18,13 +27,9 @@ public class Body {
   public ArrayList<Vector3D> trail = new ArrayList<>();
 
   /**
-   * The number of seconds the trail remains on screen.
-   * */
-  public static final double TRAIL_LENGTH = 100;
-  /**
-   * The ratio between real time and simulation time.
+   * The number of bodies that have been generated.
    */
-  public static final double TIME_SCALE = 10;
+  private static int count = 0;
 
   /**
    * Vector to store the body's position.
@@ -54,12 +59,6 @@ public class Body {
    * The body's identification number.
    */
   private int id;
-  /**
-   * The number of bodies that have been generated.
-   */
-  private static int count = 0;
-
-
 
   /**
    * Class constructor with all values specified by user. Assigns specified values to their
@@ -82,12 +81,13 @@ public class Body {
     trail.add(position.copy());
   }
 
-  //TODO: Have trail only add a point when it has changed direction a certain amount
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
    * updated based on the acceleration and the position is updated based on the velocity. Shifts
    * the trail and inserts the updated position at the start.
+   *
+   * @param millis time passed in milliseconds
    */
   public void update(int millis) {
     millis *= TIME_SCALE;
@@ -171,6 +171,7 @@ public class Body {
   /**
    * Formats the body's attributes into a <code>String</code>.
    *
+   * @param verbose whether or not to add extra information about the body
    * @return Returns a string representing the body's attributes.
    */
   public String toString(boolean verbose) {

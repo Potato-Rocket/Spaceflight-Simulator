@@ -12,7 +12,7 @@ public class Vector3D {
    */
   private double x;
   /**
-   * <b>y</b> component of the vector .
+   * <b>y</b> component of the vector.
    */
   private double y;
   /**
@@ -94,8 +94,6 @@ public class Vector3D {
   /**
    * Gets the differences between the corresponding components of two vectors.
    * Subtracts the second vector from the first vector. Returned as an array of values.
-   * <p>
-   * eg. <code>array([0.0, 0.0, 0.0])</code>
    *
    * @param vector second vector
    * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
@@ -149,12 +147,12 @@ public class Vector3D {
   /**
    * Formats the vector into a <code>String</code>.
    * <p>
-   * eg. <code>"Vector(x=0.00, y=0.00, z=0.00)"</code>
+   * eg. <code>"Vector3D(x=0.00, y=0.00, z=0.00)"</code>
    *
    * @return Returns a string expressing the vector.
    */
   public String toString() {
-    return "Vector(x=" + x + ", y=" + y + ", z=" + z + ")";
+    return "Vector3D(x=" + x + ", y=" + y + ", z=" + z + ")";
   }
 
 }
