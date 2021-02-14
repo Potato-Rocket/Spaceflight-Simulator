@@ -1,7 +1,8 @@
 package space.sim.graphics;
 
-import space.sim.interaction.Clicking;
+import space.sim.interaction.EnterRotation;
 import space.sim.interaction.Rotation;
+import space.sim.interaction.Zooming;
 
 import javax.swing.JFrame;
 import java.awt.*;
@@ -19,8 +20,9 @@ public class DrawSpace extends JFrame {
     setTitle("Space Simulator");
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setVisible(true);
-    addMouseListener(new Clicking());
+    addMouseListener(new EnterRotation());
     addMouseMotionListener(new Rotation());
+    addMouseWheelListener(new Zooming());
   }
 
   /**
@@ -31,7 +33,7 @@ public class DrawSpace extends JFrame {
    */
   public void paint(Graphics g) {
     Draw draw = new Draw(g, getWidth(), getHeight());
-    draw.drawAll(1000);
+    draw.drawAll();
     revalidate();
   }
 

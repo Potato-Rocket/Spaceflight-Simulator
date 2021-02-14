@@ -19,11 +19,19 @@ public class Draw {
    * Stores whether or not to render the trails with transparency.
    */
   private static final boolean TRANSPARENCY = true;
+  /**
+   * Factor to scale by when zooming.
+   */
+  private static final double SCALE_FACTOR = 1.1;
 
   /**
    * Stores element objects to draw.
    */
   private static ArrayList<Object> elements = new ArrayList<>();
+  /**
+   * Simulated units to fit on the screen
+   */
+  private static double minBounds = 1000;
 
   /**
    * Stores the <code>Graphics2D</code> object used to create all graphics.
@@ -72,10 +80,8 @@ public class Draw {
    *   apparent depth before finally rendering them on the screen.</li>
    *   <li>Adds a 2D crosshair at the center of the screen.</li>
    * </ol>
-   *
-   * @param minBounds simulated units to fit on the screen
    */
-  public void drawAll(double minBounds) {
+  public void drawAll() {
     g2d.fillRect(0, 0, w, h);
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
@@ -117,6 +123,19 @@ public class Draw {
   }
 
   /**
+   * Modifies the scale of the vie by the scale factor.
+   *
+   * @param direction Which direction the zooming is going in.
+   */
+  public static void modifyBounds(int direction) {
+    if (direction == 1) {
+      minBounds *= SCALE_FACTOR;
+    } else {
+      minBounds /= SCALE_FACTOR;
+    }
+  }
+
+  /**
    * Sorts the elements array by depth before running the <code>draw</code> function on each
    * element.
    */
@@ -140,7 +159,7 @@ public class Draw {
    */
   private void drawBody(Body body) {
     int size = (int) body.getRadius();
-    if (size / scale < 2) {
+    if (size * scale < 2) {
       size = (int) (2 / scale);
     }
     drawTrail(body);

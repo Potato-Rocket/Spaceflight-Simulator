@@ -4,9 +4,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 /**
- * Class to handle user interaction through clicking the mouse.
+ * Class to handle user interaction through clicking the mouse, relating to rotation movements.
  */
-public class Clicking implements MouseListener {
+public class EnterRotation implements MouseListener {
 
   /**
    * Executes when the mouse is pressed, then released. Does not contain any code.
