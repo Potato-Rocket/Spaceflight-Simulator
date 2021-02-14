@@ -23,18 +23,13 @@ public class FormatText {
     return fixLength(y) + "y:" + fixLength(d) + "d:" + fixLength(h) + "h:" + fixLength(m) + "m:" + s + "s";
   }
 
-  public static String formatDist(double num, boolean round) {
-    String unit = "m";
+  public static String formatNum(double num, String unit, String kiloUnit) {
+    String suffix = unit;
     if (num >= 1000) {
       num /= 1000;
-      unit = "km";
+      suffix = kiloUnit;
     }
-    String str = String.valueOf(num);
-    String decimal = "";
-    if (!round) {
-      decimal = str.substring(str.indexOf(".") - 1, str.length());
-    }
-    str = str.substring(0, str.indexOf("."));
+    String str = String.valueOf((long) num);
     if (str.length() > 3) {
       StringBuilder grouped = new StringBuilder();
       for (int i = str.length() - 1; i >= 0; i--) {
@@ -45,7 +40,7 @@ public class FormatText {
       }
       str = grouped.toString();
     }
-    return str + decimal + unit;
+    return str + suffix;
   }
 
   private static String fixLength(int num) {

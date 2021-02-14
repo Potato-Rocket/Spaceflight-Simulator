@@ -73,7 +73,7 @@ public class Draw {
    */
   public void drawAll() {
     if (minBounds == 0) {
-      minBounds = Physics.getInitBounds();
+      minBounds = Physics.getInitBounds() * Setup.SCALE_FACTOR;
     }
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
@@ -93,8 +93,8 @@ public class Draw {
     drawGuides();
     FormatText.drawText(g2d, new String[]
         {"Duration: " + FormatText.formatTime((long) (Simulation.duration * Setup.TIME_SCALE)),
-        "Time scale: " + (int) Setup.TIME_SCALE + "x"},
-        -w + 10, -h + 10, 1.2);
+        "Time scale: " + (int) Setup.TIME_SCALE + "x", "Body count: " +
+        Physics.getBodyArray().size()}, -w + 10, -h + 10, 1.2);
   }
 
   /**
@@ -151,15 +151,14 @@ public class Draw {
     g2d.setColor(Color.WHITE);
     g2d.drawLine(10, 0, -10, 0);
     g2d.drawLine(0, 10, 0, -10);
-
-    int tickExp = 1;
-    int tickDist = 10;
+    long tickExp = 1;
+    long tickDist = 10;
     while (h / (tickDist * scale) > 2) {
       tickExp++;
-      tickDist = (int) Math.pow(10, tickExp);
+      tickDist = (long) Math.pow(10, tickExp);
     }
     tickExp--;
-    tickDist = (int) Math.pow(10, tickExp);
+    tickDist = (long) Math.pow(10, tickExp);
     for (int x = 0; x < w; x += tickDist * scale) {
       int len = 10;
       if (Math.round(x / (tickDist * scale)) % 10 == 0) {
@@ -188,8 +187,8 @@ public class Draw {
       }
       g2d.drawLine(w, y, w - len, y);
     }
-    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatDist(tickDist, true)},
-        10 - w, h - 40, 1);
+    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatNum(tickDist,
+        "m", "km")}, 10 - w, h - 40, 1);
   }
 
   /**

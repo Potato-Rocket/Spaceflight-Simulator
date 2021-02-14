@@ -12,7 +12,7 @@ public class Setup {
   /**
    *
    */
-  public static final boolean DRAW_TRAIL = true;
+  public static final boolean DRAW_TRAIL = false;
   /**
    * Stores whether or not to render the trails with transparency.
    */
@@ -20,23 +20,23 @@ public class Setup {
   /**
    * The number of degrees of rotation the trail should cover.
    */
-  public static final double TRAIL_LENGTH = 365;
+  public static final double TRAIL_LENGTH = 90;
   /**
    * The number of degrees of rotation between trail points.
    */
-  public static final double TRAIL_RESOLUTION = 5;
+  public static final double TRAIL_RESOLUTION = 1;
   /**
    * Stores the view's sensitivity to mouse movements.
    */
-  public static final double SENSITIVITY = 50;
+  public static final double SENSITIVITY = 10;
   /**
    * Factor to scale by when zooming.
    */
-  public static final double SCALE_FACTOR = 1.1;
+  public static final double SCALE_FACTOR = 1.01;
   /**
    * The ratio between real time and simulation time.
    */
-  public static final double TIME_SCALE = 30;
+  public static final double TIME_SCALE = 10;
   /**
    * Universal gravitational constant.
    */
@@ -48,7 +48,8 @@ public class Setup {
       {"1000", "0", "0", "0", "40", "0", "10000000", "Star 1"},
       {"-1000", "0", "0", "0", "-40", "0", "10000000", "Star 2"},
       {"0", "0", "10000", "0", "40", "0", "10000", "Satellite"},
-      {"0", "100", "10000", "10", "40", "0", "10", "Moon"}
+      {"0", "100", "10000", "10", "40", "0", "10", "Moon"},
+      {"0", "1000", "0", "0", "1000000", "0", "10", "Missile"}
   };
 
 }
