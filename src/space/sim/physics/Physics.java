@@ -9,7 +9,10 @@ import java.util.ArrayList;
  */
 public class Physics {
 
-
+  /**
+   * The initial max distance of any body from the origin.
+   */
+  private static double initBounds = 0;
   /**
    * The array of all bodies.
    */
@@ -24,6 +27,15 @@ public class Physics {
           Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
           Double.parseDouble(line[4]), Double.parseDouble(line[5])),
           Double.parseDouble(line[6]), line[7]));
+    }
+    double[] distances = new double[bodyArray.size()];
+    for (int i = 0; i < distances.length; i++) {
+      distances[i] = bodyArray.get(i).getPosition().distanceTo();
+    }
+    for (double dist : distances) {
+      if (dist > initBounds) {
+        initBounds = dist;
+      }
     }
   }
 
@@ -83,6 +95,10 @@ public class Physics {
    */
   public static ArrayList<Body> getBodyArray() {
     return bodyArray;
+  }
+
+  public static double getInitBounds() {
+    return initBounds;
   }
 
   /**

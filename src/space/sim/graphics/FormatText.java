@@ -6,7 +6,7 @@ public class FormatText {
 
   public static void drawText(Graphics2D g, String[] text, int x, int y, double lineSpacing) {
     for (int l = 0; l < text.length; l++) {
-      g.drawString(text[l], x, y + 9 + (int) (lineSpacing * 10 * l));
+      g.drawString(text[l], x, y + 9 + (int) (lineSpacing * 12 * l));
     }
   }
 
@@ -20,7 +20,32 @@ public class FormatText {
     int h = (int) (seconds / 3600) % 24;
     int d = (int) (seconds / 86400) % 365;
     int y = (int) (seconds / 31536000);
-    return fixLength(y) + ":" + fixLength(d) + ":" + fixLength(h) + ":" + fixLength(m) + ":" + s;
+    return fixLength(y) + "y:" + fixLength(d) + "d:" + fixLength(h) + "h:" + fixLength(m) + "m:" + s + "s";
+  }
+
+  public static String formatDist(double num, boolean round) {
+    String unit = "m";
+    if (num >= 1000) {
+      num /= 1000;
+      unit = "km";
+    }
+    String str = String.valueOf(num);
+    String decimal = "";
+    if (!round) {
+      decimal = str.substring(str.indexOf(".") - 1, str.length());
+    }
+    str = str.substring(0, str.indexOf("."));
+    if (str.length() > 3) {
+      StringBuilder grouped = new StringBuilder();
+      for (int i = str.length() - 1; i >= 0; i--) {
+        grouped.insert(0, str.charAt(i));
+        if (i > 0 && (str.length() - i) % 3 == 0) {
+          grouped.insert(0, ",");
+        }
+      }
+      str = grouped.toString();
+    }
+    return str + decimal + unit;
   }
 
   private static String fixLength(int num) {

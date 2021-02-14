@@ -24,11 +24,11 @@ public class Draw {
   /**
    * Simulated units to fit on the screen
    */
-  private static double minBounds = 1000;
+  private static double minBounds;
   /**
    * Stores the scale factor between the virtual units and the pixels on screen.
    */
-  private static double scale = 1;
+  private static double scale = 0;
 
   /**
    * Stores the <code>Graphics2D</code> object used to create all graphics.
@@ -72,6 +72,9 @@ public class Draw {
    * </ol>
    */
   public void drawAll() {
+    if (minBounds == 0) {
+      minBounds = Physics.getInitBounds();
+    }
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
     int min = h;
@@ -185,7 +188,8 @@ public class Draw {
       }
       g2d.drawLine(w, y, w - len, y);
     }
-    FormatText.drawText(g2d, new String[] {"One tick = " + tickDist + "m"}, 10 - w, h - 40, 1);
+    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatDist(tickDist, true)},
+        10 - w, h - 40, 1);
   }
 
   /**

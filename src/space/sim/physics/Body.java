@@ -96,7 +96,8 @@ public class Body {
     velocity.addVector(acceleration.scaleVector(0.001));
     position.addVector(velocity.scaleVector(0.001));
     Vector3D direction = velocity.angleTo();
-    if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.TRAIL_RESOLUTION || position.distanceTo(trail.get(0)) > Draw.getBounds() / 10) {
+    if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.TRAIL_RESOLUTION ||
+        position.distanceTo(trail.get(0)) > Physics.getInitBounds() / 10) {
       if (trail.size() < Setup.TRAIL_LENGTH / Setup.TRAIL_RESOLUTION) {
         trail.add(new Vector3D());
       }

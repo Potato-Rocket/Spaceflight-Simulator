@@ -6,16 +6,6 @@ import space.sim.config.Setup;
 
 import java.time.Instant;
 
-//TODO: Long term list of features to add:
-//  - Basic simulation stats readout
-//  - Scale bodies chromatically to differentiate them
-//  - Properties setup for simulation settings
-//  - Trails with segments added based on change in velocity
-//  - Properties setup for initial body layout
-//  - Body randomizer implementation
-//  - Body selection and info readout
-//  - Manipulation of view center point (maybe can follow bodies?)
-
 /**
  * Top level runner class. Dictates initial body creation as well as physics updates and graphics
  * renderings

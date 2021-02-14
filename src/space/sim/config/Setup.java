@@ -28,7 +28,7 @@ public class Setup {
   /**
    * Stores the view's sensitivity to mouse movements.
    */
-  public static final double SENSITIVITY = 100;
+  public static final double SENSITIVITY = 50;
   /**
    * Factor to scale by when zooming.
    */
@@ -36,7 +36,7 @@ public class Setup {
   /**
    * The ratio between real time and simulation time.
    */
-  public static final double TIME_SCALE = 300;
+  public static final double TIME_SCALE = 30;
   /**
    * Universal gravitational constant.
    */
@@ -45,9 +45,10 @@ public class Setup {
    * The 2D array to store information about how to generate bodies.
    */
   public static final String[][] GEN_DATA = {
-      {"1000", "0", "0", "0", "30", "0", "10000000", "Star 1"},
-      {"-1000", "0", "0", "0", "-30", "0", "10000000", "Star 2"},
-      {"0", "0", "10000", "0", "30", "0", "10000", "Satellite 1"}
+      {"1000", "0", "0", "0", "40", "0", "10000000", "Star 1"},
+      {"-1000", "0", "0", "0", "-40", "0", "10000000", "Star 2"},
+      {"0", "0", "10000", "0", "40", "0", "10000", "Satellite"},
+      {"0", "100", "10000", "10", "40", "0", "10", "Moon"}
   };
 
 }
