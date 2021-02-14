@@ -23,6 +23,8 @@ public class DrawSpace extends JFrame {
     addMouseListener(new EnterRotation());
     addMouseMotionListener(new Rotation());
     addMouseWheelListener(new Zooming());
+
+    System.out.println();
   }
 
   /**
@@ -32,6 +34,8 @@ public class DrawSpace extends JFrame {
    * @param g current <code>Graphics</code> object
    */
   public void paint(Graphics g) {
+    g.setFont(new Font("Roboto Mono Thin", Font.PLAIN, 12));
+    g.fillRect(0, 0, getWidth(), getHeight());
     Draw draw = new Draw(g, getWidth(), getHeight());
     draw.drawAll();
     revalidate();

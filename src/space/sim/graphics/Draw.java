@@ -1,5 +1,6 @@
 package space.sim.graphics;
 
+import space.sim.Simulation;
 import space.sim.physics.Vector3D;
 import space.sim.physics.Body;
 import space.sim.physics.Physics;
@@ -67,7 +68,6 @@ public class Draw {
   /**
    * Draws everything. Operates in the following order:
    * <ol>
-   *   <li>Fills the background with black.</li>
    *   <li>Scales and transforms the <code>Graphics</code> object's coordinate system as required
    *   by the defined scale of the view and the 3D origin point.</li>
    *   <li>3D axes to aid with orientation.</li>
@@ -80,7 +80,6 @@ public class Draw {
    * </ol>
    */
   public void drawAll() {
-    g2d.fillRect(0, 0, w, h);
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
     int min = h;
@@ -90,7 +89,6 @@ public class Draw {
     w /= 2;
     h /=2;
     scale = min / (minBounds * 2);
-
     elements.clear();
     drawAxes();
     for (Body body : Physics.getBodyArray()) {
@@ -98,6 +96,7 @@ public class Draw {
     }
     render();
     drawGuides();
+    drawText(new String[] {"Duration: " + Simulation.duration + "ms"}, -w + 10, -h + 10, 1.2);
   }
 
   /**
@@ -186,6 +185,12 @@ public class Draw {
         len = 20;
       }
       g2d.drawLine(w, y, w - len, y);
+    }
+  }
+
+  private void drawText(String[] text, int x, int y, double lineSpacing) {
+    for (int l = 0; l < text.length; l++) {
+      g2d.drawString(text[l], x, y + 9 + (int) (lineSpacing * 10 * l));
     }
   }
 
