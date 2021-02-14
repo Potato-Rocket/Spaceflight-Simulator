@@ -1,5 +1,7 @@
 package space.sim.physics;
 
+import space.sim.config.Setup;
+
 import java.util.ArrayList;
 
 /**
@@ -8,14 +10,6 @@ import java.util.ArrayList;
  */
 public class Body {
 
-  /**
-   * The number of seconds the trail remains on screen.
-   * */
-  public static final double TRAIL_LENGTH = 100;
-  /**
-   * The ratio between real time and simulation time.
-   */
-  public static final double TIME_SCALE = 10;
 
   /**
    * Vector to store the current gravitational forces acting on the body.
@@ -90,14 +84,14 @@ public class Body {
    * @param millis time passed in milliseconds
    */
   public void update(int millis) {
-    millis *= TIME_SCALE;
+    millis *= Setup.TIME_SCALE;
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
       acceleration.addVector(f.scaleVector(1 / mass));
     }
     velocity.addVector(acceleration.scaleVector((double) millis / 1000));
     position.addVector(velocity.scaleVector((double) millis / 1000));
-    if (trail.size() < TRAIL_LENGTH) {
+    if (trail.size() < Setup.TRAIL_LENGTH) {
       trail.add(new Vector3D());
     }
     for (int i = trail.size() - 1; i > 0; i--) {

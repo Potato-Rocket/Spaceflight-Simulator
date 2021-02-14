@@ -2,6 +2,7 @@ package space.sim;
 
 import space.sim.graphics.DrawSpace;
 import space.sim.physics.Physics;
+import space.sim.config.Setup;
 
 import java.time.Instant;
 
@@ -21,10 +22,6 @@ import java.time.Instant;
  */
 public class Simulation {
 
-  /**
-   * Stores the artificial frame rate limit.
-   */
-  private static final int FRAME_LIMIT = 60;
   public static long duration = 0;
 
   /**
@@ -38,7 +35,7 @@ public class Simulation {
     DrawSpace drawSpace = new DrawSpace();
     Physics.createBodies();
     Instant now;
-    int frameCap = 1000 / FRAME_LIMIT;
+    int frameCap = 1000 / Setup.FRAME_LIMIT;
     int difference = frameCap;
     now = Instant.now();
     long start = now.toEpochMilli();

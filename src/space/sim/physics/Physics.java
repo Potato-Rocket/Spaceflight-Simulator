@@ -1,5 +1,7 @@
 package space.sim.physics;
 
+import space.sim.config.Setup;
+
 import java.util.ArrayList;
 
 /**
@@ -7,18 +9,6 @@ import java.util.ArrayList;
  */
 public class Physics {
 
-  /**
-   * Universal gravitational constant.
-   */
-  private static final double G = 1;
-  /**
-   * The 2D array to store information about how to generate bodies.
-   */
-  private static final String[][] GEN_DATA = {
-      {"500", "0", "0", "0", "10", "0", "1000000", "Star 1"},
-      {"-500", "0", "0", "0", "-10", "0", "1000000", "Star 2"},
-      {"0", "0", "1000", "0", "50", "0", "100000", "Satellite 1"}
-  };
 
   /**
    * The array of all bodies.
@@ -29,7 +19,7 @@ public class Physics {
    * Populates the array of bodies based on the generation data.
    */
   public static void createBodies() {
-    for (String[] line : GEN_DATA) {
+    for (String[] line : Setup.GEN_DATA) {
       bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
           Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
           Double.parseDouble(line[4]), Double.parseDouble(line[5])),
@@ -104,7 +94,7 @@ public class Physics {
   private static Vector3D findGravityForce(Body body, Body other) {
     if (body.getId() != other.getId()) {
       double r = body.getPosition().distanceTo(other.getPosition());
-      double f = G * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
+      double f = Setup.G * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
       Vector3D angle = body.getPosition().angleTo(other.getPosition());
       return angle.scaleVector(f);
     }

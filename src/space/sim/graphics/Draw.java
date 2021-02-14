@@ -6,6 +6,7 @@ import space.sim.physics.Body;
 import space.sim.physics.Physics;
 import space.sim.graphics.elements.Point;
 import space.sim.graphics.elements.Line;
+import space.sim.config.Setup;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,19 +18,6 @@ import java.util.ArrayList;
 public class Draw {
 
   /**
-   * Stores whether or not to render the trails with transparency.
-   */
-  private static final boolean TRANSPARENCY = true;
-  /**
-   * Factor to scale by when zooming.
-   */
-  private static final double SCALE_FACTOR = 1.1;
-  /**
-   * Stores the scale factor between the virtual units and the pixels on screen.
-   */
-  private static double scale = 1;
-
-  /**
    * Stores element objects to draw.
    */
   private static ArrayList<Object> elements = new ArrayList<>();
@@ -37,6 +25,10 @@ public class Draw {
    * Simulated units to fit on the screen
    */
   private static double minBounds = 1000;
+  /**
+   * Stores the scale factor between the virtual units and the pixels on screen.
+   */
+  private static double scale = 1;
 
   /**
    * Stores the <code>Graphics2D</code> object used to create all graphics.
@@ -96,7 +88,9 @@ public class Draw {
     }
     render();
     drawGuides();
-    drawText(new String[] {"Duration: " + Simulation.duration + "ms"}, -w + 10, -h + 10, 1.2);
+    FormatText.drawText(g2d, new String[]
+        {"Duration: " + FormatText.formatTime((long) (Simulation.duration * Setup.TIME_SCALE))},
+        -w + 10, -h + 10, 1.2);
   }
 
   /**
@@ -106,9 +100,9 @@ public class Draw {
    */
   public static void modifyBounds(int direction) {
     if (direction == 1) {
-      minBounds *= SCALE_FACTOR;
+      minBounds *= Setup.SCALE_FACTOR;
     } else {
-      minBounds /= SCALE_FACTOR;
+      minBounds /= Setup.SCALE_FACTOR;
     }
   }
 
@@ -188,12 +182,6 @@ public class Draw {
     }
   }
 
-  private void drawText(String[] text, int x, int y, double lineSpacing) {
-    for (int l = 0; l < text.length; l++) {
-      g2d.drawString(text[l], x, y + 9 + (int) (lineSpacing * 10 * l));
-    }
-  }
-
   /**
    * Sorts the elements array by depth before running the <code>draw</code> function on each
    * element.
@@ -235,7 +223,7 @@ public class Draw {
     for (int i = body.trail.size() - 1; i > 0; i--) {
       Color c;
       double fade = 1.0 - (1.0 / body.trail.size() * i);
-      if (TRANSPARENCY) {
+      if (Setup.TRANSPARENCY) {
         c = new Color(255, 255, 0, (int) (255 * fade));
       } else {
         c = new Color( (int) (255 * fade),  (int) (255 * fade), 0);

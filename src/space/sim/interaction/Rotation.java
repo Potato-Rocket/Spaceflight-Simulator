@@ -1,6 +1,7 @@
 package space.sim.interaction;
 
 import space.sim.graphics.Graphics3D;
+import space.sim.config.Setup;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -9,11 +10,6 @@ import java.awt.event.MouseMotionListener;
  * Class to handle user interaction through mouse movement and dragging.
  */
 public class Rotation implements MouseMotionListener {
-
-  /**
-   * Stores the view's sensitivity to mouse movements.
-   */
-  private static final double SENSITIVITY = 100;
 
   /**
    * Stores the coordinates of the mouse in the frame.
@@ -30,8 +26,8 @@ public class Rotation implements MouseMotionListener {
   public void mouseDragged(MouseEvent e) {
     if (mousePos[0] != 0 && mousePos[1] != 0) {
       double[] difference = {e.getX() - mousePos[0], mousePos[1] - e.getY()};
-      Graphics3D.changeYaw(difference[0] * (SENSITIVITY / 10000) * Math.PI);
-      Graphics3D.changeTilt(difference[1] * (SENSITIVITY / 10000) * Math.PI);
+      Graphics3D.changeYaw(difference[0] * (Setup.SENSITIVITY / 10000) * Math.PI);
+      Graphics3D.changeTilt(difference[1] * (Setup.SENSITIVITY / 10000) * Math.PI);
     }
     mousePos = new int[] {e.getX(), e.getY()};
   }
