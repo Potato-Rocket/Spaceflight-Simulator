@@ -1,5 +1,6 @@
 package space.sim.graphics.elements;
 
+import space.sim.graphics.Graphics3D;
 import space.sim.physics.Vector3D;
 
 import java.awt.*;
@@ -14,19 +15,24 @@ public class Point {
    */
   private Vector3D position;
   /**
+   * Stores the point's position transformed to the 3D view.
+   */
+  private Vector3D converted;
+  /**
    * Stores the point's size (the radius).
    */
   private int size;
 
   /**
-   * Class constructor. Takes the 3D position and size (radius) as inputs to assign to private
-   * variables.
+   * Class constructor. Takes the 3D position and size (radius) as inputs, and uses
+   * <code>Graphics3D</code> to transform them to the viewing angle.
    *
    * @param position 3D position of the point
    * @param size size of the point
    */
   public Point(Vector3D position, int size) {
     this.position = position;
+    this.converted = Graphics3D.convertPoint(position);
     this.size = size;
   }
 
@@ -37,7 +43,7 @@ public class Point {
    */
   public void draw(Graphics2D g) {
     g.setColor(Color.WHITE);
-    g.fillOval((int) (position.getY() - size), (int) (position.getZ() - size), size * 2, size * 2);
+    g.fillOval((int) (converted.getY() - size), (int) (converted.getZ() - size), size * 2, size * 2);
   }
 
   /**
@@ -46,7 +52,7 @@ public class Point {
    * @return Returns the point's distance along the axis perpendicular to the viewing angle.
    */
   public double getDepth() {
-    return position.getX();
+    return converted.getX();
   }
 
 }

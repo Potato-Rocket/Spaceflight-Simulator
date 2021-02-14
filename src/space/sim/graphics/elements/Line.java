@@ -1,5 +1,6 @@
 package space.sim.graphics.elements;
 
+import space.sim.graphics.Graphics3D;
 import space.sim.physics.Vector3D;
 
 import java.awt.*;
@@ -14,9 +15,17 @@ public class Line {
    */
   private Vector3D point1;
   /**
-   * Stores the position of the line's second endpoint.
+   * Stores the position of the line's first endpoint.
+   */
+  private Vector3D converted1;
+  /**
+   * Stores the position of the line's second endpoint transformed to the 3D view.
    */
   private Vector3D point2;
+  /**
+   * Stores the position of the line's second endpoint transformed to the 3D view.
+   */
+  private Vector3D converted2;
   /**
    * Stores the color of the line to draw.
    */
@@ -24,7 +33,7 @@ public class Line {
 
   /**
    * Class constructor. Takes the position of both endpoints as an input as well as the color of
-   * the line.
+   * the line, and uses <code>Graphics3D</code> to transform them to the viewing angle.
    *
    * @param point1 first endpoint
    * @param point2 second endpoint
@@ -33,6 +42,8 @@ public class Line {
   public Line(Vector3D point1, Vector3D point2, Color c) {
     this.point1 = point1;
     this.point2 = point2;
+    converted1 = Graphics3D.convertPoint(point1);
+    converted2 = Graphics3D.convertPoint(point2);
     color = c;
   }
 
@@ -43,7 +54,8 @@ public class Line {
    */
   public void draw(Graphics2D g) {
     g.setColor(color);
-    g.drawLine((int) point1.getY(), (int) point1.getZ(), (int) point2.getY(), (int) point2.getZ());
+    g.drawLine((int) converted1.getY(), (int) converted1.getZ(),
+        (int) converted2.getY(), (int) converted2.getZ());
   }
 
   /**
@@ -52,7 +64,7 @@ public class Line {
    * @return Returns the point's average distance along the axis perpendicular to the viewing angle.
    */
   public double getDepth() {
-    return (point1.getX() + point2.getX()) / 2;
+    return (converted1.getX() + converted2.getX()) / 2;
   }
 
 }

@@ -93,18 +93,18 @@ public class Draw {
     g2d.scale(scale, scale);
     //Draws the 3D axes
     elements.clear();
-    elements.add(Graphics3D.line(new Vector3D(minBounds / 2, 0, 0), new Vector3D(0, 0, 0),
-        new Color(255, 0, 0)));
-    elements.add(Graphics3D.line(new Vector3D(minBounds / -2, 0, 0), new Vector3D(0, 0, 0),
-        new Color(63, 0, 0)));
-    elements.add(Graphics3D.line(new Vector3D(0, minBounds / 2, 0), new Vector3D(0, 0, 0),
-        new Color(0, 255, 0)));
-    elements.add(Graphics3D.line(new Vector3D(0, minBounds / -2, 0), new Vector3D(0, 0, 0),
-        new Color(0, 63, 0)));
-    elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / 2), new Vector3D(0, 0, 0),
-        new Color(0, 0, 255)));
-    elements.add(Graphics3D.line(new Vector3D(0, 0, minBounds / -2), new Vector3D(0, 0, 0),
-        new Color(0, 0, 63)));
+    elements.add(new Line(new Vector3D(minBounds / 2, 0, 0),
+        new Vector3D(0, 0, 0), new Color(255, 0, 0)));
+    elements.add(new Line(new Vector3D(minBounds / -2, 0, 0),
+        new Vector3D(0, 0, 0), new Color(63, 0, 0)));
+    elements.add(new Line(new Vector3D(0, minBounds / 2, 0),
+        new Vector3D(0, 0, 0), new Color(0, 255, 0)));
+    elements.add(new Line(new Vector3D(0, minBounds / -2, 0),
+        new Vector3D(0, 0, 0), new Color(0, 63, 0)));
+    elements.add(new Line(new Vector3D(0, 0, minBounds / 2),
+        new Vector3D(0, 0, 0), new Color(0, 0, 255)));
+    elements.add(new Line(new Vector3D(0, 0, minBounds / -2),
+        new Vector3D(0, 0, 0), new Color(0, 0, 63)));
     //Draws the bodies and their respective trails
     for (Body body : Physics.getBodyArray()) {
       drawBody(body);
@@ -144,7 +144,7 @@ public class Draw {
       size = (int) (2 / scale);
     }
     drawTrail(body);
-    elements.add(Graphics3D.point(body.getPosition(), size));
+    elements.add(new Point(body.getPosition(), size));
   }
 
   /**
@@ -162,7 +162,7 @@ public class Draw {
       } else {
         c = new Color( (int) (255 * fade),  (int) (255 * fade), 0);
       }
-      elements.add(Graphics3D.line(body.trail.get(i), body.trail.get(i - 1), c));
+      elements.add(new Line(body.trail.get(i), body.trail.get(i - 1), c));
     }
   }
 

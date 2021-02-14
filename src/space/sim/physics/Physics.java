@@ -45,7 +45,6 @@ public class Physics {
    * @param millis time passed in milliseconds
    */
   public static void updateBodies(int millis) {
-    printAll();
     for (Body body : bodyArray) {
       body.gravityForces.clear();
       for (Body other : bodyArray) {
