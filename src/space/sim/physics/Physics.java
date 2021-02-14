@@ -36,28 +36,31 @@ public class Physics {
    * @param millis time passed in milliseconds
    */
   public static void updateBodies(int millis) {
-    for (Body body : bodyArray) {
-      body.gravityForces.clear();
-      for (Body other : bodyArray) {
-        body.gravityForces.add(findGravityForce(body, other));
+    while (millis > 0) {
+      for (Body body : bodyArray) {
+        body.gravityForces.clear();
+        for (Body other : bodyArray) {
+          body.gravityForces.add(findGravityForce(body, other));
+        }
       }
-    }
-    for (Body body : bodyArray) {
-      body.update(millis);
-    }
-    for (int i = 0; i < bodyArray.size(); i++) {
-      Body body = bodyArray.get(i);
-      for (int j = 0; j < bodyArray.size(); j++) {
-        Body other = bodyArray.get(j);
-        if (body.getId() != other.getId()) {
-          double distance = body.getPosition().distanceTo(other.getPosition());
-          if (body.getMass() >= other.getMass() && distance < body.getRadius()) {
-            body.collision(other.getPosition(), other.getVelocity(), other.getMass());
-            bodyArray.remove(other);
-            j--;
+      for (Body body : bodyArray) {
+        body.update();
+      }
+      for (int i = 0; i < bodyArray.size(); i++) {
+        Body body = bodyArray.get(i);
+        for (int j = 0; j < bodyArray.size(); j++) {
+          Body other = bodyArray.get(j);
+          if (body.getId() != other.getId()) {
+            double distance = body.getPosition().distanceTo(other.getPosition());
+            if (body.getMass() >= other.getMass() && distance < body.getRadius()) {
+              body.collision(other.getPosition(), other.getVelocity(), other.getMass());
+              bodyArray.remove(other);
+              j--;
+            }
           }
         }
       }
+      millis--;
     }
   }
 

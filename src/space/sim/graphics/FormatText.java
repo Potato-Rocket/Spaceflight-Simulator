@@ -13,7 +13,7 @@ public class FormatText {
   public static String formatTime(long millis) {
     double seconds = (double) millis / 1000;
     String s = String.valueOf(Math.round((seconds % 60) * 100) / 100.0);
-    if (s.length() < 5) {
+    if (seconds % 60 < 10) {
       s = "0" + s;
     }
     int m = (int) (seconds / 60) % 60;

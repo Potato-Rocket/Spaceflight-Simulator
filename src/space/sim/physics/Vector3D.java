@@ -7,6 +7,8 @@ package space.sim.physics;
  */
 public class Vector3D {
 
+  private static final Vector3D NULL = new Vector3D();
+
   /**
    * <b>x</b> component of the vector.
    */
@@ -119,6 +121,15 @@ public class Vector3D {
   }
 
   /**
+   * Returns the vector's 3D distance to (0, 0, 0). Is equal to the vector's magnitude.
+   *
+   * @return Returns the vector's magnitude.
+   */
+  public double distanceTo() {
+    return distanceTo(NULL);
+  }
+
+  /**
    * Gets a vector representing the angle to another vector in 3D space. First it calls
    * <code>compareTo</code> to find the distances on each axis. Then it calls
    * <code>distanceTo</code> to find the hypotenuse of those angles. Finally, it creates a new
@@ -133,6 +144,15 @@ public class Vector3D {
     double[] compare = compareTo(vector);
     Vector3D nonScaled = new Vector3D(compare[0], compare[1], compare[2]);
     return nonScaled.scaleVector(1/ hypotenuse);
+  }
+
+  /**
+   * Gets a vector representing only the vector's direction, its angle to (0, 0, 0).
+   *
+   * @return Returns a vector on a unit scale to represent angle.
+   */
+  public Vector3D angleTo() {
+    return angleTo(NULL).scaleVector(-1);
   }
 
   /**

@@ -1,6 +1,7 @@
 package space.sim.physics;
 
 import space.sim.config.Setup;
+import space.sim.graphics.Draw;
 
 import java.util.ArrayList;
 
@@ -10,21 +11,26 @@ import java.util.ArrayList;
  */
 public class Body {
 
+  private static final double ONE_DEGREE = Math.PI * 2 / 360;
 
   /**
    * Vector to store the current gravitational forces acting on the body.
    */
   public ArrayList<Vector3D> gravityForces = new ArrayList<>();
-  /**
-   * Stores the position vectors to render the trail.
-   */
-  public ArrayList<Vector3D> trail = new ArrayList<>();
 
   /**
    * The number of bodies that have been generated.
    */
   private static int count = 0;
 
+  /**
+   * Stores the position vectors to render the trail.
+   */
+  private ArrayList<Vector3D> trail = new ArrayList<>();
+  /**
+   * Stores the direction at the previous trail point.
+   */
+  private Vector3D prevTrail;
   /**
    * Vector to store the body's position.
    */
@@ -70,6 +76,7 @@ public class Body {
     this.mass = mass;
     this.radius = Math.cbrt((3 * mass) / (4 * Math.PI));
     this.name = name;
+    prevTrail = velocity.angleTo();
     id = count;
     count++;
     trail.add(position.copy());
@@ -80,24 +87,25 @@ public class Body {
    * based on the mass and the gravity forces currently acting on the body. The velocity is
    * updated based on the acceleration and the position is updated based on the velocity. Shifts
    * the trail and inserts the updated position at the start.
-   *
-   * @param millis time passed in milliseconds
    */
-  public void update(int millis) {
-    millis *= Setup.TIME_SCALE;
+  public void update() {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
       acceleration.addVector(f.scaleVector(1 / mass));
     }
-    velocity.addVector(acceleration.scaleVector((double) millis / 1000));
-    position.addVector(velocity.scaleVector((double) millis / 1000));
-    if (trail.size() < Setup.TRAIL_LENGTH) {
-      trail.add(new Vector3D());
+    velocity.addVector(acceleration.scaleVector(0.001));
+    position.addVector(velocity.scaleVector(0.001));
+    Vector3D direction = velocity.angleTo();
+    if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.TRAIL_RESOLUTION || position.distanceTo(trail.get(0)) > Draw.getBounds() / 10) {
+      if (trail.size() < Setup.TRAIL_LENGTH / Setup.TRAIL_RESOLUTION) {
+        trail.add(new Vector3D());
+      }
+      for (int i = trail.size() - 1; i > 0; i--) {
+        trail.set(i, trail.get(i - 1));
+      }
+      trail.set(0, position.copy());
+      prevTrail = direction;
     }
-    for (int i = trail.size() - 1; i > 0; i--) {
-      trail.set(i, trail.get(i - 1));
-    }
-    trail.set(0, position.copy());
   }
 
   /**
@@ -115,6 +123,15 @@ public class Body {
     double[] offset = position.compareTo(pos);
     position.addVector(new Vector3D(offset[0], offset[1], offset[2]).scaleVector(scale * 0.5));
     this.mass += mass;
+  }
+
+  /**
+   * Getter method for the body's trail data.
+   *
+   * @return Returns the <code>ArrayList</code> of trail points.
+   */
+  public ArrayList<Vector3D> getTrail() {
+    return trail;
   }
 
   /**

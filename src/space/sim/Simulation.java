@@ -43,7 +43,7 @@ public class Simulation {
     while (true) {
       long millis = now.toEpochMilli();
       duration = (millis - start);
-      Physics.updateBodies(difference);
+      Physics.updateBodies((int) (difference * Setup.TIME_SCALE));
       drawSpace.paint(drawSpace.getGraphics());
       now = Instant.now();
       difference = (int) (now.toEpochMilli() - millis);

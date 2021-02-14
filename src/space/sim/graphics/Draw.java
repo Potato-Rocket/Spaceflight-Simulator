@@ -89,7 +89,8 @@ public class Draw {
     render();
     drawGuides();
     FormatText.drawText(g2d, new String[]
-        {"Duration: " + FormatText.formatTime((long) (Simulation.duration * Setup.TIME_SCALE))},
+        {"Duration: " + FormatText.formatTime((long) (Simulation.duration * Setup.TIME_SCALE)),
+        "Time scale: " + (int) Setup.TIME_SCALE + "x"},
         -w + 10, -h + 10, 1.2);
   }
 
@@ -104,6 +105,10 @@ public class Draw {
     } else {
       minBounds /= Setup.SCALE_FACTOR;
     }
+  }
+
+  public static double getBounds() {
+    return minBounds;
   }
 
   /**
@@ -180,6 +185,7 @@ public class Draw {
       }
       g2d.drawLine(w, y, w - len, y);
     }
+    FormatText.drawText(g2d, new String[] {"One tick = " + tickDist + "m"}, 10 - w, h - 40, 1);
   }
 
   /**
@@ -205,12 +211,10 @@ public class Draw {
    * @param body body to draw
    */
   private void drawBody(Body body) {
-    int size = (int) body.getRadius();
-    if (size * scale < 2) {
-      size = (int) (2 / scale);
+    if (Setup.DRAW_TRAIL) {
+      drawTrail(body);
     }
-    drawTrail(body);
-    elements.add(new Point(body.getPosition(), size));
+    elements.add(new Point(body.getPosition(), body.getRadius()));
   }
 
   /**
@@ -220,15 +224,19 @@ public class Draw {
    * @param body body to draw the trail for
    */
   private void drawTrail(Body body) {
-    for (int i = body.trail.size() - 1; i > 0; i--) {
+    ArrayList<Vector3D> trail = body.getTrail();
+    if (trail.size() > 0) {
+      elements.add(new Line(body.getPosition(), trail.get(0), new Color(255, 255, 0)));
+    }
+    for (int i = 0; i < trail.size() - 1; i++) {
       Color c;
-      double fade = 1.0 - (1.0 / body.trail.size() * i);
       if (Setup.TRANSPARENCY) {
+        double fade = 1.0 - (1.0 / trail.size() * i);
         c = new Color(255, 255, 0, (int) (255 * fade));
       } else {
-        c = new Color( (int) (255 * fade),  (int) (255 * fade), 0);
+        c = new Color(255, 255, 0);
       }
-      elements.add(new Line(body.trail.get(i), body.trail.get(i - 1), c));
+      elements.add(new Line(trail.get(i), trail.get(i + 1), c));
     }
   }
 

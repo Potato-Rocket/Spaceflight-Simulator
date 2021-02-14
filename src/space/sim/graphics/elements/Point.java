@@ -35,6 +35,9 @@ public class Point {
     this.position = position;
     this.converted = Graphics3D.convertPoint(position).scaleVector(Draw.getScale());
     this.size = (int) (size * Draw.getScale());
+    if (this.size < 2) {
+      this.size = 2;
+    }
   }
 
   /**
