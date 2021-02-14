@@ -23,11 +23,11 @@ public class Draw {
    * Factor to scale by when zooming.
    */
   private static final double SCALE_FACTOR = 1.1;
-
   /**
    * Stores the scale factor between the virtual units and the pixels on screen.
    */
   private static double scale = 1;
+
   /**
    * Stores element objects to draw.
    */
@@ -64,23 +64,19 @@ public class Draw {
     h = height;
   }
 
-  //FIXME: Replace Graphics2D scaling with scaling when drawing. This will make things less weird
-  // at really close or far zooming levels, as well as facilitating future graphics additions.
   /**
    * Draws everything. Operates in the following order:
    * <ol>
    *   <li>Fills the background with black.</li>
    *   <li>Scales and transforms the <code>Graphics</code> object's coordinate system as required
-   *   by the defined scale of the view and the 3D origin point.
-   *   </li>
-   *   <li>3D axes to aid with orientation. The X-axis is red, the Y-axis is green, and the
-   *   Z-axis is blue. The axes' positive sections appear brighter than their negative
-   *   sections.</li>
+   *   by the defined scale of the view and the 3D origin point.</li>
+   *   <li>3D axes to aid with orientation.</li>
    *   <li>Draws the physical bodies and their trails. Uses the <code>Graphics3D</code> class
    *   to get the <code>Line</code> and <code>Point</code> objects describing the elements to
    *   be rendered. These objects are added to an array which sorts the elements by their
    *   apparent depth before finally rendering them on the screen.</li>
-   *   <li>Adds a 2D crosshair at the center of the screen.</li>
+   *   <li>Adds a 2D crosshair at the center of the screen, as well as tick marks to indicate
+   *   scale.</li>
    * </ol>
    */
   public void drawAll() {
@@ -91,30 +87,17 @@ public class Draw {
     if (h > w) {
       min = w;
     }
+    w /= 2;
+    h /=2;
     scale = min / (minBounds * 2);
-    //Draws the 3D axes
+
     elements.clear();
-    elements.add(new Line(new Vector3D(minBounds / 2, 0, 0),
-        new Vector3D(0, 0, 0), new Color(255, 0, 0)));
-    elements.add(new Line(new Vector3D(minBounds / -2, 0, 0),
-        new Vector3D(0, 0, 0), new Color(63, 0, 0)));
-    elements.add(new Line(new Vector3D(0, minBounds / 2, 0),
-        new Vector3D(0, 0, 0), new Color(0, 255, 0)));
-    elements.add(new Line(new Vector3D(0, minBounds / -2, 0),
-        new Vector3D(0, 0, 0), new Color(0, 63, 0)));
-    elements.add(new Line(new Vector3D(0, 0, minBounds / 2),
-        new Vector3D(0, 0, 0), new Color(0, 0, 255)));
-    elements.add(new Line(new Vector3D(0, 0, minBounds / -2),
-        new Vector3D(0, 0, 0), new Color(0, 0, 63)));
-    //Draws the bodies and their respective trails
+    drawAxes();
     for (Body body : Physics.getBodyArray()) {
       drawBody(body);
     }
     render();
-    //Draws the 2D crosshair
-    g2d.setColor(Color.WHITE);
-    g2d.drawLine(10, 0, -10, 0);
-    g2d.drawLine(0, 10, 0, -10);
+    drawGuides();
   }
 
   /**
@@ -137,6 +120,73 @@ public class Draw {
    */
   public static double getScale() {
     return scale;
+  }
+
+  /**
+   * Draws the 3D axes. The X-axis is red, the Y-axis is green, and the
+   * Z-axis is blue. The axes' positive sections appear brighter than their negative
+   * sections.
+   */
+  private void drawAxes() {
+    elements.add(new Line(new Vector3D(minBounds / 2, 0, 0),
+        new Vector3D(0, 0, 0), new Color(255, 0, 0)));
+    elements.add(new Line(new Vector3D(minBounds / -2, 0, 0),
+        new Vector3D(0, 0, 0), new Color(63, 0, 0)));
+    elements.add(new Line(new Vector3D(0, minBounds / 2, 0),
+        new Vector3D(0, 0, 0), new Color(0, 255, 0)));
+    elements.add(new Line(new Vector3D(0, minBounds / -2, 0),
+        new Vector3D(0, 0, 0), new Color(0, 63, 0)));
+    elements.add(new Line(new Vector3D(0, 0, minBounds / 2),
+        new Vector3D(0, 0, 0), new Color(0, 0, 255)));
+    elements.add(new Line(new Vector3D(0, 0, minBounds / -2),
+        new Vector3D(0, 0, 0), new Color(0, 0, 63)));
+  }
+
+  /**
+   * Draws a crosshair and tick marks for scale. Maintains the distance between the tick marks at
+   * a factor of 10 and makes every 10th tick mark longer.
+   */
+  private void drawGuides() {
+    g2d.setColor(Color.WHITE);
+    g2d.drawLine(10, 0, -10, 0);
+    g2d.drawLine(0, 10, 0, -10);
+
+    int tickExp = 1;
+    int tickDist = 10;
+    while (h / (tickDist * scale) > 2) {
+      tickExp++;
+      tickDist = (int) Math.pow(10, tickExp);
+    }
+    tickExp--;
+    tickDist = (int) Math.pow(10, tickExp);
+    for (int x = 0; x < w; x += tickDist * scale) {
+      int len = 10;
+      if (Math.round(x / (tickDist * scale)) % 10 == 0) {
+        len = 20;
+      }
+      g2d.drawLine(x, h, x, h - len);
+    }
+    for (int x = 0; x > -w; x -= tickDist * scale) {
+      int len = 10;
+      if (Math.round(x / (tickDist * scale)) % 10 == 0) {
+        len = 20;
+      }
+      g2d.drawLine(x, h, x, h - len);
+    }
+    for (int y = 0; y < h; y += tickDist * scale) {
+      int len = 10;
+      if (Math.round(y / (tickDist * scale)) % 10 == 0) {
+        len = 20;
+      }
+      g2d.drawLine(w, y, w - len, y);
+    }
+    for (int y = 0; y > -h; y -= tickDist * scale) {
+      int len = 10;
+      if (Math.round(y / (tickDist * scale)) % 10 == 0) {
+        len = 20;
+      }
+      g2d.drawLine(w, y, w - len, y);
+    }
   }
 
   /**
