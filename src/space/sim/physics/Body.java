@@ -87,13 +87,13 @@ public class Body {
    * updated based on the acceleration and the position is updated based on the velocity. Shifts
    * the trail and inserts the updated position at the start.
    */
-  public void update() {
+  public void update(double millis) {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
       acceleration.addVector(f.scaleVector(1 / mass));
     }
-    velocity.addVector(acceleration.scaleVector(0.001));
-    position.addVector(velocity.scaleVector(0.001));
+    velocity.addVector(acceleration.scaleVector(millis / 1000));
+    position.addVector(velocity.scaleVector(millis / 1000));
     Vector3D direction = velocity.angleTo();
     if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
         position.distanceTo(trail.get(0)) > Physics.getInitBounds() / 10) {
@@ -120,8 +120,7 @@ public class Body {
   public void collision(Vector3D pos, Vector3D vel, double mass) {
     double scale = mass / this.mass;
     velocity.addVector(vel.scaleVector(scale));
-    double[] offset = position.compareTo(pos);
-    position.addVector(new Vector3D(offset[0], offset[1], offset[2]).scaleVector(scale * 0.5));
+    position.addVector(position.compareTo(pos).scaleVector(scale * 0.5));
     this.mass += mass;
   }
 

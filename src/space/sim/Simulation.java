@@ -13,7 +13,8 @@ import java.time.Instant;
  */
 public class Simulation {
 
-  public static long duration = 0;
+  private static double fps;
+  private static int[] prevFrames = new int[20];
 
   /**
    * Main method. Manages lower level classes and their processes, and contains the main loop for
@@ -34,8 +35,7 @@ public class Simulation {
     //Main while loop is infinite until window is closed or program interrupted.
     while (true) {
       long millis = now.toEpochMilli();
-      duration = (millis - start);
-      Physics.updateBodies((int) (difference * Physics.getTimeScale()));
+      Physics.updateBodies(difference);
       drawSpace.paint(drawSpace.getGraphics());
       now = Instant.now();
       difference = (int) (now.toEpochMilli() - millis);
@@ -46,7 +46,20 @@ public class Simulation {
           difference = (int) (now.toEpochMilli() - millis);
         }
       }
+      for (int i = prevFrames.length - 1; i > 0; i--) {
+        prevFrames[i] = prevFrames[i - 1];
+      }
+      prevFrames[0] = difference;
+      int sum = 0;
+      for (int i : prevFrames) {
+        sum += i;
+      }
+      fps = 1000 / ((double) sum / prevFrames.length);
     }
+  }
+
+  public static double getFps() {
+    return fps;
   }
 
 }

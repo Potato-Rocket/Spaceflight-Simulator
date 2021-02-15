@@ -83,6 +83,15 @@ public class Vector3D {
   }
 
   /**
+   * Sums two vectors. Adds the corresponding components separately.
+   *
+   * @param vector second vector
+   */
+  public Vector3D sumVector(Vector3D vector) {
+    return new Vector3D(x + vector.x, y + vector.y, z + vector.z);
+  }
+
+  /**
    * Multiplies a vector with another number. Each component is multiplied by this value. This
    * function is used to scale a vector.
    *
@@ -100,8 +109,8 @@ public class Vector3D {
    * @param vector second vector
    * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
    */
-  public double[] compareTo(Vector3D vector) {
-    return new double[]{vector.x - x, vector.y - y, vector.z - z};
+  public Vector3D compareTo(Vector3D vector) {
+    return new Vector3D(vector.x - x, vector.y - y, vector.z - z);
   }
 
   /**
@@ -115,9 +124,9 @@ public class Vector3D {
    * @return Returns the 3D distance between the two vectors.
    */
   public double distanceTo(Vector3D vector) {
-    double[] compare = compareTo(vector);
-    double horizontal = Math.hypot(compare[0], compare[1]);
-    return Math.hypot(horizontal, compare[2]);
+    Vector3D compare = compareTo(vector);
+    double horizontal = Math.hypot(compare.getX(), compare.getY());
+    return Math.hypot(horizontal, compare.getZ());
   }
 
   /**
@@ -141,8 +150,7 @@ public class Vector3D {
    */
   public Vector3D angleTo(Vector3D vector) {
     double hypotenuse = distanceTo(vector);
-    double[] compare = compareTo(vector);
-    Vector3D nonScaled = new Vector3D(compare[0], compare[1], compare[2]);
+    Vector3D nonScaled = compareTo(vector);
     return nonScaled.scaleVector(1/ hypotenuse);
   }
 

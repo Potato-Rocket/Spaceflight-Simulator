@@ -1,5 +1,6 @@
 package space.sim.physics;
 
+import space.sim.Simulation;
 import space.sim.config.Setup;
 
 import java.util.ArrayList;
@@ -9,8 +10,19 @@ import java.util.ArrayList;
  */
 public class Physics {
 
+  /**
+   * Array of different time scales to switch through.
+   */
+  private static final int[] SPEEDS = {1, 2, 4, 8, 16, 32, 64,
+      100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000};
+  /**
+   * Current time scale index.
+   */
+  private static int timeScale = 0;
+  /**
+   * Simulation duration in milliseconds.
+   */
   private static long duration = 0;
-  private static double timeScale = 1;
   /**
    * The initial max distance of any body from the origin.
    */
@@ -47,10 +59,11 @@ public class Physics {
    * Finally, it checks for collisions between every body. If two bodies have collided it runs
    * the collision function on the larger one and removes the smaller one.
    *
-   * @param millis time passed in milliseconds
+   * @param realMillis time passed in milliseconds
    */
-  public static void updateBodies(int millis) {
-    while (millis > 0) {
+  public static void updateBodies(int realMillis) {
+    int simMillis = realMillis * SPEEDS[timeScale];
+    while (simMillis > 0) {
       for (Body body : bodyArray) {
         body.gravityForces.clear();
         for (Body other : bodyArray) {
@@ -58,7 +71,7 @@ public class Physics {
         }
       }
       for (Body body : bodyArray) {
-        body.update();
+        body.update(1);
       }
       for (int i = 0; i < bodyArray.size(); i++) {
         Body body = bodyArray.get(i);
@@ -75,7 +88,7 @@ public class Physics {
         }
       }
       duration++;
-      millis--;
+      simMillis--;
     }
   }
 
@@ -105,15 +118,15 @@ public class Physics {
   }
 
   public static void modifyTimeScale(boolean increase) {
-    if (increase && timeScale < 64) {
-      timeScale *= 2;
-    } else if (!increase && timeScale > 1){
-      timeScale /= 2;
+    if (increase && timeScale < SPEEDS.length - 1) {
+      timeScale++;
+    } else if (!increase && timeScale > 0){
+      timeScale--;
     }
   }
 
-  public static double getTimeScale() {
-    return timeScale;
+  public static int getTimeScale() {
+    return SPEEDS[timeScale];
   }
 
   public static long getDuration() {

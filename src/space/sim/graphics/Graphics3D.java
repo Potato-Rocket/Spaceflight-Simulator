@@ -50,6 +50,11 @@ public class Graphics3D {
     }
   }
 
+  public static void resetView() {
+    yaw = 0;
+    tilt = 0;
+  }
+
   /**
    * Transforms a point in 3D space to be displayed in 2D space. Uses the yaw and tilt of the
    * view to effectively rotate the point about the origin. This allows the 3D <b>y</b>
@@ -59,13 +64,14 @@ public class Graphics3D {
    * @param point point to be transformed
    * @return Returns the transformed point.
    */
-  public static Vector3D convertPoint(Vector3D point) {
+  public static Vector3D convertPoint(Vector3D point, Vector3D pivot) {
+    Vector3D pos = point.copy().sumVector(pivot.copy().scaleVector(-1));
     //Transforms the point based on the yaw angle.
-    double x = point.getX() * Math.cos(yaw) - point.getY() * Math.sin(yaw);
-    double y = point.getX() * Math.sin(yaw) + point.getY() * Math.cos(yaw);
+    double x = pos.getX() * Math.cos(yaw) - pos.getY() * Math.sin(yaw);
+    double y = pos.getX() * Math.sin(yaw) + pos.getY() * Math.cos(yaw);
     //Transforms the new point based on the tilt angle.
-    double finalX = x * Math.cos(tilt) + point.getZ() * Math.sin(tilt);
-    double finalZ = point.getZ() * Math.cos(tilt) - x * Math.sin(tilt);
+    double finalX = x * Math.cos(tilt) + pos.getZ() * Math.sin(tilt);
+    double finalZ = pos.getZ() * Math.cos(tilt) - x * Math.sin(tilt);
     //Returns the composite transformation
     return new Vector3D(finalX, y, finalZ);
   }

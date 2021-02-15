@@ -31,9 +31,9 @@ public class Point {
    * @param position 3D position of the point
    * @param size size of the point
    */
-  public Point(Vector3D position, double size) {
+  public Point(Vector3D position, Vector3D focus, double size) {
     this.position = position;
-    this.converted = Graphics3D.convertPoint(position).scaleVector(Draw.getScale());
+    this.converted = Graphics3D.convertPoint(position, focus).scaleVector(Draw.getScale());
     this.size = (int) (size * Draw.getScale());
     if (this.size < 2) {
       this.size = 2;

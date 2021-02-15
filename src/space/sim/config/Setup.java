@@ -36,7 +36,7 @@ public class Setup {
   /**
    * Stores the view's sensitivity to mouse movements.
    */
-  private static double rotatePrecision = 100;
+  private static double rotatePrecision = 1;
   /**
    * Factor to scale by when zooming.
    */
@@ -62,7 +62,7 @@ public class Setup {
       trailAlpha = validateBoolean(setup, "trailAlpha", false);
       trailLength = validateInt(setup, "trailLength", 180);
       trailResolution = validateDouble(setup, "trailResolution", 1);
-      rotatePrecision = validateDouble(setup, "rotatePrecision", 10);
+      rotatePrecision = validateDouble(setup, "rotatePrecision", 1);
       scalePrecision = validateDouble(setup, "scalePrecision", 1.1);
 
       readGeneration(setup.getProperty("generationFile"));

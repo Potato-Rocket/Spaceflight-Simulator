@@ -1,5 +1,6 @@
 package space.sim.graphics;
 
+import space.sim.Simulation;
 import space.sim.physics.Vector3D;
 import space.sim.physics.Body;
 import space.sim.physics.Physics;
@@ -28,6 +29,14 @@ public class Draw {
    * Stores the scale factor between the virtual units and the pixels on screen.
    */
   private static double scale = 0;
+  /**
+   * Index + 1 of the body the view is currently centered on.
+   */
+  private static int focus = 0;
+  /**
+   * Point in 3D space the view is centered on.
+   */
+  private static Vector3D centerPoint;
 
   /**
    * Stores the <code>Graphics2D</code> object used to create all graphics.
@@ -54,6 +63,20 @@ public class Draw {
     g2d = (Graphics2D) graphics;
     w = width;
     h = height;
+    if (focus != 0) {
+      centerPoint = Physics.getBodyArray().get(focus - 1).getPosition();
+      System.out.println(Physics.getBodyArray().get(focus - 1).toString(true));
+    } else {
+      centerPoint = new Vector3D();
+    }
+    System.out.println(focus);
+    System.out.println(centerPoint);
+    if (minBounds == 0) {
+      minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+      if (minBounds == 0) {
+        minBounds = 1;
+      }
+    }
   }
 
   /**
@@ -71,12 +94,6 @@ public class Draw {
    * </ol>
    */
   public void drawAll() {
-    if (minBounds == 0) {
-      minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
-      if (minBounds == 0) {
-        minBounds = 1;
-      }
-    }
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
     int min = h;
@@ -95,8 +112,9 @@ public class Draw {
     drawGuides();
     FormatText.drawText(g2d, new String[]
         {"Duration: " + FormatText.formatTime(Physics.getDuration()),
-        "Time scale: " + (int) Physics.getTimeScale() + "x", "Body count: " +
-        Physics.getBodyArray().size()}, -w + 10, -h + 10, 1.2);
+        "Time scale: " + Physics.getTimeScale() + "x",
+        "Body count: " + Physics.getBodyArray().size(),
+        "FPS: " + (int) Simulation.getFps()}, -w + 10, -h + 10, 1.2);
   }
 
   /**
@@ -112,8 +130,8 @@ public class Draw {
     }
   }
 
-  public static double getBounds() {
-    return minBounds;
+  public static void resetBounds() {
+    minBounds = Physics.getInitBounds();
   }
 
   /**
@@ -125,24 +143,34 @@ public class Draw {
     return scale;
   }
 
+  public static void modifyFocus(int change) {
+    focus += change;
+    if (focus > Physics.getBodyArray().size()) {
+      focus = 0;
+    }
+    if (focus < 0) {
+      focus = Physics.getBodyArray().size();
+    }
+  }
+
   /**
    * Draws the 3D axes. The X-axis is red, the Y-axis is green, and the
    * Z-axis is blue. The axes' positive sections appear brighter than their negative
    * sections.
    */
   private void drawAxes() {
-    elements.add(new Line(new Vector3D(minBounds / 2, 0, 0),
-        new Vector3D(0, 0, 0), new Color(255, 0, 0)));
-    elements.add(new Line(new Vector3D(minBounds / -2, 0, 0),
-        new Vector3D(0, 0, 0), new Color(63, 0, 0)));
-    elements.add(new Line(new Vector3D(0, minBounds / 2, 0),
-        new Vector3D(0, 0, 0), new Color(0, 255, 0)));
-    elements.add(new Line(new Vector3D(0, minBounds / -2, 0),
-        new Vector3D(0, 0, 0), new Color(0, 63, 0)));
-    elements.add(new Line(new Vector3D(0, 0, minBounds / 2),
-        new Vector3D(0, 0, 0), new Color(0, 0, 255)));
-    elements.add(new Line(new Vector3D(0, 0, minBounds / -2),
-        new Vector3D(0, 0, 0), new Color(0, 0, 63)));
+    elements.add(new Line(new Vector3D(minBounds / 2, 0, 0).sumVector(centerPoint),
+        centerPoint, centerPoint, new Color(255, 0, 0)));
+    elements.add(new Line(new Vector3D(minBounds / -2, 0, 0).sumVector(centerPoint),
+        centerPoint, centerPoint, new Color(63, 0, 0)));
+    elements.add(new Line(new Vector3D(0, minBounds / 2, 0).sumVector(centerPoint),
+        centerPoint, centerPoint, new Color(0, 255, 0)));
+    elements.add(new Line(new Vector3D(0, minBounds / -2, 0).sumVector(centerPoint),
+        centerPoint, centerPoint, new Color(0, 63, 0)));
+    elements.add(new Line(new Vector3D(0, 0, minBounds / 2).sumVector(centerPoint),
+        centerPoint, centerPoint, new Color(0, 0, 255)));
+    elements.add(new Line(new Vector3D(0, 0, minBounds / -2).sumVector(centerPoint),
+        centerPoint, centerPoint, new Color(0, 0, 63)));
   }
 
   /**
@@ -151,8 +179,6 @@ public class Draw {
    */
   private void drawGuides() {
     g2d.setColor(Color.WHITE);
-    g2d.drawLine(10, 0, -10, 0);
-    g2d.drawLine(0, 10, 0, -10);
     long tickExp = 1;
     long tickDist = 10;
     while (h / (tickDist * scale) > 2) {
@@ -219,7 +245,7 @@ public class Draw {
     if (Setup.isDrawTrail()) {
       drawTrail(body);
     }
-    elements.add(new Point(body.getPosition(), body.getRadius()));
+    elements.add(new Point(body.getPosition(), centerPoint, body.getRadius()));
   }
 
   /**
@@ -231,7 +257,7 @@ public class Draw {
   private void drawTrail(Body body) {
     ArrayList<Vector3D> trail = body.getTrail();
     if (trail.size() > 0) {
-      elements.add(new Line(body.getPosition(), trail.get(0), new Color(255, 255, 0)));
+      elements.add(new Line(body.getPosition(), trail.get(0), centerPoint, new Color(255, 255, 0)));
     }
     for (int i = 0; i < trail.size() - 1; i++) {
       Color c;
@@ -241,7 +267,7 @@ public class Draw {
       } else {
         c = new Color(255, 255, 0);
       }
-      elements.add(new Line(trail.get(i), trail.get(i + 1), c));
+      elements.add(new Line(trail.get(i), trail.get(i + 1), centerPoint, c));
     }
   }
 
