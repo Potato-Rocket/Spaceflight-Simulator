@@ -24,11 +24,11 @@ public class Physics {
    * Populates the array of bodies based on the generation data.
    */
   public static void createBodies() {
-    for (String[] line : Setup.GEN_DATA) {
+    for (String[] line : Setup.getGenerationData()) {
       bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
           Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
           Double.parseDouble(line[4]), Double.parseDouble(line[5])),
-          Double.parseDouble(line[6]), line[7]));
+          Double.parseDouble(line[6]),Double.parseDouble(line[7]), line[8]));
     }
     double[] distances = new double[bodyArray.size()];
     for (int i = 0; i < distances.length; i++) {

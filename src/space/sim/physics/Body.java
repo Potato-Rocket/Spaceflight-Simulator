@@ -69,11 +69,11 @@ public class Body {
    * @param mass     initial mass of the body
    * @param name     name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, double mass, String name) {
+  public Body(Vector3D position, Vector3D velocity, double mass, double density, String name) {
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
-    this.radius = Math.cbrt((3 * mass) / (4 * Math.PI));
+    this.radius = Math.cbrt((3 * (mass / density)) / (4 * Math.PI));
     this.name = name;
     prevTrail = velocity.angleTo();
     id = count;

@@ -73,6 +73,9 @@ public class Draw {
   public void drawAll() {
     if (minBounds == 0) {
       minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+      if (minBounds == 0) {
+        minBounds = 1;
+      }
     }
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
