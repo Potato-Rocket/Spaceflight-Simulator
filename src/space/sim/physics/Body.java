@@ -1,7 +1,6 @@
 package space.sim.physics;
 
 import space.sim.config.Setup;
-import space.sim.graphics.Draw;
 
 import java.util.ArrayList;
 
@@ -96,9 +95,9 @@ public class Body {
     velocity.addVector(acceleration.scaleVector(0.001));
     position.addVector(velocity.scaleVector(0.001));
     Vector3D direction = velocity.angleTo();
-    if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.TRAIL_RESOLUTION ||
+    if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
         position.distanceTo(trail.get(0)) > Physics.getInitBounds() / 10) {
-      if (trail.size() < Setup.TRAIL_LENGTH / Setup.TRAIL_RESOLUTION) {
+      if (trail.size() < Setup.getTrailLength() / Setup.getTrailResolution()) {
         trail.add(new Vector3D());
       }
       for (int i = trail.size() - 1; i > 0; i--) {

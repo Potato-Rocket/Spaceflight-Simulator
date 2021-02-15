@@ -9,6 +9,8 @@ import java.util.ArrayList;
  */
 public class Physics {
 
+  private static long duration = 0;
+  private static double timeScale = 1;
   /**
    * The initial max distance of any body from the origin.
    */
@@ -72,6 +74,7 @@ public class Physics {
           }
         }
       }
+      duration++;
       millis--;
     }
   }
@@ -101,6 +104,22 @@ public class Physics {
     return initBounds;
   }
 
+  public static void modifyTimeScale(boolean increase) {
+    if (increase && timeScale < 64) {
+      timeScale *= 2;
+    } else if (!increase && timeScale > 1){
+      timeScale /= 2;
+    }
+  }
+
+  public static double getTimeScale() {
+    return timeScale;
+  }
+
+  public static long getDuration() {
+    return duration;
+  }
+
   /**
    * Calculates the gravitational pull between this body and another body. Uses their relative
    * positions and masses as well as the gravitational constant to calculate this. Does not
@@ -113,11 +132,10 @@ public class Physics {
   private static Vector3D findGravityForce(Body body, Body other) {
     if (body.getId() != other.getId()) {
       double r = body.getPosition().distanceTo(other.getPosition());
-      double f = Setup.G * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
+      double f = Setup.getGravity() * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
       Vector3D angle = body.getPosition().angleTo(other.getPosition());
       return angle.scaleVector(f);
     }
     return new Vector3D();
   }
-
 }

@@ -26,8 +26,8 @@ public class Rotation implements MouseMotionListener {
   public void mouseDragged(MouseEvent e) {
     if (mousePos[0] != 0 && mousePos[1] != 0) {
       double[] difference = {e.getX() - mousePos[0], mousePos[1] - e.getY()};
-      Graphics3D.changeYaw(difference[0] * (Setup.SENSITIVITY / 10000) * Math.PI);
-      Graphics3D.changeTilt(difference[1] * (Setup.SENSITIVITY / 10000) * Math.PI);
+      Graphics3D.changeYaw(difference[0] * (Setup.getRotatePrecision() / 10000) * Math.PI);
+      Graphics3D.changeTilt(difference[1] * (Setup.getRotatePrecision() / 10000) * Math.PI);
     }
     mousePos = new int[] {e.getX(), e.getY()};
   }

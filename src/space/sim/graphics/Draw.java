@@ -1,6 +1,5 @@
 package space.sim.graphics;
 
-import space.sim.Simulation;
 import space.sim.physics.Vector3D;
 import space.sim.physics.Body;
 import space.sim.physics.Physics;
@@ -73,7 +72,7 @@ public class Draw {
    */
   public void drawAll() {
     if (minBounds == 0) {
-      minBounds = Physics.getInitBounds() * Setup.SCALE_FACTOR;
+      minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
     }
     //Transforms the coordinate grid
     g2d.translate(w / 2, h / 2);
@@ -92,8 +91,8 @@ public class Draw {
     render();
     drawGuides();
     FormatText.drawText(g2d, new String[]
-        {"Duration: " + FormatText.formatTime((long) (Simulation.duration * Setup.TIME_SCALE)),
-        "Time scale: " + (int) Setup.TIME_SCALE + "x", "Body count: " +
+        {"Duration: " + FormatText.formatTime(Physics.getDuration()),
+        "Time scale: " + (int) Physics.getTimeScale() + "x", "Body count: " +
         Physics.getBodyArray().size()}, -w + 10, -h + 10, 1.2);
   }
 
@@ -104,9 +103,9 @@ public class Draw {
    */
   public static void modifyBounds(int direction) {
     if (direction == 1) {
-      minBounds *= Setup.SCALE_FACTOR;
+      minBounds *= Setup.getScalePrecision();
     } else {
-      minBounds /= Setup.SCALE_FACTOR;
+      minBounds /= Setup.getScalePrecision();
     }
   }
 
@@ -214,7 +213,7 @@ public class Draw {
    * @param body body to draw
    */
   private void drawBody(Body body) {
-    if (Setup.DRAW_TRAIL) {
+    if (Setup.isDrawTrail()) {
       drawTrail(body);
     }
     elements.add(new Point(body.getPosition(), body.getRadius()));
@@ -233,7 +232,7 @@ public class Draw {
     }
     for (int i = 0; i < trail.size() - 1; i++) {
       Color c;
-      if (Setup.TRANSPARENCY) {
+      if (Setup.isTrailAlpha()) {
         double fade = 1.0 - (1.0 / trail.size() * i);
         c = new Color(255, 255, 0, (int) (255 * fade));
       } else {

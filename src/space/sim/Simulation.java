@@ -4,6 +4,7 @@ import space.sim.graphics.DrawSpace;
 import space.sim.physics.Physics;
 import space.sim.config.Setup;
 
+import java.io.IOException;
 import java.time.Instant;
 
 /**
@@ -20,12 +21,13 @@ public class Simulation {
    *
    * @param args command line inputs
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     //Sets up graphical window and timing variables.
-    DrawSpace drawSpace = new DrawSpace();
+    Setup.read();
     Physics.createBodies();
+    DrawSpace drawSpace = new DrawSpace();
     Instant now;
-    int frameCap = 1000 / Setup.FRAME_LIMIT;
+    int frameCap = 1000 / Setup.getFrameLimit();
     int difference = frameCap;
     now = Instant.now();
     long start = now.toEpochMilli();
@@ -33,7 +35,7 @@ public class Simulation {
     while (true) {
       long millis = now.toEpochMilli();
       duration = (millis - start);
-      Physics.updateBodies((int) (difference * Setup.TIME_SCALE));
+      Physics.updateBodies((int) (difference * Physics.getTimeScale()));
       drawSpace.paint(drawSpace.getGraphics());
       now = Instant.now();
       difference = (int) (now.toEpochMilli() - millis);

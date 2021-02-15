@@ -3,8 +3,9 @@ package space.sim.graphics;
 import space.sim.interaction.EnterRotation;
 import space.sim.interaction.Rotation;
 import space.sim.interaction.Zooming;
+import space.sim.interaction.Keymaps;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -17,15 +18,16 @@ public class DrawSpace extends JFrame {
    * required for user interaction.
    */
   public DrawSpace() {
-    setTitle("Space Simulator");
+    setTitle("Spaceflight Simulator");
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setVisible(true);
     addMouseListener(new EnterRotation());
     addMouseMotionListener(new Rotation());
     addMouseWheelListener(new Zooming());
-
-    System.out.println();
+    new Keymaps(rootPane);
   }
+
+
 
   /**
    * Updates the graphics in the frame. Creates a new <code>Draw</code> object and runs the
