@@ -198,36 +198,22 @@ public class Draw {
       tickDist = (long) Math.pow(10, tickExp);
     }
     tickExp--;
-    tickDist = (long) Math.pow(10, tickExp);
-    for (int x = 0; x < w; x += tickDist * scale) {
+    tickDist = (long) (Math.pow(10, tickExp) * scale);
+    for (int x = (int) ((int) (-w / tickDist) * tickDist); x < w; x += tickDist) {
       int len = 10;
-      if (Math.round(x / (tickDist * scale)) % 10 == 0) {
+      if (Math.round(x / (double) tickDist) % 10 == 0) {
         len = 20;
       }
       g2d.drawLine(x, h, x, h - len);
     }
-    for (int x = 0; x > -w; x -= tickDist * scale) {
+    for (int y = (int) ((int) (-h / tickDist) * tickDist); y < h; y += tickDist) {
       int len = 10;
-      if (Math.round(x / (tickDist * scale)) % 10 == 0) {
-        len = 20;
-      }
-      g2d.drawLine(x, h, x, h - len);
-    }
-    for (int y = 0; y < h; y += tickDist * scale) {
-      int len = 10;
-      if (Math.round(y / (tickDist * scale)) % 10 == 0) {
+      if (Math.round(y / (double) tickDist) % 10 == 0) {
         len = 20;
       }
       g2d.drawLine(w, y, w - len, y);
     }
-    for (int y = 0; y > -h; y -= tickDist * scale) {
-      int len = 10;
-      if (Math.round(y / (tickDist * scale)) % 10 == 0) {
-        len = 20;
-      }
-      g2d.drawLine(w, y, w - len, y);
-    }
-    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatNum(tickDist,
+    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatNum(tickDist / scale,
         "m", "km")}, 10 - w, h - 40, 1);
   }
 

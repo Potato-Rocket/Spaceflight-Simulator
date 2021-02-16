@@ -68,7 +68,7 @@ public class Physics {
 
   //TODO: Implement automatic time scale limit detection.
   //TODO: Add basic multithreading.
-  //TODO: On collision, update focused body if focused is >= to this body.
+  //FIXME: On collision, update focused body if focused is >= to this body.
 
   /**
    * Updates every body in the body array. Runs the update function for each body to update the
