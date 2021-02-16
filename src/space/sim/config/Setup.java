@@ -184,7 +184,7 @@ public class Setup {
       gravity = validateDouble(generation, "gravity", 1);
       String[] keys = generation.getProperty("bodies", "").split(" ");
       //Reads the body data for each body key.
-      generationData = new String[keys.length][9];
+      generationData = new String[keys.length][12];
       for (int i = 0; i < keys.length; i++) {
         String[] position = generation.getProperty(keys[i] + ".position","0,0,0").split(",");
         generationData[i][0] = position[0];
@@ -197,16 +197,20 @@ public class Setup {
         generationData[i][6] = generation.getProperty(keys[i] + ".mass", "1");
         generationData[i][7] = generation.getProperty(keys[i] + ".density", "1");
         generationData[i][8] = generation.getProperty(keys[i] + ".name", "Body " + i);
-        if (generationData.length < 1) {
-          throw new IOException("System setup was empty; Cannot have system with 0 bodies.");
-        }
+        String[] color = generation.getProperty(keys[i] + ".color","255,255,255").split(",");
+        generationData[i][9] = color[0];
+        generationData[i][10] = color[1];
+        generationData[i][11] = color[2];
+      }
+      if (generationData.length < 1) {
+        throw new IOException("System setup was empty; Cannot have system with 0 bodies.");
       }
     } catch (IOException e) {
       e.printStackTrace();
       gravity = 1;
       generationData = new String[][] {
-          {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star"},
-          {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite"}
+          {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star", "255", "255", "255"},
+          {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite", "127", "127", "127"}
       };
     }
   }

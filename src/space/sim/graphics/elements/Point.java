@@ -15,10 +15,17 @@ public class Point {
    * Stores the point's position transformed to the 3D view.
    */
   private Vector3D converted;
+
+  /**
+   * Stores the color of this body.
+   */
+  private Color color;
+
   /**
    * Stores the point's size (the radius).
    */
   private int size;
+
 
   //TODO: Have size scale to bounds and largest body.
   /**
@@ -29,22 +36,21 @@ public class Point {
    * @param focus center point of the view
    * @param size size of the point
    */
-  public Point(Vector3D position, Vector3D focus, double size) {
+  public Point(Vector3D position, Vector3D focus, Color c, double size) {
     this.converted = Graphics3D.convertPoint(position, focus).scaleVector(Draw.getScale());
+    this.color = c;
     this.size = (int) (size * Draw.getScale());
     if (this.size < 2) {
       this.size = 2;
     }
   }
-
-  //TODO: Take a color input.
   /**
    * Draws the point on the screen. Takes the current <code>Graphics2D</code> object as an input.
    *
    * @param g current <code>Graphics2D</code> object
    */
   public void draw(Graphics2D g) {
-    g.setColor(Color.WHITE);
+    g.setColor(color);
     g.fillOval((int) (converted.getY() - size), (int) (converted.getZ() - size), size * 2, size * 2);
   }
 

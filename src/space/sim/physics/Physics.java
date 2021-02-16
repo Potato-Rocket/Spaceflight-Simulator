@@ -2,7 +2,9 @@ package space.sim.physics;
 
 import space.sim.config.Setup;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Static class to handle all body interactions.
@@ -44,10 +46,14 @@ public class Physics {
    */
   public static void createBodies() {
     for (String[] line : Setup.getGenerationData()) {
-      bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
-          Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
-          Double.parseDouble(line[4]), Double.parseDouble(line[5])),
-          Double.parseDouble(line[6]), Double.parseDouble(line[7]), line[8]));
+      try {
+        bodyArray.add(new Body(new Vector3D(line[0], line[1], line[2]),
+            new Vector3D(line[3], line[4], line[5]), Double.parseDouble(line[6]),
+            Double.parseDouble(line[7]), line[8], new Color(Integer.parseInt(line[9]),
+            Integer.parseInt(line[10]), Integer.parseInt(line[11]))));
+      } catch(NumberFormatException e) {
+        System.out.println(Arrays.toString(e.getStackTrace()));
+      }
     }
     double[] distances = new double[bodyArray.size()];
     for (int i = 0; i < distances.length; i++) {

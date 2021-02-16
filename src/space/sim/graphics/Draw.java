@@ -79,6 +79,7 @@ public class Draw {
   }
 
   //TODO: Add much more information about the simulation.
+  //TODO: Add a label element type.
   /**
    * Draws everything. Operates in the following order:
    * <ol>
@@ -246,7 +247,6 @@ public class Draw {
     }
   }
 
-  //TODO: Add color parameter to bodies.
   /**
    * Adds a <code>Point</code> object to the elements array. Uses the given body's position and
    * size to generate the new object using <code>Graphics3D</code>.
@@ -257,7 +257,7 @@ public class Draw {
     if (Setup.isDrawingTrail()) {
       drawTrail(body);
     }
-    elements.add(new Point(body.getPosition(), centerPoint, body.getRadius()));
+    elements.add(new Point(body.getPosition(), centerPoint, body.getColor(), body.getRadius()));
   }
 
   //TODO: Draw trails relative to the body they are captive to.

@@ -2,6 +2,7 @@ package space.sim.physics;
 
 import space.sim.config.Setup;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -51,6 +52,11 @@ public class Body {
   private Vector3D acceleration;
 
   /**
+   * Stores the color to use when drawing this body.
+   */
+  private Color color;
+
+  /**
    * The body's mass.
    */
   private double mass;
@@ -75,25 +81,26 @@ public class Body {
    * corresponding fields and generates an id and gravity forces array for the body. Adds another
    * vector to each body's gravity force array.
    *
-   * @param position initial position of the body
-   * @param velocity initial velocity of the body
+   * @param pos initial position of the body
+   * @param vel initial velocity of the body
    * @param mass     initial mass of the body
    * @param name     name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, double mass, double density, String name) {
-    this.position = position;
-    this.velocity = velocity;
+  public Body(Vector3D pos, Vector3D vel, double mass, double density, String name, Color c) {
+    this.position = pos;
+    this.velocity = vel;
     this.mass = mass;
     this.radius = Math.cbrt((3 * (mass / density)) / (4 * Math.PI));
     this.name = name;
-    prevTrail = velocity.angleTo();
+    this.color = c;
+    prevTrail = vel.angleTo();
     id = count;
     count++;
-    trail.add(position.copy());
+    trail.add(pos.copy());
   }
 
-  //TODO: Add constructor that takes orbital parameters as an input.
 
+  //TODO: Add constructor that takes orbital parameters as an input.
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
@@ -206,6 +213,15 @@ public class Body {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Getter method for the body's drawing color.
+   *
+   * @return Returns the color.
+   */
+  public Color getColor() {
+    return color;
   }
 
   /**

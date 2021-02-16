@@ -1,5 +1,7 @@
 package space.sim.physics;
 
+import java.util.Arrays;
+
 /**
  * Stores a 3D vector, containing an <b>x</b> component,  a <b>y</b> component, and a <b>z</b>
  * component. Each component can be accessed individually through their getter methods.
@@ -35,6 +37,19 @@ public class Vector3D {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+
+  public Vector3D(String x, String y, String z) {
+    try {
+      this.x = Double.parseDouble(x);
+      this.y = Double.parseDouble(y);
+      this.z = Double.parseDouble(z);
+    } catch(NumberFormatException e) {
+      System.out.println(Arrays.toString(e.getStackTrace()));
+      this.x = 0;
+      this.y = 0;
+      this.z = 0;
+    }
   }
 
   /**
