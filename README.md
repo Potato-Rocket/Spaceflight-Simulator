@@ -36,3 +36,4 @@ L - Go to next body.
 Finally, these keybinding can be used for other functions:
 
 F1 - Reset viewing angle and zoom.
+F2 - Toggle whether to view planet sizes to scale with distance or on a log scale.

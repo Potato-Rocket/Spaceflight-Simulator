@@ -26,8 +26,6 @@ public class Point {
    */
   private int size;
 
-
-  //TODO: Have size scale to bounds and largest body.
   /**
    * Class constructor. Takes the 3D position and size (radius) as inputs, and uses
    * <code>Graphics3D</code> to transform them to the viewing angle.
@@ -36,14 +34,12 @@ public class Point {
    * @param focus center point of the view
    * @param size size of the point
    */
-  public Point(Vector3D position, Vector3D focus, Color c, double size) {
+  public Point(Vector3D position, Vector3D focus, Color c, int size) {
     this.converted = Graphics3D.convertPoint(position, focus).scaleVector(Draw.getScale());
     this.color = c;
-    this.size = (int) (size * Draw.getScale());
-    if (this.size < 2) {
-      this.size = 2;
-    }
+    this.size = size;
   }
+
   /**
    * Draws the point on the screen. Takes the current <code>Graphics2D</code> object as an input.
    *

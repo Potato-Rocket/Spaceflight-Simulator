@@ -10,6 +10,7 @@ import space.sim.config.Setup;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class to create all the drawings and graphics. Runs the 3D transformation code and
@@ -26,6 +27,11 @@ public class Draw {
    * Simulated units to fit on the screen
    */
   private static double minBounds;
+
+  /**
+   * Whether to display bodies at real scale or a log scale.
+   */
+  private static boolean logScale = true;
 
   /**
    * Stores the scale factor between the virtual units and the pixels on screen.
@@ -46,6 +52,11 @@ public class Draw {
    * Point in 3D space the view is centered on.
    */
   private Vector3D centerPoint;
+
+  /**
+   * Smallest and largest body sizes after being put on a log scale.
+   */
+  private double[] logMinMax;
 
   /**
    * Stores the frame width.
@@ -74,6 +85,16 @@ public class Draw {
       minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
       if (minBounds == 0) {
         minBounds = 1;
+      }
+    }
+    logMinMax = new double[] {100, 0};
+    for (Body body : Physics.getBodyArray()) {
+      double log = Math.log(body.getRadius());
+      if (log < logMinMax[0]) {
+        logMinMax[0] = log;
+      }
+      if (log > logMinMax[1]) {
+        logMinMax[1] = log;
       }
     }
   }
@@ -164,6 +185,10 @@ public class Draw {
     }
   }
 
+  public static void toggleLogScale() {
+    logScale = !logScale;
+  }
+
   /**
    * Draws the 3D axes. The X-axis is red, the Y-axis is green, and the
    * Z-axis is blue. The axes' positive sections appear brighter than their negative
@@ -213,10 +238,11 @@ public class Draw {
       }
       g2d.drawLine(w, y, w - len, y);
     }
-    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatNum(tickDist / scale,
+    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatNum(Math.pow(10, tickExp),
         "m", "km")}, 10 - w, h - 40, 1);
   }
 
+  //TODO: Remove/edit elements where they intersect a larger body.
   /**
    * Sorts the elements array by depth before running the <code>draw</code> function on each
    * element.
@@ -243,7 +269,19 @@ public class Draw {
     if (Setup.isDrawingTrail()) {
       drawTrail(body);
     }
-    elements.add(new Point(body.getPosition(), centerPoint, body.getColor(), body.getRadius()));
+    double size = body.getRadius();
+    if (logScale) {
+      size = Math.log(size);
+      size -= logMinMax[0];
+      size++;
+      size *= (minBounds * scale) / 100;
+    } else {
+      size *= scale;
+      if (size < 2) {
+        size = 2;
+      }
+    }
+    elements.add(new Point(body.getPosition(), centerPoint, body.getColor(), (int) size));
   }
 
   //TODO: Draw trails relative to the body they are captive to.

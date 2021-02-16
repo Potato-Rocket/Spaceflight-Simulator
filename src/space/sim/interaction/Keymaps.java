@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
  */
 public class Keymaps {
 
-  //TODO: Toggle amount of info shown on screen with F2.
+  //TODO: Toggle amount of info shown on screen with F3.
   /**
    * Class constructor. Creates an <code>inputMap</code> and an <code>actionMap</code> for each
    * <code>Action</code>.
@@ -23,9 +23,11 @@ public class Keymaps {
     //Creates the inputMap and actionMap.
     InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
     ActionMap actionMap = component.getActionMap();
-    //Function key map.
+    //Function key maps.
     inputMap.put(KeyStroke.getKeyStroke("released F1"), "RESET_VIEW");
     actionMap.put("RESET_VIEW", resetView);
+    inputMap.put(KeyStroke.getKeyStroke("released F2"), "TOGGLE_LOG");
+    actionMap.put("TOGGLE_LOG", toggleLog);
     //Q&E keys to change the time scale.
     inputMap.put(KeyStroke.getKeyStroke("released Q"), "SLOW_DOWN");
     actionMap.put("SLOW_DOWN", slowDown);
@@ -163,6 +165,16 @@ public class Keymaps {
     public void actionPerformed(ActionEvent e) {
       Draw.resetBounds();
       Graphics3D.resetView();
+    }
+  };
+
+  /**
+   * Toggles whether to draw planet size to scale or in a lgo scale for visibility.
+   */
+  private Action toggleLog = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Draw.toggleLogScale();
     }
   };
 
