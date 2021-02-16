@@ -10,6 +10,9 @@ import java.util.ArrayList;
  */
 public class Body {
 
+  /**
+   * Stores the distance between points one degree apart on a unit circle.
+   */
   private static final double ONE_DEGREE = Math.PI * 2 / 360;
 
   /**
@@ -84,8 +87,16 @@ public class Body {
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
-   * updated based on the acceleration and the position is updated based on the velocity. Shifts
-   * the trail and inserts the updated position at the start.
+   * updated based on the acceleration and the position is updated based on the velocity.
+   * <p>
+   * The trail is updated based on both direction change and distance traveled. It will add a
+   * point to the trail if either:
+   * <ul>
+   *   <li>The direction of the body's velocity has changed more than [trail resolution] degrees
+   *   from the direction of velocity at the previous trail point.</li>
+   *   <li>THe body has traveled more than a predetermined distance since the previous trail
+   *   point. Scaled to the size of the system.</li>
+   * </ul>
    */
   public void update(double millis) {
     acceleration = new Vector3D();
@@ -176,6 +187,15 @@ public class Body {
    */
   public int getId() {
     return id;
+  }
+
+  /**
+   * Getter method for the body's name.
+   *
+   * @return Returns the body's name.
+   */
+  public String getName() {
+    return name;
   }
 
   /**

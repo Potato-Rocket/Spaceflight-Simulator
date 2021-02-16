@@ -63,12 +63,7 @@ public class Draw {
     g2d = (Graphics2D) graphics;
     w = width;
     h = height;
-    if (focus != 0) {
-      centerPoint = Physics.getBodyArray().get(focus - 1).getPosition();
-      System.out.println(Physics.getBodyArray().get(focus - 1).toString(true));
-    } else {
-      centerPoint = new Vector3D();
-    }
+    centerPoint = Physics.getBodyArray().get(focus).getPosition();
     System.out.println(focus);
     System.out.println(centerPoint);
     if (minBounds == 0) {
@@ -112,9 +107,10 @@ public class Draw {
     drawGuides();
     FormatText.drawText(g2d, new String[]
         {"Duration: " + FormatText.formatTime(Physics.getDuration()),
-        "Time scale: " + Physics.getTimeScale() + "x",
-        "Body count: " + Physics.getBodyArray().size(),
-        "FPS: " + (int) Simulation.getFps()}, -w + 10, -h + 10, 1.2);
+            "Time scale: " + Physics.getTimeScale() + "x",
+            "Body count: " + Physics.getBodyArray().size(),
+            "FPS: " + (int) Simulation.getFps(),
+            "Focus: " + Physics.getBodyArray().get(focus).getName()}, -w + 10, -h + 10, 1.2);
   }
 
   /**
@@ -145,11 +141,11 @@ public class Draw {
 
   public static void modifyFocus(int change) {
     focus += change;
-    if (focus > Physics.getBodyArray().size()) {
+    if (focus > Physics.getBodyArray().size() - 1) {
       focus = 0;
     }
     if (focus < 0) {
-      focus = Physics.getBodyArray().size();
+      focus = Physics.getBodyArray().size() - 1;
     }
   }
 

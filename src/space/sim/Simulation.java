@@ -13,12 +13,18 @@ import java.time.Instant;
  */
 public class Simulation {
 
+  /**
+   * Stores the current average fps.
+   */
   private static double fps;
-  private static int[] prevFrames = new int[20];
+  /**
+   * Stores the duration of each frame in the last second.
+   */
+  private static int[] prevFrames = new int[Setup.getFrameLimit()];
 
   /**
    * Main method. Manages lower level classes and their processes, and contains the main loop for
-   * the simulation.
+   * the simulation. Manages and calculates the frame rate.
    *
    * @param args command line inputs
    */
@@ -46,6 +52,7 @@ public class Simulation {
           difference = (int) (now.toEpochMilli() - millis);
         }
       }
+      //Updates fps
       for (int i = prevFrames.length - 1; i > 0; i--) {
         prevFrames[i] = prevFrames[i - 1];
       }
@@ -58,6 +65,11 @@ public class Simulation {
     }
   }
 
+  /**
+   * Getter method for the current fps. Averaged across the frame durations for 1 second.
+   *
+   * @return Returns the current fps.
+   */
   public static double getFps() {
     return fps;
   }

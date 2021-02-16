@@ -83,9 +83,11 @@ public class Vector3D {
   }
 
   /**
-   * Sums two vectors. Adds the corresponding components separately.
+   * Sums two vectors. Adds the corresponding components separately. This method returns the sum
+   * rather than setting the values of this vector.
    *
    * @param vector second vector
+   * @return Returns the sum.
    */
   public Vector3D sumVector(Vector3D vector) {
     return new Vector3D(x + vector.x, y + vector.y, z + vector.z);
