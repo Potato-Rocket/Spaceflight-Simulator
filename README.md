@@ -15,22 +15,22 @@ When you start the program, the view will automatically encompass every one of y
 rotate the view, click and drag on the screen. To zoom in or out, you can use the scroll wheel. 
 Alternatively, these keybindings can be used:
 
-W - Tilt view up.
-S - Tilt view down.
-A - Rotate view left.
-D - Rotate view right.
+W - Tilt view up.<br>
+S - Tilt view down.<br>
+A - Rotate view left.<br>
+D - Rotate view right.<br>
 
-J - Zoom in.
-K - Zoom out.
+J - Zoom in.<br>
+K - Zoom out.<br>
 
 To increase or decrease the virtual time-scale, use the following keybindings:
 
-Q - Slow down time.
+Q - Slow down time.<br>
 E - Speed up time.
 
 To toggle the center of the view between different bodies, use these keybindings:
 
-H - Go to previous body.
+H - Go to previous body.<br>
 L - Go to next body.
 
 Finally, these keybinding can be used for other functions:
