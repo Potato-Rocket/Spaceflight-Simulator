@@ -7,6 +7,8 @@ import java.awt.*;
  */
 public class FormatText {
 
+  //TODO: Add method to print data about a body.
+
   /**
    * Prints an array of lines of text onto the screen. Each <code>String</code> in the array is
    * treated as a line, and the positioning is determined by the line spacing and base <b>x</b>

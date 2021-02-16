@@ -20,6 +20,7 @@ public class Point {
    */
   private int size;
 
+  //TODO: Have size scale to bounds and largest body.
   /**
    * Class constructor. Takes the 3D position and size (radius) as inputs, and uses
    * <code>Graphics3D</code> to transform them to the viewing angle.
@@ -36,6 +37,7 @@ public class Point {
     }
   }
 
+  //TODO: Take a color input.
   /**
    * Draws the point on the screen. Takes the current <code>Graphics2D</code> object as an input.
    *

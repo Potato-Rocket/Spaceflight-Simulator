@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
  */
 public class Keymaps {
 
+  //TODO: Toggle amount of info shown on screen with F2.
   /**
    * Class constructor. Creates an <code>inputMap</code> and an <code>actionMap</code> for each
    * <code>Action</code>.

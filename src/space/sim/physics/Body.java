@@ -92,6 +92,8 @@ public class Body {
     trail.add(position.copy());
   }
 
+  //TODO: Add constructor that takes orbital parameters as an input.
+
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is

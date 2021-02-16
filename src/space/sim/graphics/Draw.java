@@ -80,6 +80,7 @@ public class Draw {
     }
   }
 
+  //TODO: Add much more information about the simulation.
   /**
    * Draws everything. Operates in the following order:
    * <ol>
@@ -247,6 +248,7 @@ public class Draw {
     }
   }
 
+  //TODO: Add color parameter to bodies.
   /**
    * Adds a <code>Point</code> object to the elements array. Uses the given body's position and
    * size to generate the new object using <code>Graphics3D</code>.

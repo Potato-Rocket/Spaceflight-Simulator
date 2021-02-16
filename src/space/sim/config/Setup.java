@@ -168,6 +168,7 @@ public class Setup {
     return generationData;
   }
 
+  //TODO: Differentiate between different body constructors.
   /**
    * Reads a system setup file and writes info about the bodies to the <code>genData</code> field.
    *
@@ -196,9 +197,17 @@ public class Setup {
         generationData[i][6] = generation.getProperty(keys[i] + ".mass", "1");
         generationData[i][7] = generation.getProperty(keys[i] + ".density", "1");
         generationData[i][8] = generation.getProperty(keys[i] + ".name", "Body " + i);
+        if (generationData.length < 1) {
+          throw new IOException("System setup was empty; Cannot have system with 0 bodies.");
+        }
       }
     } catch (IOException e) {
       e.printStackTrace();
+      gravity = 1;
+      generationData = new String[][] {
+          {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star"},
+          {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite"}
+      };
     }
   }
 

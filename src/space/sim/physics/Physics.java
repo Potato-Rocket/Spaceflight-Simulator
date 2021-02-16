@@ -57,6 +57,9 @@ public class Physics {
     }
   }
 
+  //TODO: Implement physics step scaling to compensate for limited processing.
+  //TODO: Add basic multithreading.
+  //TODO: On collision, update focused body if focused is >= to this body.
   /**
    * Updates every body in the body array. Runs the update function for each body to update the
    * motion, then updates the gravitational forces between each body and every other body.
