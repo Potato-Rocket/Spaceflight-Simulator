@@ -42,7 +42,7 @@ public class Simulation {
     //Main while loop is infinite until window is closed or program interrupted.
     while (true) {
       long millis = now.toEpochMilli();
-      Physics.updateBodies(difference);
+      Physics.updateBodies(difference, fps);
       drawSpace.paint(drawSpace.getGraphics());
       now = Instant.now();
       difference = (int) (now.toEpochMilli() - millis);

@@ -70,8 +70,6 @@ public class Draw {
     w = width;
     h = height;
     centerPoint = Physics.getBodyArray().get(focus).getPosition();
-    System.out.println(focus);
-    System.out.println(centerPoint);
     if (minBounds == 0) {
       minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
       if (minBounds == 0) {
@@ -262,6 +260,7 @@ public class Draw {
     elements.add(new Point(body.getPosition(), centerPoint, body.getRadius()));
   }
 
+  //TODO: Draw trails relative to the body they are captive to.
   /**
    * Adds <code>Line</code> objects to the elements array. Uses the given body's trail data to
    * generate a line for each trail segment using <code>Graphics3D</code>.

@@ -15,6 +15,8 @@ public class Physics {
   private static final int[] SPEEDS = {1, 2, 4, 8, 16, 32, 64,
       100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000};
 
+  private static int scaleLimit = 7/*SPEEDS.length*/;
+
   /**
    * Current time scale index.
    */
@@ -35,6 +37,7 @@ public class Physics {
    */
   private static ArrayList<Body> bodyArray = new ArrayList<>();
 
+  //TODO: Calculate sphere of influence for each body. Run only once per frame.
   /**
    * Populates the array of bodies based on the generation data. After generating the bodies,
    * gets the max initial distance of any one body from the origin.
@@ -44,7 +47,7 @@ public class Physics {
       bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
           Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
           Double.parseDouble(line[4]), Double.parseDouble(line[5])),
-          Double.parseDouble(line[6]),Double.parseDouble(line[7]), line[8]));
+          Double.parseDouble(line[6]), Double.parseDouble(line[7]), line[8]));
     }
     double[] distances = new double[bodyArray.size()];
     for (int i = 0; i < distances.length; i++) {
@@ -57,9 +60,10 @@ public class Physics {
     }
   }
 
-  //TODO: Implement physics step scaling to compensate for limited processing.
+  //TODO: Implement automatic time scale limit detection.
   //TODO: Add basic multithreading.
   //TODO: On collision, update focused body if focused is >= to this body.
+
   /**
    * Updates every body in the body array. Runs the update function for each body to update the
    * motion, then updates the gravitational forces between each body and every other body.
@@ -72,9 +76,14 @@ public class Physics {
    *
    * @param realMillis time passed in milliseconds
    */
-  public static void updateBodies(int realMillis) {
-    int simMillis = realMillis * SPEEDS[timeScale];
-    while (simMillis > 0) {
+  public static void updateBodies(int realMillis, double fps) {
+    int reps = realMillis * SPEEDS[timeScale];
+    double repMillis = 1;
+    if (timeScale > scaleLimit) {
+      reps = realMillis * SPEEDS[scaleLimit];
+      repMillis = (double) SPEEDS[timeScale] / SPEEDS[scaleLimit];
+    }
+    while (reps > 0) {
       for (Body body : bodyArray) {
         body.gravityForces.clear();
         for (Body other : bodyArray) {
@@ -82,7 +91,7 @@ public class Physics {
         }
       }
       for (Body body : bodyArray) {
-        body.update(1);
+        body.update(repMillis);
       }
       for (int i = 0; i < bodyArray.size(); i++) {
         Body body = bodyArray.get(i);
@@ -98,21 +107,9 @@ public class Physics {
           }
         }
       }
-      duration++;
-      simMillis--;
+      duration += repMillis;
+      reps--;
     }
-  }
-
-  /**
-   * Returns information about every body in a <code>String</code>. Runs the verbose toString method
-   * for each body in the bodies array and appends them into one <code>String</code>.
-   */
-  public static void printAll() {
-    StringBuilder string = new StringBuilder();
-    for (Body body : bodyArray) {
-      string.append(body.toString(true)).append("\n\n");
-    }
-    System.out.println(string);
   }
 
   /**
@@ -143,7 +140,7 @@ public class Physics {
   public static void modifyTimeScale(boolean increase) {
     if (increase && timeScale < SPEEDS.length - 1) {
       timeScale++;
-    } else if (!increase && timeScale > 0){
+    } else if (!increase && timeScale > 0) {
       timeScale--;
     }
   }
@@ -172,7 +169,7 @@ public class Physics {
    * positions and masses as well as the gravitational constant to calculate this. Does not
    * calculate for a comparison between a body and itself.
    *
-   * @param body main body
+   * @param body  main body
    * @param other other body
    * @return Returns the gravitational force between the two bodies
    */
