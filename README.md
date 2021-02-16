@@ -1,4 +1,4 @@
 # Spaceflight-Simulator
-A Java application designed to simulate the physics of multiple bodies interacting gravitationally in 3D space.
+A Java application to simulate 3D gravitational physics.
 
 Javadoc tool should function to generate explanation of the code.
