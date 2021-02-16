@@ -14,19 +14,13 @@ public class Line {
   /**
    * Stores the position of the line's first endpoint.
    */
-  private Vector3D point1;
-  /**
-   * Stores the position of the line's first endpoint.
-   */
   private Vector3D converted1;
-  /**
-   * Stores the position of the line's second endpoint transformed to the 3D view.
-   */
-  private Vector3D point2;
+
   /**
    * Stores the position of the line's second endpoint transformed to the 3D view.
    */
   private Vector3D converted2;
+
   /**
    * Stores the color of the line to draw.
    */
@@ -38,11 +32,10 @@ public class Line {
    *
    * @param point1 first endpoint
    * @param point2 second endpoint
+   * @param focus center point of the view
    * @param c color of the line
    */
   public Line(Vector3D point1, Vector3D point2, Vector3D focus, Color c) {
-    this.point1 = point1;
-    this.point2 = point2;
     converted1 = Graphics3D.convertPoint(point1, focus).scaleVector(Draw.getScale());
     converted2 = Graphics3D.convertPoint(point2, focus).scaleVector(Draw.getScale());
     color = c;

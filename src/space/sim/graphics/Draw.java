@@ -21,31 +21,37 @@ public class Draw {
    * Stores element objects to draw.
    */
   private static ArrayList<Object> elements = new ArrayList<>();
+
   /**
    * Simulated units to fit on the screen
    */
   private static double minBounds;
+
   /**
    * Stores the scale factor between the virtual units and the pixels on screen.
    */
   private static double scale = 0;
+
   /**
    * Index + 1 of the body the view is currently centered on.
    */
   private static int focus = 0;
-  /**
-   * Point in 3D space the view is centered on.
-   */
-  private static Vector3D centerPoint;
 
   /**
    * Stores the <code>Graphics2D</code> object used to create all graphics.
    */
   private Graphics2D g2d;
+
+  /**
+   * Point in 3D space the view is centered on.
+   */
+  private Vector3D centerPoint;
+
   /**
    * Stores the frame width.
    */
   private int w;
+
   /**
    * Stores the frame height.
    */
@@ -126,6 +132,9 @@ public class Draw {
     }
   }
 
+  /**
+   * Resets the view scale to the initial view scale.
+   */
   public static void resetBounds() {
     minBounds = Physics.getInitBounds();
   }
@@ -139,6 +148,12 @@ public class Draw {
     return scale;
   }
 
+  /**
+   * Toggles through the array of bodies. Alters the <code>focus</code> field, which stores the
+   * index of the focused body in the bodyArray.
+   *
+   * @param change whether to increase or decrease the index
+   */
   public static void modifyFocus(int change) {
     focus += change;
     if (focus > Physics.getBodyArray().size() - 1) {
@@ -152,7 +167,7 @@ public class Draw {
   /**
    * Draws the 3D axes. The X-axis is red, the Y-axis is green, and the
    * Z-axis is blue. The axes' positive sections appear brighter than their negative
-   * sections.
+   * sections. Translates it to the current focus point.
    */
   private void drawAxes() {
     elements.add(new Line(new Vector3D(minBounds / 2, 0, 0).sumVector(centerPoint),
@@ -166,12 +181,13 @@ public class Draw {
     elements.add(new Line(new Vector3D(0, 0, minBounds / 2).sumVector(centerPoint),
         centerPoint, centerPoint, new Color(0, 0, 255)));
     elements.add(new Line(new Vector3D(0, 0, minBounds / -2).sumVector(centerPoint),
-        centerPoint, centerPoint, new Color(0, 0, 63)));
+        centerPoint, centerPoint, new Color(0, 0, 127)));
   }
 
   /**
-   * Draws a crosshair and tick marks for scale. Maintains the distance between the tick marks at
-   * a factor of 10 and makes every 10th tick mark longer.
+   * Draws  tick marks for scale. Maintains the distance between the tick marks at
+   * a factor of 10 and makes every 10th tick mark longer. Prints the virtual distance between
+   * each tick mark in the bottom left corner.
    */
   private void drawGuides() {
     g2d.setColor(Color.WHITE);

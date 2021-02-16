@@ -27,8 +27,6 @@ public class DrawSpace extends JFrame {
     new Keymaps(rootPane);
   }
 
-
-
   /**
    * Updates the graphics in the frame. Creates a new <code>Draw</code> object and runs the
    * <code>drawAll</code> method. Finally, it revalidates to ensure smoother animations.

@@ -12,10 +12,6 @@ import java.awt.*;
 public class Point {
 
   /**
-   * Stores the point's position.
-   */
-  private Vector3D position;
-  /**
    * Stores the point's position transformed to the 3D view.
    */
   private Vector3D converted;
@@ -29,10 +25,10 @@ public class Point {
    * <code>Graphics3D</code> to transform them to the viewing angle.
    *
    * @param position 3D position of the point
+   * @param focus center point of the view
    * @param size size of the point
    */
   public Point(Vector3D position, Vector3D focus, double size) {
-    this.position = position;
     this.converted = Graphics3D.convertPoint(position, focus).scaleVector(Draw.getScale());
     this.size = (int) (size * Draw.getScale());
     if (this.size < 2) {
