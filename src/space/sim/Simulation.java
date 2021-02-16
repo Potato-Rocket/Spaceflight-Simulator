@@ -53,7 +53,7 @@ public class Simulation {
           difference = (int) (now.toEpochMilli() - millis);
         }
       }
-      //Updates fps
+      //Updates fps counter.
       for (int i = prevFrames.length - 1; i > 0; i--) {
         prevFrames[i] = prevFrames[i - 1];
       }

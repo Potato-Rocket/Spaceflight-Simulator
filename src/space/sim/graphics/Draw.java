@@ -254,7 +254,7 @@ public class Draw {
    * @param body body to draw
    */
   private void drawBody(Body body) {
-    if (Setup.isDrawTrail()) {
+    if (Setup.isDrawingTrail()) {
       drawTrail(body);
     }
     elements.add(new Point(body.getPosition(), centerPoint, body.getRadius()));
@@ -273,7 +273,7 @@ public class Draw {
     }
     for (int i = 0; i < trail.size() - 1; i++) {
       Color c;
-      if (Setup.isTrailAlpha()) {
+      if (Setup.trailHasAlpha()) {
         double fade = 1.0 - (1.0 / trail.size() * i);
         c = new Color(255, 255, 0, (int) (255 * fade));
       } else {
