@@ -7,15 +7,30 @@ import space.sim.physics.Physics;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+/**
+ * Class to create and manage keymaps and their corresponding actions.
+ */
 public class Keymaps {
 
+  /**
+   * Class constructor. Creates an <code>inputMap</code> and an <code>actionMap</code> for each
+   * <code>Action</code>.
+   *
+   * @param component <code>JComponent</code> in which to create the input and action maps
+   */
   public Keymaps(JComponent component) {
+    //Creates the inputMap and actionMap.
     InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
     ActionMap actionMap = component.getActionMap();
-
+    //Function key map.
     inputMap.put(KeyStroke.getKeyStroke("released F1"), "RESET_VIEW");
     actionMap.put("RESET_VIEW", resetView);
-
+    //Q&E keys to change the time scale.
+    inputMap.put(KeyStroke.getKeyStroke("released Q"), "SLOW_DOWN");
+    actionMap.put("SLOW_DOWN", slowDown);
+    inputMap.put(KeyStroke.getKeyStroke("released E"), "SPEED_UP");
+    actionMap.put("SPEED_UP", speedUp);
+    //Vim keys to control zooming and toggling the focused body.
     inputMap.put(KeyStroke.getKeyStroke("J"), "ZOOM_IN");
     actionMap.put("ZOOM_IN", zoomIn);
     inputMap.put(KeyStroke.getKeyStroke("K"), "ZOOM_OUT");
@@ -24,7 +39,7 @@ public class Keymaps {
     actionMap.put("PREV_FOCUS", prevFocus);
     inputMap.put(KeyStroke.getKeyStroke("released L"), "NEXT_FOCUS");
     actionMap.put("NEXT_FOCUS", nextFocus);
-
+    //WASD keys to rotate the view.
     inputMap.put(KeyStroke.getKeyStroke("W"), "TILT_UP");
     actionMap.put("TILT_UP", tiltUp);
     inputMap.put(KeyStroke.getKeyStroke("S"), "TILT_DOWN");
@@ -33,55 +48,72 @@ public class Keymaps {
     actionMap.put("YAW_LEFT", yawLeft);
     inputMap.put(KeyStroke.getKeyStroke("D"), "YAW_RIGHT");
     actionMap.put("YAW_RIGHT", yawRight);
-    inputMap.put(KeyStroke.getKeyStroke("released Q"), "SLOW_DOWN");
-    actionMap.put("SLOW_DOWN", slowDown);
-    inputMap.put(KeyStroke.getKeyStroke("released E"), "SPEED_UP");
-    actionMap.put("SPEED_UP", speedUp);
   }
 
-  Action tiltUp = new AbstractAction() {
+  /**
+   * Tilts the view up.
+   */
+  private Action tiltUp = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Graphics3D.changeTilt(Math.PI / -20);
     }
   };
 
-  Action tiltDown = new AbstractAction() {
+  /**
+   * Tilts the view down.
+   */
+  private Action tiltDown = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Graphics3D.changeTilt(Math.PI / 20);
     }
   };
 
-  Action yawLeft = new AbstractAction() {
+  /**
+   * Spins the view left.
+   */
+  private Action yawLeft = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Graphics3D.changeYaw(Math.PI / -20);
     }
   };
 
-  Action yawRight = new AbstractAction() {
+  /**
+   * Spins the view right.
+   */
+  private Action yawRight = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Graphics3D.changeYaw(Math.PI / 20);
     }
   };
 
-  Action speedUp = new AbstractAction() {
+  /**
+   * Speeds up the time scale.
+   */
+  private Action speedUp = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Physics.modifyTimeScale(true);
     }
   };
 
-  Action slowDown = new AbstractAction() {
+  /**
+   * Slows down the time scale.
+   */
+  private Action slowDown = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Physics.modifyTimeScale(false);
     }
   };
 
-  Action zoomIn = new AbstractAction() {
+  /**
+   * Zooms in the view.
+   */
+  private Action zoomIn = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       for (int i = 0; i < 10; i++) {
@@ -90,7 +122,10 @@ public class Keymaps {
     }
   };
 
-  Action zoomOut = new AbstractAction() {
+  /**
+   * Zooms out the view.
+   */
+  private Action zoomOut = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       for (int i = 0; i < 10; i++) {
@@ -99,21 +134,30 @@ public class Keymaps {
     }
   };
 
-  Action prevFocus = new AbstractAction() {
+  /**
+   * Toggles the focus to the previous body.
+   */
+  private Action prevFocus = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Draw.modifyFocus(-1);
     }
   };
 
-  Action nextFocus = new AbstractAction() {
+  /**
+   * Toggles the focus to the next body.
+   */
+  private Action nextFocus = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Draw.modifyFocus(1);
     }
   };
 
-  Action resetView = new AbstractAction() {
+  /**
+   * Resets the view scaling and rotation.
+   */
+  private Action resetView = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Draw.resetBounds();

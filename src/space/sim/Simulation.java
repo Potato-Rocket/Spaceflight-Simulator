@@ -17,6 +17,7 @@ public class Simulation {
    * Stores the current average fps.
    */
   private static double fps;
+
   /**
    * Stores the duration of each frame in the last second.
    */

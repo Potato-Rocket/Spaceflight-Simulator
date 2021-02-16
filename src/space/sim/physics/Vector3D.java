@@ -13,10 +13,12 @@ public class Vector3D {
    * <b>x</b> component of the vector.
    */
   private double x;
+
   /**
    * <b>y</b> component of the vector.
    */
   private double y;
+
   /**
    * <b>z</b> component of the vector.
    */

@@ -14,18 +14,22 @@ public class Physics {
    */
   private static final int[] SPEEDS = {1, 2, 4, 8, 16, 32, 64,
       100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000};
+
   /**
    * Current time scale index.
    */
   private static int timeScale = 0;
+
   /**
    * Simulation duration in milliseconds.
    */
   private static long duration = 0;
+
   /**
    * The initial max distance of any body from the origin.
    */
   private static double initBounds = 0;
+
   /**
    * The array of all bodies.
    */

@@ -29,34 +29,42 @@ public class Body {
    * Stores the position vectors to render the trail.
    */
   private ArrayList<Vector3D> trail = new ArrayList<>();
+
   /**
    * Stores the direction at the previous trail point.
    */
   private Vector3D prevTrail;
+
   /**
    * Vector to store the body's position.
    */
   private Vector3D position;
+
   /**
    * Vector to store the body's velocity.
    */
   private Vector3D velocity;
+
   /**
    * Vector to store the body's total acceleration.
    */
   private Vector3D acceleration;
+
   /**
    * The body's mass.
    */
   private double mass;
+
   /**
    * The body's radius.
    */
   private double radius;
+
   /**
    * The body's name.
    */
   private String name;
+
   /**
    * The body's identification number.
    */
