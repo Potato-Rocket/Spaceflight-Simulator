@@ -16,7 +16,7 @@ public class Simulation {
   /**
    * Stores the current average fps.
    */
-  private static double fps;
+  private static double fps = Setup.getFrameLimit();
 
   /**
    * Stores the duration of each frame in the last second.
@@ -34,16 +34,14 @@ public class Simulation {
     Setup.read();
     Physics.createBodies();
     DrawSpace drawSpace = new DrawSpace();
-    Instant now;
     int frameCap = 1000 / Setup.getFrameLimit();
     int difference = frameCap;
-    now = Instant.now();
-    long start = now.toEpochMilli();
+    Instant now = Instant.now();
     //Main while loop is infinite until window is closed or program interrupted.
     while (true) {
       long millis = now.toEpochMilli();
-      Physics.updateBodies(difference, fps);
-      drawSpace.paint(drawSpace.getGraphics());
+      Physics.updateBodies(fps);
+      drawSpace.repaint();
       now = Instant.now();
       difference = (int) (now.toEpochMilli() - millis);
       //Delays until the amount of time allotted for each frame is reached.

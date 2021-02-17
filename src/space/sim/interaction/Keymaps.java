@@ -21,7 +21,7 @@ public class Keymaps {
    */
   public Keymaps(JComponent component) {
     //Creates the inputMap and actionMap.
-    InputMap inputMap = component.getInputMap(JComponent.WHEN_FOCUSED);
+    InputMap inputMap = component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap actionMap = component.getActionMap();
     //Function key maps.
     inputMap.put(KeyStroke.getKeyStroke("released F1"), "RESET_VIEW");

@@ -69,7 +69,6 @@ public class Physics {
   //TODO: Implement automatic time scale limit detection.
   //TODO: Add basic multithreading.
   //FIXME: On collision, update focused body if focused is >= to this body.
-
   /**
    * Updates every body in the body array. Runs the update function for each body to update the
    * motion, then updates the gravitational forces between each body and every other body.
@@ -80,13 +79,14 @@ public class Physics {
    * simulation that has passed since the previous frame. That is the real time milliseconds
    * passed times the time scale.
    *
-   * @param realMillis time passed in milliseconds
+   * @param fps current average fps
    */
-  public static void updateBodies(int realMillis, double fps) {
-    int reps = realMillis * SPEEDS[timeScale];
+  public static void updateBodies(double fps) {
+    double realMillis = 1000 / fps;
+    int reps = (int) (realMillis * SPEEDS[timeScale]);
     double repMillis = 1;
     if (timeScale > scaleLimit) {
-      reps = realMillis * SPEEDS[scaleLimit];
+      reps = (int) (realMillis * SPEEDS[scaleLimit]);
       repMillis = (double) SPEEDS[timeScale] / SPEEDS[scaleLimit];
     }
     while (reps > 0) {
@@ -119,25 +119,6 @@ public class Physics {
   }
 
   /**
-   * Getter method for the <code>ArrayList</code> of bodies.
-   *
-   * @return Returns the <code>ArrayList</code> of bodies.
-   */
-  public static ArrayList<Body> getBodyArray() {
-    return bodyArray;
-  }
-
-  /**
-   * Gets the initial boundaries for the simulation view. Equal th=o the furthest distance from
-   * the origin any one body starts at.
-   *
-   * @return Returns the initial boundaries for the view.
-   */
-  public static double getInitBounds() {
-    return initBounds;
-  }
-
-  /**
    * Increases or decreases the time scale based on the input. Is bound to a keymap in the
    * <code>Keymaps</code> class.
    *
@@ -158,6 +139,25 @@ public class Physics {
    */
   public static int getTimeScale() {
     return SPEEDS[timeScale];
+  }
+
+  /**
+   * Getter method for the <code>ArrayList</code> of bodies.
+   *
+   * @return Returns the <code>ArrayList</code> of bodies.
+   */
+  public static ArrayList<Body> getBodyArray() {
+    return bodyArray;
+  }
+
+  /**
+   * Gets the initial boundaries for the simulation view. Equal th=o the furthest distance from
+   * the origin any one body starts at.
+   *
+   * @return Returns the initial boundaries for the view.
+   */
+  public static double getInitBounds() {
+    return initBounds;
   }
 
   /**
