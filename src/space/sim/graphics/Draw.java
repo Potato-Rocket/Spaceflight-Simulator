@@ -10,7 +10,6 @@ import space.sim.config.Setup;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Class to create all the drawings and graphics. Runs the 3D transformation code and
@@ -136,6 +135,13 @@ public class Draw {
     }
     render();
     drawGuides();
+    g2d.setColor(new Color(0, 0, 0, 127));
+    if (verbose) {
+      g2d.fillRect(-w, -h, 450, 18 * 16 + 9);
+    } else {
+      g2d.fillRect(-w, -h, 300, 18 * 6 + 9);
+    }
+    g2d.setColor(Color.WHITE);
     ArrayList<String> bodyInfo = new ArrayList<>();
     bodyInfo.add("FPS: " + (int) Simulation.getFps() + "fps");
     bodyInfo.add("Duration: " + FormatText.formatTime(Physics.getDuration()));
@@ -157,7 +163,7 @@ public class Draw {
       bodyInfo.add("Focused body: " + Physics.getBodyArray().get(focus).getName() +
           " (" + (focus + 1) + ")");
     }
-    FormatText.drawText(g2d, bodyInfo, -w + 10, -h + 10, 1.2);
+    FormatText.drawText(g2d, bodyInfo, -w + 10, -h + 10, 1.5);
   }
 
   /**
@@ -262,6 +268,9 @@ public class Draw {
       }
       g2d.drawLine(w, y, w - len, y);
     }
+    g2d.setColor(new Color(0, 0, 0, 127));
+    g2d.fillRect(-w, h - 50, 200, 30);
+    g2d.setColor(Color.WHITE);
     FormatText.drawText(g2d, "One tick = " + FormatText.formatNum(Math.pow(10, tickExp),
         "m", "km"), 10 - w, h - 40);
   }

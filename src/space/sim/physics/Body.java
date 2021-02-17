@@ -1,10 +1,10 @@
 package space.sim.physics;
 
 import space.sim.config.Setup;
+import space.sim.graphics.FormatText;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Stores and updates physical information about a body. Updates information such as position
@@ -233,11 +233,11 @@ public class Body {
   public ArrayList<String> toStringArray() {
     ArrayList<String> string = new ArrayList<>();
     string.add("Body " + (id + 1) + ": " + name);
-    string.add("Mass = " + mass);
-    string.add("Radius = " + radius);
-    string.add("Position = " + position);
-    string.add("Velocity = " + velocity);
-    string.add("Acceleration = " + acceleration);
+    string.add("Mass = " + FormatText.formatNum(mass, "kg", "t"));
+    string.add("Radius = " + FormatText.formatNum(radius, "m", "km"));
+    string.add("Position = " + position.toString("m"));
+    string.add("Velocity = " + velocity.toString("m/s"));
+    string.add("Acceleration = " + acceleration.toString("m/s²"));
     return string;
   }
 

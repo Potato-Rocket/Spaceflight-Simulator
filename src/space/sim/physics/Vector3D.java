@@ -1,5 +1,7 @@
 package space.sim.physics;
 
+import space.sim.graphics.FormatText;
+
 import java.util.Arrays;
 
 /**
@@ -198,8 +200,11 @@ public class Vector3D {
    *
    * @return Returns a string expressing the vector.
    */
-  public String toString() {
-    return "Vector3D(x=" + x + ", y=" + y + ", z=" + z + ")";
+  public String toString(String unit) {
+    String string = "Vector3D(x=" + FormatText.formatNum(x, unit, "k" + unit);
+    string += ", y=" + FormatText.formatNum(y, unit, "k" + unit);
+    string += ", z=" + FormatText.formatNum(z, unit, "k" + unit);
+    return string + ")";
   }
 
 }

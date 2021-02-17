@@ -62,8 +62,11 @@ public class FormatText {
       num /= 1000;
       suffix = kiloUnit;
     }
-    String str = String.valueOf((long) num);
-    if (str.length() > 3) {
+    String str;
+    if (num < 1000) {
+      str = String.valueOf((double) Math.round(num * 100) / 100);
+    } else if (num <= Long.MAX_VALUE){
+      str = String.valueOf((long) num);
       StringBuilder grouped = new StringBuilder();
       for (int i = str.length() - 1; i >= 0; i--) {
         grouped.insert(0, str.charAt(i));
@@ -72,6 +75,13 @@ public class FormatText {
         }
       }
       str = grouped.toString();
+    } else {
+      int exp = 1;
+      while (Math.pow(10, exp + 1) < num) {
+        exp++;
+      }
+      num /= Math.pow(10, exp);
+      str = ((double) Math.round(num * 10000) / 10000) + " E" + exp + " ";
     }
     return str + suffix;
   }
