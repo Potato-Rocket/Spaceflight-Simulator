@@ -11,20 +11,26 @@ import java.awt.*;
 /**
  * Class to handle the <code>JFrame</code> and the highest level of graphics operations.
  */
-public class DrawSpace extends JFrame {
+public class DrawSpace extends JPanel {
 
   /**
    * Sets up a new <code>JFrame</code> and sets the required settings. Adds various listeners
    * required for user interaction.
    */
   public DrawSpace() {
-    setTitle("Spaceflight Simulator");
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setVisible(true);
+    JFrame frame = new JFrame();
+    frame.add(this);
+    frame.setTitle("Spaceflight Simulator");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    frame.setSize(dim.width / 2, dim.height / 2);
+    frame.setLocation(dim.width / 4, dim.height / 4);
+    frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+    frame.setVisible(true);
     addMouseListener(new EnterRotation());
     addMouseMotionListener(new Rotation());
     addMouseWheelListener(new Zooming());
-    new Keymaps(rootPane);
+    new Keymaps(this);
   }
 
   /**

@@ -29,12 +29,12 @@ public class Setup {
   /**
    * Stores whether or not to render the trails with transparency.
    */
-  private static boolean trailAlpha = true;
+  private static boolean trailAlpha = false;
 
   /**
    * The number of degrees of rotation the trail should cover.
    */
-  private static double trailLength = 180;
+  private static double trailLength = 360;
 
   /**
    * The number of degrees of rotation between trail points.
@@ -84,6 +84,10 @@ public class Setup {
       readGeneration(setup.getProperty("generationFile"));
     } catch (IOException e) {
       e.printStackTrace();
+      generationData = new String[][] {
+              {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star", "255", "255", "255"},
+              {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite", "127", "127", "127"}
+      };
     }
   }
 
