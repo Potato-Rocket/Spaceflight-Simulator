@@ -31,7 +31,7 @@ public class Draw {
   /**
    * Whether to display bodies at real scale or a log scale.
    */
-  private static boolean logScale = true;
+  private static boolean logScale = false;
 
   /**
    * Stores the scale factor between the virtual units and the pixels on screen.

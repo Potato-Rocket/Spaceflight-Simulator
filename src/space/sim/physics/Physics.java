@@ -83,12 +83,14 @@ public class Physics {
    * @param realMillis time passed in milliseconds
    */
   public static void updateBodies(int realMillis, double fps) {
+    //Sets the number of physics repetitions and the length in milliseconds of each rep.
     int reps = realMillis * SPEEDS[timeScale];
     double repMillis = 1;
     if (timeScale > scaleLimit) {
       reps = realMillis * SPEEDS[scaleLimit];
       repMillis = (double) SPEEDS[timeScale] / SPEEDS[scaleLimit];
     }
+    //Calculates the physics and gravity for each body.
     while (reps > 0) {
       for (Body body : bodyArray) {
         body.gravityForces.clear();

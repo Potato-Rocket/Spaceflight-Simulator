@@ -22,14 +22,14 @@ public class Body {
   public ArrayList<Vector3D> gravityForces = new ArrayList<>();
 
   /**
-   * The number of bodies that have been generated.
-   */
-  private static int count = 0;
-
-  /**
    * Stores the position vectors to render the trail.
    */
   private ArrayList<Vector3D> trail = new ArrayList<>();
+
+  /**
+   * The number of bodies that have been generated.
+   */
+  private static int count = 0;
 
   /**
    * Stores the direction at the previous trail point.
