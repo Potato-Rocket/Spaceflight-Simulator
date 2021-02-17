@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
  */
 public class Keymaps {
 
-  //TODO: Toggle amount of info shown on screen with F3.
   /**
    * Class constructor. Creates an <code>inputMap</code> and an <code>actionMap</code> for each
    * <code>Action</code>.
@@ -28,6 +27,8 @@ public class Keymaps {
     actionMap.put("RESET_VIEW", resetView);
     inputMap.put(KeyStroke.getKeyStroke("released F2"), "TOGGLE_LOG");
     actionMap.put("TOGGLE_LOG", toggleLog);
+    inputMap.put(KeyStroke.getKeyStroke("released F3"), "TOGGLE_VERBOSE");
+    actionMap.put("TOGGLE_VERBOSE", toggleVerbose);
     //Q&E keys to change the time scale.
     inputMap.put(KeyStroke.getKeyStroke("released Q"), "SLOW_DOWN");
     actionMap.put("SLOW_DOWN", slowDown);
@@ -59,7 +60,7 @@ public class Keymaps {
   private Action tiltUp = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      Graphics3D.changeTilt(Math.PI / -20);
+      Graphics3D.changeTilt(Math.PI / -36);
     }
   };
 
@@ -69,7 +70,7 @@ public class Keymaps {
   private Action tiltDown = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      Graphics3D.changeTilt(Math.PI / 20);
+      Graphics3D.changeTilt(Math.PI / 36);
     }
   };
 
@@ -79,7 +80,7 @@ public class Keymaps {
   private Action yawLeft = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      Graphics3D.changeYaw(Math.PI / -20);
+      Graphics3D.changeYaw(Math.PI / -36);
     }
   };
 
@@ -89,7 +90,7 @@ public class Keymaps {
   private Action yawRight = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      Graphics3D.changeYaw(Math.PI / 20);
+      Graphics3D.changeYaw(Math.PI / 36);
     }
   };
 
@@ -175,6 +176,16 @@ public class Keymaps {
     @Override
     public void actionPerformed(ActionEvent e) {
       Draw.toggleLogScale();
+    }
+  };
+
+  /**
+   * Toggles whether to draw planet size to scale or in a lgo scale for visibility.
+   */
+  private Action toggleVerbose = new AbstractAction() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Draw.toggleVerboseOut();
     }
   };
 

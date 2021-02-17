@@ -19,6 +19,14 @@ public class Graphics3D {
    */
   private static double tilt;
 
+  public static double getYaw() {
+    return yaw;
+  }
+
+  public static double getTilt() {
+    return tilt;
+  }
+
   /**
    * Alters the current yaw, or rotation of the view.
    *

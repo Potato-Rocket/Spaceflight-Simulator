@@ -1,29 +1,31 @@
 package space.sim.graphics;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Class to store methods dealing with text and strings to be displayed on screen.
  */
 public class FormatText {
 
-  //TODO: Add method to display data about a body.
-
   /**
    * Prints an array of lines of text onto the screen. Each <code>String</code> in the array is
    * treated as a line, and the positioning is determined by the line spacing and base <b>x</b>
    * and <b>y</b> positions.
-   *
-   * @param g current <code>Graphics2D</code> object
+   *  @param g current <code>Graphics2D</code> object
    * @param text array of lines of text to print
    * @param x <b>x</b> position of upper-left corner
    * @param y <b>y</b> position of upper-left corner
    * @param lineSpacing distance between lines measured in character heights
    */
-  public static void drawText(Graphics2D g, String[] text, int x, int y, double lineSpacing) {
-    for (int l = 0; l < text.length; l++) {
-      g.drawString(text[l], x, y + 9 + (int) (lineSpacing * 12 * l));
+  public static void drawText(Graphics2D g, ArrayList<String> text, int x, int y, double lineSpacing) {
+    for (int l = 0; l < text.size(); l++) {
+      g.drawString(text.get(l), x, y + 9 + (int) (lineSpacing * 12 * l));
     }
+  }
+
+  public static void drawText(Graphics2D g, String text, int x, int y) {
+      g.drawString(text, x, y + 9);
   }
 
   /**

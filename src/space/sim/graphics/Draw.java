@@ -34,6 +34,11 @@ public class Draw {
   private static boolean logScale = false;
 
   /**
+   * Whether to show extra info on screen.
+   */
+  private static boolean verbose = false;
+
+  /**
    * Stores the scale factor between the virtual units and the pixels on screen.
    */
   private static double scale = 0;
@@ -99,7 +104,6 @@ public class Draw {
     }
   }
 
-  //TODO: Add much more information about the simulation.
   //TODO: Add a label element type.
   /**
    * Draws everything. Operates in the following order:
@@ -132,12 +136,28 @@ public class Draw {
     }
     render();
     drawGuides();
-    FormatText.drawText(g2d, new String[]
-        {"Duration: " + FormatText.formatTime(Physics.getDuration()),
-            "Time scale: " + Physics.getTimeScale() + "x",
-            "Body count: " + Physics.getBodyArray().size(),
-            "FPS: " + (int) Simulation.getFps(),
-            "Focus: " + Physics.getBodyArray().get(focus).getName()}, -w + 10, -h + 10, 1.2);
+    ArrayList<String> bodyInfo = new ArrayList<>();
+    bodyInfo.add("FPS: " + (int) Simulation.getFps() + "fps");
+    bodyInfo.add("Duration: " + FormatText.formatTime(Physics.getDuration()));
+    bodyInfo.add("Time scale: " + Physics.getTimeScale() + "x");
+    if (logScale) {
+      bodyInfo.add("Planet scale: Log");
+    } else {
+      bodyInfo.add("Planet scale: Realistic");
+    }
+    bodyInfo.add("Body count: " + Physics.getBodyArray().size());
+    if (verbose) {
+      bodyInfo.add("");
+      bodyInfo.add("Viewing angle:");
+      bodyInfo.add("Rotation = " + (int) Math.round(Math.toDegrees(Graphics3D.getYaw())) + "°");
+      bodyInfo.add("Tilt = " + (int) Math.round(Math.toDegrees(-Graphics3D.getTilt())) + "°");
+      bodyInfo.add("");
+      bodyInfo.addAll(Physics.getBodyArray().get(focus).toStringArray());
+    } else {
+      bodyInfo.add("Focused body: " + Physics.getBodyArray().get(focus).getName() +
+          " (" + (focus + 1) + ")");
+    }
+    FormatText.drawText(g2d, bodyInfo, -w + 10, -h + 10, 1.2);
   }
 
   /**
@@ -189,6 +209,10 @@ public class Draw {
     logScale = !logScale;
   }
 
+  public static void toggleVerboseOut() {
+    verbose = !verbose;
+  }
+
   /**
    * Draws the 3D axes. The X-axis is red, the Y-axis is green, and the
    * Z-axis is blue. The axes' positive sections appear brighter than their negative
@@ -238,8 +262,8 @@ public class Draw {
       }
       g2d.drawLine(w, y, w - len, y);
     }
-    FormatText.drawText(g2d, new String[] {"One tick = " + FormatText.formatNum(Math.pow(10, tickExp),
-        "m", "km")}, 10 - w, h - 40, 1);
+    FormatText.drawText(g2d, "One tick = " + FormatText.formatNum(Math.pow(10, tickExp),
+        "m", "km"), 10 - w, h - 40);
   }
 
   //TODO: Remove/edit elements where they intersect a larger body.

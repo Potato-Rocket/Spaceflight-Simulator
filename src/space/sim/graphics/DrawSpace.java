@@ -9,13 +9,14 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Class to handle the <code>JFrame</code> and the highest level of graphics operations.
+ * Class to handle the <code>JFrame</code> and <code>JPanel</code>. Deals with the highest level of
+ * graphical operations.
  */
 public class DrawSpace extends JPanel {
 
   /**
-   * Sets up a new <code>JFrame</code> and sets the required settings. Adds various listeners
-   * required for user interaction.
+   * Sets up a new <code>JFrame</code> and sets the required settings. Adds this JPanel and
+   * various listeners required for user interaction.
    */
   public DrawSpace() {
     JFrame frame = new JFrame();

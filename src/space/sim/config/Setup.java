@@ -84,10 +84,7 @@ public class Setup {
       readGeneration(setup.getProperty("generationFile"));
     } catch (IOException e) {
       e.printStackTrace();
-      generationData = new String[][] {
-              {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star", "255", "255", "255"},
-              {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite", "127", "127", "127"}
-      };
+      setDefaultSystem();
     }
   }
 
@@ -211,12 +208,16 @@ public class Setup {
       }
     } catch (IOException e) {
       e.printStackTrace();
+      setDefaultSystem();
       gravity = 1;
-      generationData = new String[][] {
-          {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star", "255", "255", "255"},
-          {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite", "127", "127", "127"}
-      };
     }
+  }
+
+  private static void setDefaultSystem() {
+    generationData = new String[][] {
+        {"0", "0", "0", "0", "0", "0", "1000000", "1", "Star", "255", "255", "255"},
+        {"1000", "0", "0", "0", "30", "0", "1000", "1", "Satellite", "127", "127", "127"}
+    };
   }
 
   /**

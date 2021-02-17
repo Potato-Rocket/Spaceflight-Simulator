@@ -4,6 +4,7 @@ import space.sim.config.Setup;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Stores and updates physical information about a body. Updates information such as position
@@ -225,21 +226,18 @@ public class Body {
   }
 
   /**
-   * Formats the body's attributes into a <code>String</code>.
+   * Formats the body's attributes into a <code>String[]</code>. Each array item is a line.
    *
-   * @param verbose whether or not to add extra information about the body
-   * @return Returns a string representing the body's attributes.
+   * @return Returns a string array representing the body's attributes.
    */
-  public String toString(boolean verbose) {
-    String string = "Body " + (id + 1) + ": " + name;
-    if (verbose) {
-      string += "\nMass = " + mass +
-          "\nRadius = " + radius +
-          "\nPosition = " + position +
-          "\nVelocity = " + velocity +
-          "\nAcceleration = " + acceleration +
-          "\nForces = " + gravityForces;
-    }
+  public ArrayList<String> toStringArray() {
+    ArrayList<String> string = new ArrayList<>();
+    string.add("Body " + (id + 1) + ": " + name);
+    string.add("Mass = " + mass);
+    string.add("Radius = " + radius);
+    string.add("Position = " + position);
+    string.add("Velocity = " + velocity);
+    string.add("Acceleration = " + acceleration);
     return string;
   }
 
@@ -250,7 +248,7 @@ public class Body {
    * @return Returns a string representing the body.
    */
   public String toString() {
-    return toString(false);
+    return toStringArray().get(0);
   }
 
 }
