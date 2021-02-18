@@ -14,7 +14,8 @@ public class Setup {
   /**
    * The file path to the local .config directory.
    */
-  private static final String CONFIG_DIR = "/home/oscar/.config/spaceflight-simulator/";
+  private static final String CONFIG_DIR = System.getProperty("user.home") +
+      "/.config/spaceflight-simulator/";
 
   /**
    * Stores the artificial frame rate limit.
@@ -29,7 +30,7 @@ public class Setup {
   /**
    * Stores whether or not to render the trails with transparency.
    */
-  private static boolean trailAlpha = false;
+  private static boolean trailAlpha = true;
 
   /**
    * The number of degrees of rotation the trail should cover.
@@ -169,7 +170,6 @@ public class Setup {
     return generationData;
   }
 
-  //TODO: Differentiate between different body constructors.
   /**
    * Reads a system setup file and writes info about the bodies to the <code>genData</code> field.
    *

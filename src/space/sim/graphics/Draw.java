@@ -103,7 +103,6 @@ public class Draw {
     }
   }
 
-  //TODO: Add a label element type.
   /**
    * Draws everything. Operates in the following order:
    * <ol>

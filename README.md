@@ -5,10 +5,10 @@ stages of development.
 Javadoc tool should function to generate explanation of the code.
 
 ### Setup
-To get it working, your .properties files should be set up, and their directory configured. To 
-do this, first copy example_setup.properties and example_system.properties to a folder in your .
-config directory (or wherever you want to keep them). Then, set the final field "CONFIG_DIR" in 
-"space.sim.config.Setup" to the directory of that folder.
+To get it working, your .properties files should be set up. Create the directory 
+"spaceflight-simulator" in your .config, and copy the example .properties files to that 
+directory. Then, rename "example_setup.properties" to "setup.properties" and modify settings 
+however you want. The format is explained in the .properties files.
 
 ### Usage
 When you start the program, the view will automatically encompass every one of your bodies. To 
@@ -37,3 +37,4 @@ Finally, these keybinding can be used for other functions:
 
 F1 - Reset viewing angle and zoom.
 F2 - Toggle whether to view planet sizes to scale with distance or on a log scale.
+F3 - Toggle whether to show extra info on screen.

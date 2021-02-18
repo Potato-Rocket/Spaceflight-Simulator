@@ -100,8 +100,7 @@ public class Body {
     trail.add(pos.copy());
   }
 
-
-  //TODO: Add constructor that takes orbital parameters as an input.
+  //TODO: Identify whether the body is close to a stable elliptical orbit.
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
