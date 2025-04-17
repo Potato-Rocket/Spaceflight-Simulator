@@ -1,7 +1,9 @@
 package space.sim.physics;
 
 import space.sim.config.Setup;
+import space.sim.graphics.FormatText;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -10,6 +12,9 @@ import java.util.ArrayList;
  */
 public class Body {
 
+  /**
+   * Stores the distance between points one degree apart on a unit circle.
+   */
   private static final double ONE_DEGREE = Math.PI * 2 / 360;
 
   /**
@@ -18,42 +23,55 @@ public class Body {
   public ArrayList<Vector3D> gravityForces = new ArrayList<>();
 
   /**
+   * Stores the position vectors to render the trail.
+   */
+  private ArrayList<Vector3D> trail = new ArrayList<>();
+
+  /**
    * The number of bodies that have been generated.
    */
   private static int count = 0;
 
   /**
-   * Stores the position vectors to render the trail.
-   */
-  private ArrayList<Vector3D> trail = new ArrayList<>();
-  /**
    * Stores the direction at the previous trail point.
    */
   private Vector3D prevTrail;
+
   /**
    * Vector to store the body's position.
    */
   private Vector3D position;
+
   /**
    * Vector to store the body's velocity.
    */
   private Vector3D velocity;
+
   /**
    * Vector to store the body's total acceleration.
    */
   private Vector3D acceleration;
+
+  /**
+   * Stores the color to use when drawing this body.
+   */
+  private Color color;
+
   /**
    * The body's mass.
    */
   private double mass;
+
   /**
    * The body's radius.
    */
   private double radius;
+
   /**
    * The body's name.
    */
   private String name;
+
   /**
    * The body's identification number.
    */
@@ -64,36 +82,46 @@ public class Body {
    * corresponding fields and generates an id and gravity forces array for the body. Adds another
    * vector to each body's gravity force array.
    *
-   * @param position initial position of the body
-   * @param velocity initial velocity of the body
+   * @param pos initial position of the body
+   * @param vel initial velocity of the body
    * @param mass     initial mass of the body
    * @param name     name of the body
    */
-  public Body(Vector3D position, Vector3D velocity, double mass, double density, String name) {
-    this.position = position;
-    this.velocity = velocity;
+  public Body(Vector3D pos, Vector3D vel, double mass, double density, String name, Color c) {
+    this.position = pos;
+    this.velocity = vel;
     this.mass = mass;
     this.radius = Math.cbrt((3 * (mass / density)) / (4 * Math.PI));
     this.name = name;
-    prevTrail = velocity.angleTo();
+    this.color = c;
+    prevTrail = vel.angleTo();
     id = count;
     count++;
-    trail.add(position.copy());
+    trail.add(pos.copy());
   }
 
+  //TODO: Identify whether the body is close to a stable elliptical orbit.
   /**
    * Updates the body's physical motion vectors. Resets the acceleration factor and sets it
    * based on the mass and the gravity forces currently acting on the body. The velocity is
-   * updated based on the acceleration and the position is updated based on the velocity. Shifts
-   * the trail and inserts the updated position at the start.
+   * updated based on the acceleration and the position is updated based on the velocity.
+   * <p>
+   * The trail is updated based on both direction change and distance traveled. It will add a
+   * point to the trail if either:
+   * <ul>
+   *   <li>The direction of the body's velocity has changed more than [trail resolution] degrees
+   *   from the direction of velocity at the previous trail point.</li>
+   *   <li>THe body has traveled more than a predetermined distance since the previous trail
+   *   point. Scaled to the size of the system.</li>
+   * </ul>
    */
-  public void update() {
+  public void update(double millis) {
     acceleration = new Vector3D();
     for (Vector3D f : gravityForces) {
       acceleration.addVector(f.scaleVector(1 / mass));
     }
-    velocity.addVector(acceleration.scaleVector(0.001));
-    position.addVector(velocity.scaleVector(0.001));
+    velocity.addVector(acceleration.scaleVector(millis / 1000));
+    position.addVector(velocity.scaleVector(millis / 1000));
     Vector3D direction = velocity.angleTo();
     if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
         position.distanceTo(trail.get(0)) > Physics.getInitBounds() / 10) {
@@ -120,8 +148,7 @@ public class Body {
   public void collision(Vector3D pos, Vector3D vel, double mass) {
     double scale = mass / this.mass;
     velocity.addVector(vel.scaleVector(scale));
-    double[] offset = position.compareTo(pos);
-    position.addVector(new Vector3D(offset[0], offset[1], offset[2]).scaleVector(scale * 0.5));
+    position.addVector(position.compareTo(pos).scaleVector(scale * 0.5));
     this.mass += mass;
   }
 
@@ -180,21 +207,36 @@ public class Body {
   }
 
   /**
-   * Formats the body's attributes into a <code>String</code>.
+   * Getter method for the body's name.
    *
-   * @param verbose whether or not to add extra information about the body
-   * @return Returns a string representing the body's attributes.
+   * @return Returns the body's name.
    */
-  public String toString(boolean verbose) {
-    String string = "Body " + (id + 1) + ": " + name;
-    if (verbose) {
-      string += "\nMass = " + mass +
-          "\nRadius = " + radius +
-          "\nPosition = " + position +
-          "\nVelocity = " + velocity +
-          "\nAcceleration = " + acceleration +
-          "\nForces = " + gravityForces;
-    }
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Getter method for the body's drawing color.
+   *
+   * @return Returns the color.
+   */
+  public Color getColor() {
+    return color;
+  }
+
+  /**
+   * Formats the body's attributes into a <code>String[]</code>. Each array item is a line.
+   *
+   * @return Returns a string array representing the body's attributes.
+   */
+  public ArrayList<String> toStringArray() {
+    ArrayList<String> string = new ArrayList<>();
+    string.add("Body " + (id + 1) + ": " + name);
+    string.add("Mass = " + FormatText.formatNum(mass, "kg", "t"));
+    string.add("Radius = " + FormatText.formatNum(radius, "m", "km"));
+    string.add("Position = " + position.toString("m"));
+    string.add("Velocity = " + velocity.toString("m/s"));
+    string.add("Acceleration = " + acceleration.toString("m/s²"));
     return string;
   }
 
@@ -205,7 +247,7 @@ public class Body {
    * @return Returns a string representing the body.
    */
   public String toString() {
-    return toString(false);
+    return toStringArray().get(0);
   }
 
 }

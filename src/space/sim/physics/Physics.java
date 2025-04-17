@@ -2,33 +2,58 @@ package space.sim.physics;
 
 import space.sim.config.Setup;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Static class to handle all body interactions.
  */
 public class Physics {
 
+  /**
+   * Array of different time scales to toggle through.
+   */
+  private static final int[] SPEEDS = {1, 2, 4, 8, 16, 32, 64,
+      100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000};
+
+  private static int scaleLimit = 7/*SPEEDS.length*/;
+
+  /**
+   * Current time scale index.
+   */
+  private static int timeScale = 0;
+
+  /**
+   * Simulation duration in milliseconds.
+   */
   private static long duration = 0;
-  private static double timeScale = 1;
+
   /**
    * The initial max distance of any body from the origin.
    */
   private static double initBounds = 0;
+
   /**
    * The array of all bodies.
    */
   private static ArrayList<Body> bodyArray = new ArrayList<>();
 
+  //TODO: Calculate sphere of influence for each body. Run only once per frame.
   /**
-   * Populates the array of bodies based on the generation data.
+   * Populates the array of bodies based on the generation data. After generating the bodies,
+   * gets the max initial distance of any one body from the origin.
    */
   public static void createBodies() {
     for (String[] line : Setup.getGenerationData()) {
-      bodyArray.add(new Body(new Vector3D(Double.parseDouble(line[0]), Double.parseDouble(line[1]),
-          Double.parseDouble(line[2])), new Vector3D(Double.parseDouble(line[3]),
-          Double.parseDouble(line[4]), Double.parseDouble(line[5])),
-          Double.parseDouble(line[6]),Double.parseDouble(line[7]), line[8]));
+      try {
+        bodyArray.add(new Body(new Vector3D(line[0], line[1], line[2]),
+            new Vector3D(line[3], line[4], line[5]), Double.parseDouble(line[6]),
+            Double.parseDouble(line[7]), line[8], new Color(Integer.parseInt(line[9]),
+            Integer.parseInt(line[10]), Integer.parseInt(line[11]))));
+      } catch(NumberFormatException e) {
+        System.out.println(Arrays.toString(e.getStackTrace()));
+      }
     }
     double[] distances = new double[bodyArray.size()];
     for (int i = 0; i < distances.length; i++) {
@@ -41,16 +66,30 @@ public class Physics {
     }
   }
 
+  //TODO: Implement automatic time scale limit detection.
+  //TODO: Add basic multithreading.
+  //FIXME: On collision, update focused body if focused is >= to this body.
   /**
    * Updates every body in the body array. Runs the update function for each body to update the
    * motion, then updates the gravitational forces between each body and every other body.
    * Finally, it checks for collisions between every body. If two bodies have collided it runs
    * the collision function on the larger one and removes the smaller one.
+   * <p>
+   * The code to update the physics for every body is run once for every millisecond in the
+   * simulation that has passed since the previous frame. That is the real time milliseconds
+   * passed times the time scale.
    *
-   * @param millis time passed in milliseconds
+   * @param fps current average fps
    */
-  public static void updateBodies(int millis) {
-    while (millis > 0) {
+  public static void updateBodies(double fps) {
+    double realMillis = 1000 / fps;
+    int reps = (int) (realMillis * SPEEDS[timeScale]);
+    double repMillis = 1;
+    if (timeScale > scaleLimit) {
+      reps = (int) (realMillis * SPEEDS[scaleLimit]);
+      repMillis = (double) SPEEDS[timeScale] / SPEEDS[scaleLimit];
+    }
+    while (reps > 0) {
       for (Body body : bodyArray) {
         body.gravityForces.clear();
         for (Body other : bodyArray) {
@@ -58,7 +97,7 @@ public class Physics {
         }
       }
       for (Body body : bodyArray) {
-        body.update();
+        body.update(repMillis);
       }
       for (int i = 0; i < bodyArray.size(); i++) {
         Body body = bodyArray.get(i);
@@ -74,21 +113,32 @@ public class Physics {
           }
         }
       }
-      duration++;
-      millis--;
+      duration += repMillis;
+      reps--;
     }
   }
 
   /**
-   * Returns information about every body in a <code>String</code>. Runs the verbose toString method
-   * for each body in the bodies array and appends them into one <code>String</code>.
+   * Increases or decreases the time scale based on the input. Is bound to a keymap in the
+   * <code>Keymaps</code> class.
+   *
+   * @param increase whether to increase or decrease the time scale
    */
-  public static void printAll() {
-    StringBuilder string = new StringBuilder();
-    for (Body body : bodyArray) {
-      string.append(body.toString(true)).append("\n\n");
+  public static void modifyTimeScale(boolean increase) {
+    if (increase && timeScale < SPEEDS.length - 1) {
+      timeScale++;
+    } else if (!increase && timeScale > 0) {
+      timeScale--;
     }
-    System.out.println(string);
+  }
+
+  /**
+   * Getter method for the current time scale in milliseconds.
+   *
+   * @return Returns the time scale.
+   */
+  public static int getTimeScale() {
+    return SPEEDS[timeScale];
   }
 
   /**
@@ -100,22 +150,22 @@ public class Physics {
     return bodyArray;
   }
 
+  /**
+   * Gets the initial boundaries for the simulation view. Equal th=o the furthest distance from
+   * the origin any one body starts at.
+   *
+   * @return Returns the initial boundaries for the view.
+   */
   public static double getInitBounds() {
     return initBounds;
   }
 
-  public static void modifyTimeScale(boolean increase) {
-    if (increase && timeScale < 64) {
-      timeScale *= 2;
-    } else if (!increase && timeScale > 1){
-      timeScale /= 2;
-    }
-  }
-
-  public static double getTimeScale() {
-    return timeScale;
-  }
-
+  /**
+   * Gets the duration of the simulation. This variable is increased each time the physics are
+   * updated.
+   *
+   * @return Returns the simulation duration.
+   */
   public static long getDuration() {
     return duration;
   }
@@ -125,7 +175,7 @@ public class Physics {
    * positions and masses as well as the gravitational constant to calculate this. Does not
    * calculate for a comparison between a body and itself.
    *
-   * @param body main body
+   * @param body  main body
    * @param other other body
    * @return Returns the gravitational force between the two bodies
    */

@@ -13,11 +13,19 @@ import java.time.Instant;
  */
 public class Simulation {
 
-  public static long duration = 0;
+  /**
+   * Stores the current average fps.
+   */
+  private static double fps = Setup.getFrameLimit();
+
+  /**
+   * Stores the duration of each frame in the last second.
+   */
+  private static int[] prevFrames = new int[Setup.getFrameLimit()];
 
   /**
    * Main method. Manages lower level classes and their processes, and contains the main loop for
-   * the simulation.
+   * the simulation. Manages and calculates the frame rate.
    *
    * @param args command line inputs
    */
@@ -26,17 +34,14 @@ public class Simulation {
     Setup.read();
     Physics.createBodies();
     DrawSpace drawSpace = new DrawSpace();
-    Instant now;
     int frameCap = 1000 / Setup.getFrameLimit();
     int difference = frameCap;
-    now = Instant.now();
-    long start = now.toEpochMilli();
+    Instant now = Instant.now();
     //Main while loop is infinite until window is closed or program interrupted.
     while (true) {
       long millis = now.toEpochMilli();
-      duration = (millis - start);
-      Physics.updateBodies((int) (difference * Physics.getTimeScale()));
-      drawSpace.paint(drawSpace.getGraphics());
+      Physics.updateBodies(fps);
+      drawSpace.repaint();
       now = Instant.now();
       difference = (int) (now.toEpochMilli() - millis);
       //Delays until the amount of time allotted for each frame is reached.
@@ -46,7 +51,26 @@ public class Simulation {
           difference = (int) (now.toEpochMilli() - millis);
         }
       }
+      //Updates fps counter.
+      for (int i = prevFrames.length - 1; i > 0; i--) {
+        prevFrames[i] = prevFrames[i - 1];
+      }
+      prevFrames[0] = difference;
+      int sum = 0;
+      for (int i : prevFrames) {
+        sum += i;
+      }
+      fps = 1000 / ((double) sum / prevFrames.length);
     }
+  }
+
+  /**
+   * Getter method for the current fps. Averaged across the frame durations for 1 second.
+   *
+   * @return Returns the current fps.
+   */
+  public static double getFps() {
+    return fps;
   }
 
 }

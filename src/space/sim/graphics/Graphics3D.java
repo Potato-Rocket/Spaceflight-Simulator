@@ -1,10 +1,6 @@
 package space.sim.graphics;
 
 import space.sim.physics.Vector3D;
-import space.sim.graphics.elements.Point;
-import space.sim.graphics.elements.Line;
-
-import java.awt.*;
 
 /**
  * Static class to handle conversion between 3D and 2D graphics. Stores the current yaw and tilt
@@ -17,10 +13,19 @@ public class Graphics3D {
    * Stores the yaw, or rotation, of the current view.
    */
   private static double yaw;
+
   /**
    * Stores the tilt, or inclination, of the current view.
    */
   private static double tilt;
+
+  public static double getYaw() {
+    return yaw;
+  }
+
+  public static double getTilt() {
+    return tilt;
+  }
 
   /**
    * Alters the current yaw, or rotation of the view.
@@ -51,21 +56,30 @@ public class Graphics3D {
   }
 
   /**
-   * Transforms a point in 3D space to be displayed in 2D space. Uses the yaw and tilt of the
-   * view to effectively rotate the point about the origin. This allows the 3D <b>y</b>
-   * and <b>z</b> axes to be projected to the 2D <b>x</b> and <b>y</b> axes, giving the illusion
-   * of 3D rotation.
+   * Resets the tilt and yaw.
+   */
+  public static void resetView() {
+    yaw = 0;
+    tilt = 0;
+  }
+
+  /**
+   * Transforms a point in 3D space to be displayed in 2D space. First translates the point
+   * based on the center point of the view. Uses the yaw and tilt of the view to effectively
+   * rotate the point about the origin. This allows the 3D <b>y</b> and <b>z</b> axes to be
+   * projected to the 2D <b>x</b> and <b>y</b> axes, giving the illusion of 3D rotation.
    *
    * @param point point to be transformed
    * @return Returns the transformed point.
    */
-  public static Vector3D convertPoint(Vector3D point) {
+  public static Vector3D convertPoint(Vector3D point, Vector3D pivot) {
+    Vector3D pos = point.copy().sumVector(pivot.copy().scaleVector(-1));
     //Transforms the point based on the yaw angle.
-    double x = point.getX() * Math.cos(yaw) - point.getY() * Math.sin(yaw);
-    double y = point.getX() * Math.sin(yaw) + point.getY() * Math.cos(yaw);
+    double x = pos.getX() * Math.cos(yaw) - pos.getY() * Math.sin(yaw);
+    double y = pos.getX() * Math.sin(yaw) + pos.getY() * Math.cos(yaw);
     //Transforms the new point based on the tilt angle.
-    double finalX = x * Math.cos(tilt) + point.getZ() * Math.sin(tilt);
-    double finalZ = point.getZ() * Math.cos(tilt) - x * Math.sin(tilt);
+    double finalX = x * Math.cos(tilt) + pos.getZ() * Math.sin(tilt);
+    double finalZ = pos.getZ() * Math.cos(tilt) - x * Math.sin(tilt);
     //Returns the composite transformation
     return new Vector3D(finalX, y, finalZ);
   }

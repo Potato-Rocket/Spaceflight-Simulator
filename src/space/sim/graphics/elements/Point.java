@@ -12,13 +12,15 @@ import java.awt.*;
 public class Point {
 
   /**
-   * Stores the point's position.
-   */
-  private Vector3D position;
-  /**
    * Stores the point's position transformed to the 3D view.
    */
   private Vector3D converted;
+
+  /**
+   * Stores the color of this body.
+   */
+  private Color color;
+
   /**
    * Stores the point's size (the radius).
    */
@@ -29,15 +31,13 @@ public class Point {
    * <code>Graphics3D</code> to transform them to the viewing angle.
    *
    * @param position 3D position of the point
+   * @param focus center point of the view
    * @param size size of the point
    */
-  public Point(Vector3D position, double size) {
-    this.position = position;
-    this.converted = Graphics3D.convertPoint(position).scaleVector(Draw.getScale());
-    this.size = (int) (size * Draw.getScale());
-    if (this.size < 2) {
-      this.size = 2;
-    }
+  public Point(Vector3D position, Vector3D focus, Color c, int size) {
+    this.converted = Graphics3D.convertPoint(position, focus).scaleVector(Draw.getScale());
+    this.color = c;
+    this.size = size;
   }
 
   /**
@@ -46,7 +46,7 @@ public class Point {
    * @param g current <code>Graphics2D</code> object
    */
   public void draw(Graphics2D g) {
-    g.setColor(Color.WHITE);
+    g.setColor(color);
     g.fillOval((int) (converted.getY() - size), (int) (converted.getZ() - size), size * 2, size * 2);
   }
 
