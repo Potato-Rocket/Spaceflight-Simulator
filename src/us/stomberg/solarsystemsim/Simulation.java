@@ -1,8 +1,8 @@
-package space.sim;
+package us.stomberg.solarsystemsim;
 
-import space.sim.graphics.DrawSpace;
-import space.sim.physics.Physics;
-import space.sim.config.Setup;
+import us.stomberg.solarsystemsim.graphics.DrawSpace;
+import us.stomberg.solarsystemsim.physics.Physics;
+import us.stomberg.solarsystemsim.config.Setup;
 
 import java.io.IOException;
 import java.time.Instant;

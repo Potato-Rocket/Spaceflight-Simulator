@@ -1,7 +1,7 @@
-package space.sim.physics;
+package us.stomberg.solarsystemsim.physics;
 
-import space.sim.config.Setup;
-import space.sim.graphics.FormatText;
+import us.stomberg.solarsystemsim.config.Setup;
+import us.stomberg.solarsystemsim.graphics.FormatText;
 
 import java.awt.*;
 import java.util.ArrayList;

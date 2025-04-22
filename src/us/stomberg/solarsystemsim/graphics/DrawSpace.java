@@ -1,9 +1,9 @@
-package space.sim.graphics;
+package us.stomberg.solarsystemsim.graphics;
 
-import space.sim.interaction.EnterRotation;
-import space.sim.interaction.Rotation;
-import space.sim.interaction.Zooming;
-import space.sim.interaction.Keymaps;
+import us.stomberg.solarsystemsim.interaction.EnterRotation;
+import us.stomberg.solarsystemsim.interaction.Rotation;
+import us.stomberg.solarsystemsim.interaction.Zooming;
+import us.stomberg.solarsystemsim.interaction.Keymaps;
 
 import javax.swing.*;
 import java.awt.*;

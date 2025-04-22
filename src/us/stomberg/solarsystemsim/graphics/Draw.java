@@ -1,12 +1,12 @@
-package space.sim.graphics;
+package us.stomberg.solarsystemsim.graphics;
 
-import space.sim.Simulation;
-import space.sim.physics.Vector3D;
-import space.sim.physics.Body;
-import space.sim.physics.Physics;
-import space.sim.graphics.elements.Point;
-import space.sim.graphics.elements.Line;
-import space.sim.config.Setup;
+import us.stomberg.solarsystemsim.Simulation;
+import us.stomberg.solarsystemsim.physics.Vector3D;
+import us.stomberg.solarsystemsim.physics.Body;
+import us.stomberg.solarsystemsim.physics.Physics;
+import us.stomberg.solarsystemsim.graphics.elements.Point;
+import us.stomberg.solarsystemsim.graphics.elements.Line;
+import us.stomberg.solarsystemsim.config.Setup;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package space.sim.graphics.elements;
+package us.stomberg.solarsystemsim.graphics.elements;
 
-import space.sim.graphics.Draw;
-import space.sim.graphics.Graphics3D;
-import space.sim.physics.Vector3D;
+import us.stomberg.solarsystemsim.graphics.Draw;
+import us.stomberg.solarsystemsim.graphics.Graphics3D;
+import us.stomberg.solarsystemsim.physics.Vector3D;
 
 import java.awt.*;
 

@@ -1,4 +1,4 @@
-package space.sim.graphics;
+package us.stomberg.solarsystemsim.graphics;
 
 import java.awt.*;
 import java.util.ArrayList;

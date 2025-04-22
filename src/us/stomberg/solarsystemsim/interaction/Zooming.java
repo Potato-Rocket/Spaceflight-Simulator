@@ -1,6 +1,6 @@
-package space.sim.interaction;
+package us.stomberg.solarsystemsim.interaction;
 
-import space.sim.graphics.Draw;
+import us.stomberg.solarsystemsim.graphics.Draw;
 
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;

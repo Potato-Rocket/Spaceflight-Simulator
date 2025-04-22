@@ -1,4 +1,4 @@
-package space.sim.config;
+package us.stomberg.solarsystemsim.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;

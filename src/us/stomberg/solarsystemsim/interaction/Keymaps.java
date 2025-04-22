@@ -1,8 +1,8 @@
-package space.sim.interaction;
+package us.stomberg.solarsystemsim.interaction;
 
-import space.sim.graphics.Draw;
-import space.sim.graphics.Graphics3D;
-import space.sim.physics.Physics;
+import us.stomberg.solarsystemsim.graphics.Draw;
+import us.stomberg.solarsystemsim.graphics.Graphics3D;
+import us.stomberg.solarsystemsim.physics.Physics;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

@@ -1,4 +1,4 @@
-package space.sim.interaction;
+package us.stomberg.solarsystemsim.interaction;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

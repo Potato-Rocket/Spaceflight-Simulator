@@ -1,6 +1,6 @@
-package space.sim.graphics;
+package us.stomberg.solarsystemsim.graphics;
 
-import space.sim.physics.Vector3D;
+import us.stomberg.solarsystemsim.physics.Vector3D;
 
 /**
  * Static class to handle conversion between 3D and 2D graphics. Stores the current yaw and tilt
