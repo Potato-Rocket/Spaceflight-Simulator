@@ -49,7 +49,7 @@ public class FormatText {
 
     /**
      * Formats a large number to be more readable. Groups the zeroes if possible, and appends the correct unit. If value
-     * is over 1000, will use the kilo unit and divide the value by 1000. (eg. 10000000 -> 10,000km)
+     * is over 10000, will use the kilo unit and divide the value by 1000. (eg. 10000000 -> 10,000km)
      *
      * @param num      number to format
      * @param unit     base unit
@@ -58,7 +58,7 @@ public class FormatText {
      */
     public static String formatNum(double num, String unit, String kiloUnit) {
         String suffix = unit;
-        if (num >= 1000) {
+        if (num >= 10000) {
             num /= 1000;
             suffix = kiloUnit;
         }

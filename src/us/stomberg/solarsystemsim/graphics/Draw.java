@@ -237,8 +237,8 @@ public class Draw {
     }
 
     /**
-     * Draws  tick marks for scale. Maintains the distance between the tick marks at a factor of 10 and makes every 10th
-     * tick mark longer. Prints the virtual distance between each tick mark in the bottom left corner.
+     * Draws tick marks to represent the scale. Maintains the distance between the tick marks at a factor of 10 and
+     * makes every 10th tick mark longer. Prints the virtual distance between each tick mark in the bottom left corner.
      */
     private void drawGuides() {
         g2d.setColor(Color.WHITE);
@@ -270,8 +270,6 @@ public class Draw {
         FormatText.drawText(g2d, "One tick = " + FormatText.formatNum(Math.pow(10, tickExp), "m", "km"), 10 - w,
                             h - 40);
     }
-
-    //TODO: Remove/edit elements where they intersect a larger body.
 
     /**
      * Sorts the elements array by depth before running the <code>draw</code> function on each element.
@@ -312,8 +310,6 @@ public class Draw {
         }
         elements.add(new Point(body.getPosition(), centerPoint, body.getColor(), (int) size));
     }
-
-    //TODO: Draw trails relative to the body they are captive to.
 
     /**
      * Adds <code>Line</code> objects to the elements array. Uses the given body's trail data to generate a line for

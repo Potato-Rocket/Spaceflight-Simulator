@@ -39,8 +39,6 @@ public class Physics {
      */
     private static final ArrayList<Body> bodyArray = new ArrayList<>();
 
-    //TODO: Calculate sphere of influence for each body. Run only once per frame.
-
     /**
      * Populates the array of bodies based on the generation data. After generating the bodies, gets the max initial
      * distance of any one body from the origin.
@@ -67,8 +65,6 @@ public class Physics {
         }
     }
 
-    //TODO: Implement automatic time scale limit detection.
-    //TODO: Add basic multithreading.
     //FIXME: On collision, update focused body if focused is >= to this body.
 
     /**

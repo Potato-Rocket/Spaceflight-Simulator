@@ -30,8 +30,8 @@ public class Setup {
      */
     private static boolean trailHasAlpha = true;
 
-    // TODO: Investigate how angular trail length is derived
     /**
+     * TODO: Investigate how angular trail length is derived.
      * The degrees of revolution the trail should cover.
      */
     private static double trailLength = 360;
@@ -63,6 +63,9 @@ public class Setup {
 
     /**
      * Reads the setup files and sets the fields accordingly.
+     * TODO: Improve error handling and include a default setup file.
+     * TODO: Implement records to organize and contain setup data.
+     * TODO: Integrate system generation data with the system class to be more flexible.
      *
      * @throws IOException when the setup file directories are incorrect
      */

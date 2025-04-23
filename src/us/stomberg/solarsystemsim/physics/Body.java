@@ -16,18 +16,22 @@ public class Body {
      * Stores the distance between points one degree apart on a unit circle.
      */
     private static final double ONE_DEGREE = Math.PI * 2 / 360;
+
     /**
      * The number of bodies that have been generated.
      */
     private static int count = 0;
+
     /**
      * Vector to store the current gravitational forces acting on the body.
      */
     public ArrayList<Vector3D> gravityForces = new ArrayList<>();
+
     /**
      * Stores the position vectors to render the trail.
      */
     private final ArrayList<Vector3D> trail = new ArrayList<>();
+
     /**
      * Stores the direction at the previous trail point.
      */
@@ -94,8 +98,6 @@ public class Body {
         count++;
         trail.add(pos.copy());
     }
-
-    //TODO: Identify whether the body is close to a stable elliptical orbit.
 
     /**
      * Updates the body's physical motion vectors. Resets the acceleration factor and sets it based on the mass and the
