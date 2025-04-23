@@ -3,6 +3,7 @@ package us.stomberg.solarsystemsim;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -97,10 +98,7 @@ public class Setup {
      * @return Returns the frame limit.
      */
     public static int getFrameLimit() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.frameLimit();
-        }
-        return graphicsConfig.frameLimit();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).frameLimit();
     }
 
     /**
@@ -109,10 +107,7 @@ public class Setup {
      * @return Returns whether to draw the trail.
      */
     public static boolean isDrawingTrail() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.shouldDrawTrail();
-        }
-        return graphicsConfig.shouldDrawTrail();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).shouldDrawTrail();
     }
 
     /**
@@ -121,10 +116,7 @@ public class Setup {
      * @return Returns whether the trail has transparency.
      */
     public static boolean trailHasAlpha() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.trailHasAlpha();
-        }
-        return graphicsConfig.trailHasAlpha();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailHasAlpha();
     }
 
     /**
@@ -133,10 +125,7 @@ public class Setup {
      * @return Returns the trail length.
      */
     public static double getTrailLength() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.trailLength();
-        }
-        return graphicsConfig.trailLength();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailLength();
     }
 
     /**
@@ -145,10 +134,7 @@ public class Setup {
      * @return Returns the trail resolution.
      */
     public static double getTrailResolution() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.trailResolution();
-        }
-        return graphicsConfig.trailResolution();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailResolution();
     }
 
     /**
@@ -157,10 +143,7 @@ public class Setup {
      * @return Returns the rotational precision.
      */
     public static double getRotatePrecision() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.rotatePrecision();
-        }
-        return graphicsConfig.rotatePrecision();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).rotatePrecision();
     }
 
     /**
@@ -169,10 +152,7 @@ public class Setup {
      * @return Returns the scale precision.
      */
     public static double getScalePrecision() {
-        if (graphicsConfig == null) {
-            return defaultGraphicsConfig.scalePrecision();
-        }
-        return graphicsConfig.scalePrecision();
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).scalePrecision();
     }
 
     /**
