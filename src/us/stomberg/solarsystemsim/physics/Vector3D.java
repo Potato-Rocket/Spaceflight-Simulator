@@ -91,33 +91,43 @@ public class Vector3D {
     }
 
     /**
-     * Sums two vectors. Adds the corresponding components separately.
+     * Adds another vector to this vector. This is an elementwise operation.
      *
-     * @param vector second vector
+     * @param vector The other vector.
      */
     public void addVector(Vector3D vector) {
-        x = x + vector.x;
-        y = y + vector.y;
-        z = z + vector.z;
+        x += vector.x;
+        y += vector.y;
+        z += vector.z;
     }
 
     /**
-     * Sums two vectors. Adds the corresponding components separately. This method returns the sum rather than setting
-     * the values of this vector.
+     * Resets the vector's components to default values of 0.
+     * This operation sets the x, y, and z components of the vector to 0.
+     */
+    public void setToZero() {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+
+    /**
+     * Sums two vectors. Adds the corresponding components separately. This method returns a new vector rather than
+     * setting the values of this vector.
      *
-     * @param vector second vector
-     * @return Returns the sum.
+     * @param vector The second vector.
+     * @return The sum of both vectors.
      */
     public Vector3D sumVector(Vector3D vector) {
         return new Vector3D(x + vector.x, y + vector.y, z + vector.z);
     }
 
     /**
-     * Multiplies a vector with another number. Each component is multiplied by this value. This function is used to
+     * Multiplies a vector with another number. This value multiplies each component. This function is used to
      * scale a vector.
      *
-     * @param factor factor to multiply with the vector
-     * @return Returns a vector containing the scaled vector.
+     * @param factor The factor by which to scale the vector.
+     * @return The scaled vector.
      */
     public Vector3D scaleVector(double factor) {
         return new Vector3D(x * factor, y * factor, z * factor);
@@ -127,7 +137,7 @@ public class Vector3D {
      * Gets the differences between the corresponding components of two vectors. Subtracts the second vector from the
      * first vector. Returned as an array of values.
      *
-     * @param vector second vector
+     * @param vector The second vector.
      * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
      */
     public Vector3D compareTo(Vector3D vector) {
@@ -138,9 +148,9 @@ public class Vector3D {
      * Calculates the 3D distance between two vectors. First calls the <code>compareTo</code> method to find the
      * separate linear distances between the two vectors. It then uses the
      * <b>x</b> and <b>y</b> differences to calculate the composite horizontal distance between the
-     * vectors. Finally it uses the horizontal distance and the <b>z</b> difference to calculate the final 3D distance.
+     * vectors. Finally, it uses the horizontal distance and the <b>z</b> difference to calculate the final 3D distance.
      *
-     * @param vector second vector
+     * @param vector The second vector.
      * @return Returns the 3D distance between the two vectors.
      */
     public double distanceTo(Vector3D vector) {
@@ -164,8 +174,8 @@ public class Vector3D {
      * <code>distanceTo</code> to find the hypotenuse of those angles. Finally, it creates a new
      * vector using the results from <code>compareTo</code> and puts it on a unit scale using the hypotenuse.
      *
-     * @param vector other vector
-     * @return Returns a vector on a unit scale to represent angle.
+     * @param vector The other vector.
+     * @return Returns a vector on a unit scale to representing a direction.
      */
     public Vector3D angleTo(Vector3D vector) {
         double hypotenuse = distanceTo(vector);

@@ -37,23 +37,15 @@ public class Physics {
     /**
      * The array of all bodies.
      */
-    private static final ArrayList<Body> bodyArray = new ArrayList<>();
+    private static ArrayList<Body> bodyArray;
 
     /**
      * Populates the array of bodies based on the generation data. After generating the bodies, gets the max initial
      * distance of any one body from the origin.
      */
     public static void createBodies() {
-        for (String[] line : Setup.getGenerationData()) {
-            try {
-                bodyArray.add(new Body(new Vector3D(line[0], line[1], line[2]), new Vector3D(line[3], line[4], line[5]),
-                                       Double.parseDouble(line[6]), Double.parseDouble(line[7]), line[8],
-                                       new Color(Integer.parseInt(line[9]), Integer.parseInt(line[10]),
-                                                 Integer.parseInt(line[11]))));
-            } catch (NumberFormatException e) {
-                System.out.println(Arrays.toString(e.getStackTrace()));
-            }
-        }
+        bodyArray = Setup.getGenerationData();
+
         double[] distances = new double[bodyArray.size()];
         for (int i = 0; i < distances.length; i++) {
             distances[i] = bodyArray.get(i).getPosition().distanceTo();
@@ -70,10 +62,10 @@ public class Physics {
     /**
      * Updates every body in the body array. Runs the update function for each body to update the motion, then updates
      * the gravitational forces between each body and every other body. Finally, it checks for collisions between every
-     * body. If two bodies have collided it runs the collision function on the larger one and removes the smaller one.
+     * body. If two bodies have collided, it runs the collision function on the larger one and removes the smaller one.
      * <p>
      * The code to update the physics for every body is run once for every millisecond in the simulation that has passed
-     * since the previous frame. That is the real time milliseconds passed times the time scale.
+     * since the previous frame. That is the real time milliseconds passed times the timescale.
      *
      * @param fps current average fps
      */

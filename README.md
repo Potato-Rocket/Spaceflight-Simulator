@@ -42,26 +42,27 @@ You need two main configuration files:
 
 When you start the program, the view will automatically encompass every one of your bodies. To rotate the view, click and drag on the screen. To zoom in or out, you can use the scroll wheel. Alternatively, these keybindings can be used:
 
-W - Tilt view up.<br>
-S - Tilt view down.<br>
-A - Rotate view left.<br>
-D - Rotate view right.<br>
+- W: Tilt view up
+- S: Tilt view down
+- A: Rotate view left
+- D: Rotate view right
 
-J - Zoom in.<br>
-K - Zoom out.<br>
+
+- J: Zoom in
+- K: Zoom out
 
 To increase or decrease the virtual time-scale, use the following keybindings:
 
-Q - Slow down time.<br>
-E - Speed up time.
+- Q: Slow down time
+- E: Speed up time
 
 To toggle the center of the view between different bodies, use these keybindings:
 
-H - Go to previous body.<br>
-L - Go to next body.
+- H: Go to previous body
+- L: Go to next body
 
 Finally, these keybinding can be used for other functions:
 
-F1 - Reset viewing angle and zoom.
-F2 - Toggle whether to view planet sizes to scale with distance or on a log scale.
-F3 - Toggle whether to show extra info on screen.
+- F1: Reset viewing angle and zoom
+- F2: Toggle whether to view planet sizes to scale with distance or on a log scale
+- F3: Toggle whether to show extra info on screen

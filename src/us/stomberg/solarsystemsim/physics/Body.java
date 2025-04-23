@@ -25,7 +25,7 @@ public class Body {
     /**
      * Vector to store the current gravitational forces acting on the body.
      */
-    public ArrayList<Vector3D> gravityForces = new ArrayList<>();
+    public final ArrayList<Vector3D> gravityForces = new ArrayList<>();
 
     /**
      * Stores the position vectors to render the trail.
@@ -50,7 +50,7 @@ public class Body {
     /**
      * Vector to store the body's total acceleration.
      */
-    private Vector3D acceleration;
+    private final Vector3D acceleration = new Vector3D();
 
     /**
      * Stores the color to use when drawing this body.
@@ -65,7 +65,7 @@ public class Body {
     /**
      * The body's radius.
      */
-    private final double radius;
+    private double radius;
 
     /**
      * The body's name.
@@ -78,8 +78,88 @@ public class Body {
     private final int id;
 
     /**
-     * Class constructor with all values specified by user. Assigns specified values to their corresponding fields and
-     * generates an id and gravity forces array for the body. Adds another vector to each body's gravity force array.
+     * A builder class for creating instances of the Body class. This class uses
+     * the builder design pattern to allow for a step-by-step configuration of
+     * the Body's attributes before creating the object.
+     */
+    public static class Builder {
+        private Vector3D pos = new Vector3D();
+        private Vector3D vel = new Vector3D();
+        private double mass = 1.0;
+        private double density = 1.0;
+        private String name;
+        private Color c = Color.WHITE;
+
+        private boolean isDefault = true;
+        private boolean isBuilt = false;
+
+        public Builder() {}
+
+        public Builder position(Vector3D pos) {
+            if (pos != null) {
+                isDefault = false;
+                this.pos = pos;
+            }
+            return this;
+        }
+
+        public Builder velocity(Vector3D vel) {
+            if (vel != null) {
+                isDefault = false;
+                this.vel = vel;
+            }
+            return this;
+        }
+
+        public Builder mass(Double mass) {
+            if (mass != null && mass > 0) {
+                isDefault = false;
+                this.mass = mass;
+            }
+            return this;
+        }
+
+        public Builder density(Double density) {
+            if (density != null && density > 0) {
+                isDefault = false;
+                this.density = density;
+            }
+            return this;
+        }
+
+        public Builder name(String name) {
+            if (name != null) {
+                isDefault = false;
+                this.name = name;
+            }
+            return this;
+        }
+
+        public Builder color(Color c) {
+            if (c != null) {
+                isDefault = false;
+                this.c = c;
+            }
+            return this;
+        }
+
+        public Body build() {
+            if (name == null) {
+                name = "Body " + (count + 1);
+            }
+            if (isDefault || isBuilt) {
+                return null;
+            }
+            isBuilt = true;
+            return new Body(pos, vel, mass, density, name, c);
+        }
+
+    }
+
+    /**
+     * Class constructor with all values specified by the user. Assigns specified values to their corresponding fields
+     * and generates an id and gravity forces array for the body. Adds another vector to each body's gravity force
+     * array.
      *
      * @param pos  initial position of the body
      * @param vel  initial velocity of the body
@@ -114,7 +194,7 @@ public class Body {
      * </ul>
      */
     public void update(double millis) {
-        acceleration = new Vector3D();
+        acceleration.setToZero();
         for (Vector3D f : gravityForces) {
             acceleration.addVector(f.scaleVector(1 / mass));
         }
@@ -122,7 +202,7 @@ public class Body {
         position.addVector(velocity.scaleVector(millis / 1000));
         Vector3D direction = velocity.angleTo();
         if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() || position.distanceTo(
-                trail.get(0)) > Physics.getInitBounds() / 10) {
+                trail.getFirst()) > Physics.getInitBounds() / 10) {
             if (trail.size() < Setup.getTrailLength() / Setup.getTrailResolution()) {
                 trail.add(new Vector3D());
             }
@@ -137,11 +217,14 @@ public class Body {
     /**
      * Modifies this body's attributes based on collision information. Adjusts the position and velocity based on the
      * other body's position and velocity scaled to the bodies' relative masses. The masses are then merged.
+     * <p>
+     * TODO: Modify collision to take another body as a input
+     * <p>
+     * TODO: Take weighted average of the densities to find the new radius
      *
-     * @param pos  other body's position
-     * @param vel  other body's velocity
-     * @param mass other body's mass
-     */
+     * @param pos  The other body's position.
+     * @param vel  The other body's velocity.
+     * @param mass The other body's mass.     */
     public void collision(Vector3D pos, Vector3D vel, double mass) {
         double scale = mass / this.mass;
         velocity.addVector(vel.scaleVector(scale));
@@ -244,7 +327,7 @@ public class Body {
      * @return Returns a string representing the body.
      */
     public String toString() {
-        return toStringArray().get(0);
+        return toStringArray().getFirst();
     }
 
 }
