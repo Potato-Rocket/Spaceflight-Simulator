@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.function.Function;
 
 import us.stomberg.solarsystemsim.physics.Body;
 import us.stomberg.solarsystemsim.physics.Vector3D;
@@ -19,16 +20,17 @@ public class Setup {
     /**
      * The file path to the local .config directory.
      */
-    private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/solarsystemsim/";
+    private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/solarsystm/";
 
     /**
      * Universal gravitational constant.
      */
-    private static double gravity = 1;
+    private static double gravity;
+
+    private static final double DEFAULT_GRAVITY = 1.0;
 
     /**
      * Stores parameters for the graphics configuration.
-     * TODO: Investigate how angular trail length is derived.
      *
      * @param frameLimit Stores the artificial frame rate limit.
      * @param shouldDrawTrail Whether to draw the trail.
@@ -63,11 +65,10 @@ public class Setup {
     /**
      * The 2D array to store information about how to generate bodies.
      */
-    private static ArrayList<Body> generationData;
+    private static final ArrayList<Body> generationData = new ArrayList<>();
 
     /**
      * Reads the setup files and sets the fields accordingly.
-     * TODO: Improve error handling and include a default setup file.
      *
      * @throws IOException when the setup file directories are incorrect
      */
@@ -79,13 +80,13 @@ public class Setup {
             setup.load(input);
             //Gets the values for how to display the simulation.
             graphicsConfig = new GraphicsConfig(
-                validateInt(setup, "frameLimit", defaultGraphicsConfig.frameLimit()),
-                validateBoolean(setup, "drawTrail", defaultGraphicsConfig.shouldDrawTrail()),
-                validateBoolean(setup, "trailAlpha", defaultGraphicsConfig.trailHasAlpha()),
-                validateDouble(setup, "trailLength", defaultGraphicsConfig.trailLength()),
-                validateDouble(setup, "trailResolution", defaultGraphicsConfig.trailResolution()),
-                validateDouble(setup, "rotatePrecision", defaultGraphicsConfig.rotatePrecision()),
-                validateDouble(setup, "scalePrecision", defaultGraphicsConfig.scalePrecision())
+                validateProperty(setup, "frameLimit", Integer::parseInt, defaultGraphicsConfig.frameLimit()),
+                validateProperty(setup, "drawTrail", Boolean::parseBoolean, defaultGraphicsConfig.shouldDrawTrail()),
+                validateProperty(setup, "trailAlpha", Boolean::parseBoolean, defaultGraphicsConfig.trailHasAlpha()),
+                validateProperty(setup, "trailLength", Double::parseDouble, defaultGraphicsConfig.trailLength()),
+                validateProperty(setup, "trailResolution", Double::parseDouble, defaultGraphicsConfig.trailResolution()),
+                validateProperty(setup, "rotatePrecision", Double::parseDouble, defaultGraphicsConfig.rotatePrecision()),
+                validateProperty(setup, "scalePrecision", Double::parseDouble, defaultGraphicsConfig.scalePrecision())
             );
             //Reads the system setup file.
             readGeneration(setup.getProperty("generationFile"));
@@ -178,7 +179,6 @@ public class Setup {
 
     /**
      * Reads a system setup file and writes info about the bodies to the <code>genData</code> field.
-     * TODO: Integrate system generation data with the Physics.createBodies() to be more flexible.
      *
      * @param fileName name of a system setup file
      */
@@ -189,17 +189,16 @@ public class Setup {
             Properties generation = new Properties();
             generation.load(input);
             //Sets the gravitational constant and gets the keys for the different bodies.
-            gravity = validateDouble(generation, "gravity", gravity);
+            gravity = validateProperty(generation, "gravity", Double::parseDouble, DEFAULT_GRAVITY);
             String[] keys = generation.getProperty("bodies", "").split(" ");
             //Reads the body data for each body key.
-            generationData = new ArrayList<>();
-
+            generationData.clear();
             for (String key : keys) {
                 Body newBody = new Body.Builder()
                         .position(parseVector(generation, key + ".position"))
                         .velocity(parseVector(generation, key + ".velocity"))
-                        .mass(parseDouble(generation, key + ".mass"))
-                        .density(parseDouble(generation, key + ".density"))
+                        .mass(parseProperty(generation, key + ".mass", Double::parseDouble))
+                        .density(parseProperty(generation, key + ".density", Double::parseDouble))
                         .name(generation.getProperty(key + ".name"))
                         .color(parseColor(generation, key + ".color"))
                         .build();
@@ -212,45 +211,15 @@ public class Setup {
         } catch (IOException e) {
             e.printStackTrace();
             setDefaultSystem();
-            gravity = 1;
         }
     }
 
     private static void setDefaultSystem() {
-        generationData = new ArrayList<>();
-        
-        // Create a central star (Sun-like)
-        Body star = new Body.Builder()
-                .position(new Vector3D(0, 0, 0))
-                .velocity(new Vector3D(0, 0, 0))
-                .mass(1000000.)
-                .density(1.4)
-                .name("Sun")
-                .color(new Color(255, 220, 0))
-                .build();
-        generationData.add(star);
-        
-        // Create an inner planet (Mercury-like)
-        Body innerPlanet = new Body.Builder()
-                .position(new Vector3D(800, 0, 50))
-                .velocity(new Vector3D(0, 35, 0))
-                .mass(1000.)
-                .density(5.4)
-                .name("Inner Planet")
-                .color(new Color(180, 180, 180))
-                .build();
-        generationData.add(innerPlanet);
-        
-        // Create an outer planet (Earth-like)
-        Body outerPlanet = new Body.Builder()
-                .position(new Vector3D(1500, 0, 0))
-                .velocity(new Vector3D(-5, 25, 0))
-                .mass(5000.)
-                .density(5.5)
-                .name("Outer Planet")
-                .color(new Color(0, 100, 255))
-                .build();
-        generationData.add(outerPlanet);
+        generationData.clear();
+        generationData.add(Body.Factory.createDefaultStar());
+        generationData.add(Body.Factory.createDefaultInnerPlanet());
+        generationData.add(Body.Factory.createDefaultOuterPlanet());
+        gravity = DEFAULT_GRAVITY;
     }
 
     /**
@@ -316,87 +285,47 @@ public class Setup {
     }
 
     /**
-     * Gets and int value from a properties file. If the property cannot be converted to an
-     * <code>integer</code>, it returns a default value.
+     * Gets a value from a properties file, and attempts to convert it using the provided function. If there is no
+     * property matching the key, it returns a default value.
      *
      * @param setup        the properties file
      * @param key          the key to read
+     * @param converter    the conversion function
      * @param defaultValue the default value
      * @return Returns the determined value.
      */
-    private static int validateInt(Properties setup, String key, int defaultValue) {
+    private static <T> T validateProperty(Properties setup, String key, Function<String, T> converter, T defaultValue) {
         String in = setup.getProperty(key);
         if (in == null) {
             return defaultValue;
         }
         try {
-            return Integer.parseInt(in);
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Gets a Double value from a properties file. If the property cannot be converted to a Double, it returns null.
-     *
-     * @param setup the properties file
-     * @param key   the key to read
-     * @return Returns the parsed Double value or null if parsing fails.
-     */
-    private static Double parseDouble(Properties setup, String key) {
-        String in = setup.getProperty(key);
-        if (in == null) {
-            return null;
-        }
-        try {
-            return Double.parseDouble(in);
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-            return null;
-        }
-    }
-
-    /**
-     * Gets and double value from a properties file. If the property cannot be converted to an
-     * <code>double</code>, it returns a default value.
-     *
-     * @param setup        the properties file
-     * @param key          the key to read
-     * @param defaultValue the default value
-     * @return Returns the determined value.
-     */
-    private static double validateDouble(Properties setup, String key, double defaultValue) {
-        String in = setup.getProperty(key);
-        if (in == null) {
-            return defaultValue;
-        }
-        try {
-            return Double.parseDouble(in);
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Gets and int value from a properties file. If there is no property matching the key, it returns a default value.
-     *
-     * @param setup        the properties file
-     * @param key          the key to read
-     * @param defaultValue the default value
-     * @return Returns the determined value.
-     */
-    private static boolean validateBoolean(Properties setup, String key, boolean defaultValue) {
-        String in = setup.getProperty(key);
-        if (in == null) {
-            return defaultValue;
-        }
-        try {
-            return Boolean.parseBoolean(in);
+            return converter.apply(in);
         } catch (Exception e) {
             System.out.println(e);
             return defaultValue;
+        }
+    }
+
+    /**
+     * Gets a value from a properties file, and attempts to convert it using the provided function. If there is no
+     * property matching the key, it returns null.
+     *
+     * @param setup     the properties file
+     * @param key       the key to read
+     * @param converter the conversion function
+     * @return Returns the determined value or null if parsing fails.
+     */
+    private static <T> T parseProperty(Properties setup, String key, Function<String, T> converter) {
+        String in = setup.getProperty(key);
+        if (in == null) {
+            return null;
+        }
+        try {
+            return converter.apply(in);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
     }
 
