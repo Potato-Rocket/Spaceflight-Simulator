@@ -1,4 +1,4 @@
-package us.stomberg.solarsystemsim.config;
+package us.stomberg.solarsystemsim;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,48 +13,46 @@ public class Setup {
     /**
      * The file path to the local .config directory.
      */
-    private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/spaceflight-simulator/";
-
-    /**
-     * Stores the artificial frame rate limit.
-     */
-    private static int frameLimit = 60;
-
-    /**
-     * Whether to draw the trail
-     */
-    private static boolean shouldDrawTrail = true;
-
-    /**
-     * Stores whether to render the trails with transparency.
-     */
-    private static boolean trailHasAlpha = true;
-
-    /**
-     * TODO: Investigate how angular trail length is derived.
-     * The degrees of revolution the trail should cover.
-     */
-    private static double trailLength = 360;
-
-    /**
-     * The degrees of revolution between trail points.
-     */
-    private static double trailResolution = 1;
-
-    /**
-     * Stores the view's sensitivity to mouse movements.
-     */
-    private static double rotatePrecision = 1;
-
-    /**
-     * Factor to scale by when zooming.
-     */
-    private static double scalePrecision = 1.1;
+    private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/solarsystemsim/";
 
     /**
      * Universal gravitational constant.
      */
     private static double gravity = 1;
+
+    /**
+     * Stores parameters for the graphics configuration.
+     * TODO: Investigate how angular trail length is derived.
+     *
+     * @param frameLimit Stores the artificial frame rate limit.
+     * @param shouldDrawTrail Whether to draw the trail.
+     * @param trailHasAlpha Stores whether to render the trails with transparency.
+     * @param trailLength The degrees of revolution the trail should cover.
+     * @param trailResolution The degrees of revolution between trail points.
+     * @param rotatePrecision Stores the view's sensitivity to mouse movements.
+     * @param scalePrecision Factor to scale by when zooming.
+     */
+    private record GraphicsConfig(
+            int frameLimit,
+            boolean shouldDrawTrail,
+            boolean trailHasAlpha,
+            double trailLength,
+            double trailResolution,
+            double rotatePrecision,
+            double scalePrecision
+    ) {}
+
+    private static GraphicsConfig graphicsConfig;
+
+    private static final GraphicsConfig defaultGraphicsConfig = new GraphicsConfig(
+            60,
+            true,
+            true,
+            360,
+            1,
+            1,
+            1.1
+    );
 
     /**
      * The 2D array to store information about how to generate bodies.
@@ -76,13 +74,15 @@ public class Setup {
             Properties setup = new Properties();
             setup.load(input);
             //Gets the values for how to display the simulation.
-            frameLimit = validateInt(setup, "frameLimit", 60);
-            shouldDrawTrail = validateBoolean(setup, "drawTrail", true);
-            trailHasAlpha = validateBoolean(setup, "trailAlpha", false);
-            trailLength = validateInt(setup, "trailLength", 180);
-            trailResolution = validateDouble(setup, "trailResolution", 1);
-            rotatePrecision = validateDouble(setup, "rotatePrecision", 1);
-            scalePrecision = validateDouble(setup, "scalePrecision", 1.1);
+            graphicsConfig = new GraphicsConfig(
+                validateInt(setup, "frameLimit", defaultGraphicsConfig.frameLimit()),
+                validateBoolean(setup, "drawTrail", defaultGraphicsConfig.shouldDrawTrail()),
+                validateBoolean(setup, "trailAlpha", defaultGraphicsConfig.trailHasAlpha()),
+                validateDouble(setup, "trailLength", defaultGraphicsConfig.trailLength()),
+                validateDouble(setup, "trailResolution", defaultGraphicsConfig.trailResolution()),
+                validateDouble(setup, "rotatePrecision", defaultGraphicsConfig.rotatePrecision()),
+                validateDouble(setup, "scalePrecision", defaultGraphicsConfig.scalePrecision())
+            );
             //Reads the system setup file.
             readGeneration(setup.getProperty("generationFile"));
         } catch (IOException e) {
@@ -97,7 +97,10 @@ public class Setup {
      * @return Returns the frame limit.
      */
     public static int getFrameLimit() {
-        return frameLimit;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.frameLimit();
+        }
+        return graphicsConfig.frameLimit();
     }
 
     /**
@@ -106,7 +109,10 @@ public class Setup {
      * @return Returns whether to draw the trail.
      */
     public static boolean isDrawingTrail() {
-        return shouldDrawTrail;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.shouldDrawTrail();
+        }
+        return graphicsConfig.shouldDrawTrail();
     }
 
     /**
@@ -115,7 +121,10 @@ public class Setup {
      * @return Returns whether the trail has transparency.
      */
     public static boolean trailHasAlpha() {
-        return trailHasAlpha;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.trailHasAlpha();
+        }
+        return graphicsConfig.trailHasAlpha();
     }
 
     /**
@@ -124,7 +133,10 @@ public class Setup {
      * @return Returns the trail length.
      */
     public static double getTrailLength() {
-        return trailLength;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.trailLength();
+        }
+        return graphicsConfig.trailLength();
     }
 
     /**
@@ -133,7 +145,10 @@ public class Setup {
      * @return Returns the trail resolution.
      */
     public static double getTrailResolution() {
-        return trailResolution;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.trailResolution();
+        }
+        return graphicsConfig.trailResolution();
     }
 
     /**
@@ -142,7 +157,10 @@ public class Setup {
      * @return Returns the rotational precision.
      */
     public static double getRotatePrecision() {
-        return rotatePrecision;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.rotatePrecision();
+        }
+        return graphicsConfig.rotatePrecision();
     }
 
     /**
@@ -151,7 +169,10 @@ public class Setup {
      * @return Returns the scale precision.
      */
     public static double getScalePrecision() {
-        return scalePrecision;
+        if (graphicsConfig == null) {
+            return defaultGraphicsConfig.scalePrecision();
+        }
+        return graphicsConfig.scalePrecision();
     }
 
     /**

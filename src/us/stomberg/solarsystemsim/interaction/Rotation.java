@@ -1,6 +1,6 @@
 package us.stomberg.solarsystemsim.interaction;
 
-import us.stomberg.solarsystemsim.config.Setup;
+import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.Graphics3D;
 
 import java.awt.event.MouseEvent;

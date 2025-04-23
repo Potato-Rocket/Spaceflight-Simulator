@@ -1,6 +1,5 @@
 package us.stomberg.solarsystemsim;
 
-import us.stomberg.solarsystemsim.config.Setup;
 import us.stomberg.solarsystemsim.graphics.DrawSpace;
 import us.stomberg.solarsystemsim.physics.Physics;
 

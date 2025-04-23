@@ -1,7 +1,7 @@
 package us.stomberg.solarsystemsim.graphics;
 
 import us.stomberg.solarsystemsim.Simulation;
-import us.stomberg.solarsystemsim.config.Setup;
+import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.elements.Line;
 import us.stomberg.solarsystemsim.graphics.elements.Point;
 import us.stomberg.solarsystemsim.physics.Body;
