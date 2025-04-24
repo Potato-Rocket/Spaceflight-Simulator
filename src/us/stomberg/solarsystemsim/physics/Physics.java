@@ -94,7 +94,7 @@ public class Physics {
                     if (body.getId() != other.getId()) {
                         double distance = body.getPosition().distanceTo(other.getPosition());
                         if (body.getMass() >= other.getMass() && distance < body.getRadius()) {
-                            body.collision(other.getPosition(), other.getVelocity(), other.getMass());
+                            body.collision(other);
                             bodyArray.remove(other);
                             j--;
                         }
@@ -107,10 +107,10 @@ public class Physics {
     }
 
     /**
-     * Increases or decreases the time scale based on the input. Is bound to a keymap in the
+     * Increases or decreases the timescale based on the input. Is bound to a keymap in the
      * <code>Keymaps</code> class.
      *
-     * @param increase whether to increase or decrease the time scale
+     * @param increase whether to increase or decrease the timescale
      */
     public static void modifyTimeScale(boolean increase) {
         if (increase && timeScale < SPEEDS.length - 1) {
@@ -121,9 +121,9 @@ public class Physics {
     }
 
     /**
-     * Getter method for the current time scale in milliseconds.
+     * Getter method for the current timescale in milliseconds.
      *
-     * @return Returns the time scale.
+     * @return Returns the timescale.
      */
     public static int getTimeScale() {
         return SPEEDS[timeScale];

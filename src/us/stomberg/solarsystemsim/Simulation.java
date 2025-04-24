@@ -36,6 +36,7 @@ public class Simulation {
         int difference = frameCap;
         Instant now = Instant.now();
         // Main while loop is infinite until the window is closed or the program is interrupted.
+        // TODO: Implement an exit condition for when the window is closed, executable by a shortcut
         while (true) {
             long millis = now.toEpochMilli();
             Physics.updateBodies(fps);
