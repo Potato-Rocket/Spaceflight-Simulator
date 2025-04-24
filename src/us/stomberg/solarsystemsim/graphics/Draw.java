@@ -6,11 +6,12 @@ import us.stomberg.solarsystemsim.graphics.elements.Line;
 import us.stomberg.solarsystemsim.graphics.elements.Point;
 import us.stomberg.solarsystemsim.physics.Body;
 import us.stomberg.solarsystemsim.physics.Physics;
+import us.stomberg.solarsystemsim.physics.TimeManager;
 import us.stomberg.solarsystemsim.physics.Vector3D;
 
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -185,8 +186,10 @@ public class Draw {
         scale = min / (minBounds * 2);
         elements.clear();
         drawAxes();
-        for (Body body : Physics.getBodyArray()) {
-            drawBody(body);
+        synchronized (Main.lock) {
+            for (Body body : Physics.getBodyArray()) {
+                drawBody(body);
+            }
         }
         render();
         drawGuides();
@@ -198,10 +201,14 @@ public class Draw {
         }
         g2d.setColor(Color.WHITE);
         ArrayList<String> bodyInfo = new ArrayList<>();
-        bodyInfo.add("FPS: " + Main.getFPS() + FormatText.formatNum(Main.getFPS(), "fps", "kfps"));
-        bodyInfo.add("Duration: " + FormatText.formatTime(Physics.getDuration(), ChronoUnit.SECONDS));
-        bodyInfo.add("Time step: " + Physics.getTimeStep() + "s");
-        bodyInfo.add("Time scale: " + FormatText.formatTime((long)Main.getTimeScale(), ChronoUnit.SECONDS) + " per second");
+
+        DecimalFormat fps = new DecimalFormat("0.00 fps");
+        DecimalFormat fpsc = new DecimalFormat("0.## fps");
+        bodyInfo.add("FPS: " + fps.format(TimeManager.getCurrentFPS()) + " (" + fpsc.format(Setup.getFrameLimit()) + ")");
+        bodyInfo.add("Duration: " + FormatText.formatDuration((long) TimeManager.getDuration(), ChronoUnit.SECONDS));
+        bodyInfo.add("Time step: " + FormatText.formatScale(Setup.getTimeStep(), true) + " s");
+        bodyInfo.add("Time scale: " + FormatText.formatScale(TimeManager.getCurrentTimeScale(), false) +
+                             "x (" + FormatText.formatScale(TimeManager.getTimescaleCap(), true) + "x)");
         if (logScale) {
             bodyInfo.add("Planet scale: Log");
         } else {
@@ -254,14 +261,14 @@ public class Draw {
         }
         tickExp--;
         tickDist = (long) (Math.pow(10, tickExp) * scale);
-        for (int x = (int) ((int) (-w / tickDist) * tickDist); x < w; x += tickDist) {
+        for (int x = (int) ((int) (-w / tickDist) * tickDist); x < w; x += (int) tickDist) {
             int len = 10;
             if (Math.round(x / (double) tickDist) % 10 == 0) {
                 len = 20;
             }
             g2d.drawLine(x, h, x, h - len);
         }
-        for (int y = (int) ((int) (-h / tickDist) * tickDist); y < h; y += tickDist) {
+        for (int y = (int) ((int) (-h / tickDist) * tickDist); y < h; y += (int) tickDist) {
             int len = 10;
             if (Math.round(y / (double) tickDist) % 10 == 0) {
                 len = 20;

@@ -9,6 +9,8 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import us.stomberg.solarsystemsim.physics.Body;
+import us.stomberg.solarsystemsim.physics.BodyBuilder;
+import us.stomberg.solarsystemsim.physics.BodyFactory;
 import us.stomberg.solarsystemsim.physics.Vector3D;
 
 import javax.naming.ConfigurationException;
@@ -19,6 +21,34 @@ import javax.naming.ConfigurationException;
 public class Setup {
 
     /**
+     * Stores parameters for the graphics configuration.
+     *
+     * @param frameLimit      the artificial frame rate limit
+     * @param shouldDrawTrail whether to draw the trail
+     * @param trailHasAlpha   whether to render the trails with transparency
+     * @param trailLength     the degrees of revolution the trail should cover
+     * @param trailResolution the degrees of revolution between trail points
+     * @param rotatePrecision the view's sensitivity to mouse movements
+     * @param scalePrecision  the factor to scale by when zooming
+     */
+    private record GraphicsConfig(
+            double frameLimit,
+            boolean shouldDrawTrail,
+            boolean trailHasAlpha,
+            double trailLength,
+            double trailResolution,
+            double rotatePrecision,
+            double scalePrecision
+    ) {}
+    /**
+     * Stores parameters for the simulation mechanics.
+     *
+     * @param gravity  the universal gravitational constant
+     * @param timeStep the simulation time step
+     */
+    private record SimulationConfig(double gravity, double timeStep) {}
+
+    /**
      * The logger for this class.
      */
     private static final Logger logger = Logger.getLogger(Setup.class.getName());
@@ -26,10 +56,6 @@ public class Setup {
      * The file path to the local .config directory.
      */
     private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/solarsystemsim/";
-    /**
-     * The default gravitational constant. Not a realistic value.
-     */
-    private static final double DEFAULT_GRAVITY = 1.0;
     /**
      * Default graphics configuration for the simulation.
      */
@@ -43,18 +69,21 @@ public class Setup {
             1.1
     );
     /**
+     * Default simulation physics configuration.
+     */
+    private static final SimulationConfig defaultSimulationConfig = new SimulationConfig(1.0, 0.004);
+    /**
      * The 2D array to store information about how to generate bodies.
      */
     private static final ArrayList<Body> generationData = new ArrayList<>();
-
-    /**
-     * Universal gravitational constant.
-     */
-    private static double gravity;
     /**
      * The active graphics configuration.
      */
     private static GraphicsConfig graphicsConfig;
+    /**
+     * The active graphics configuration.
+     */
+    private static SimulationConfig simulationConfig;
 
     /**
      * Represents an exception that occurs during the processing of properties.
@@ -197,7 +226,16 @@ public class Setup {
      * @return the gravity value
      */
     public static double getGravity() {
-        return gravity;
+        return Objects.requireNonNullElse(simulationConfig, defaultSimulationConfig).gravity();
+    }
+
+    /**
+     * Getter method for the simulation time step.
+     *
+     * @return the time step
+     */
+    public static double getTimeStep() {
+        return Objects.requireNonNullElse(simulationConfig, defaultSimulationConfig).timeStep();
     }
 
     /**
@@ -228,7 +266,10 @@ public class Setup {
             Properties generation = new Properties();
             generation.load(input);
             // Sets the gravitational constant and gets the keys for the different bodies.
-            gravity = parseProperty(generation, "gravity", Double::parseDouble);
+            simulationConfig = new SimulationConfig(
+                    parseProperty(generation, "gravity", Double::parseDouble),
+                    parseProperty(generation, "timeStep", Double::parseDouble)
+            );
             String bodiesStr = generation.getProperty("bodies");
             if (bodiesStr == null) {
                 throw new PropertyNotFoundException("No bodies specified in system setup file");
@@ -237,12 +278,12 @@ public class Setup {
             // Reads the body data for each body key.
             generationData.clear();
             for (String key : keys) {
-                Body newBody = new Body.Builder().position(parseVector(generation, key + ".position"))
-                                                 .velocity(parseVector(generation, key + ".velocity"))
-                                                 .mass(parseProperty(generation, key + ".mass", Double::parseDouble))
-                                                 .density(parseProperty(generation, key + ".density", Double::parseDouble))
-                                                 .name(generation.getProperty(key + ".name"))
-                                                 .color(parseColor(generation, key + ".color")).build();
+                Body newBody = new BodyBuilder().position(parseVector(generation, key + ".position"))
+                                                .velocity(parseVector(generation, key + ".velocity"))
+                                                .mass(parseProperty(generation, key + ".mass", Double::parseDouble))
+                                                .density(parseProperty(generation, key + ".density", Double::parseDouble))
+                                                .name(generation.getProperty(key + ".name"))
+                                                .color(parseColor(generation, key + ".color")).build();
                 generationData.add(newBody);
             }
             logger.info("System setup file read successfully.");
@@ -259,10 +300,10 @@ public class Setup {
     private static void setDefaultSystem() {
         logger.info("Using default system.");
         generationData.clear();
-        generationData.add(Body.Factory.createDefaultStar());
-        generationData.add(Body.Factory.createDefaultInnerPlanet());
-        generationData.add(Body.Factory.createDefaultOuterPlanet());
-        gravity = DEFAULT_GRAVITY;
+        generationData.add(BodyFactory.createDefaultStar());
+        generationData.add(BodyFactory.createDefaultInnerPlanet());
+        generationData.add(BodyFactory.createDefaultOuterPlanet());
+        simulationConfig = defaultSimulationConfig;
     }
 
     /**
@@ -379,26 +420,5 @@ public class Setup {
             throw new PropertyFormatException("Invalid value for key " + key + ": " + e.getMessage());
         }
     }
-
-    /**
-     * Stores parameters for the graphics configuration.
-     *
-     * @param frameLimit      the artificial frame rate limit
-     * @param shouldDrawTrail whether to draw the trail
-     * @param trailHasAlpha   whether to render the trails with transparency
-     * @param trailLength     the degrees of revolution the trail should cover
-     * @param trailResolution the degrees of revolution between trail points
-     * @param rotatePrecision the view's sensitivity to mouse movements
-     * @param scalePrecision  the factor to scale by when zooming
-     */
-    private record GraphicsConfig(
-            double frameLimit,
-            boolean shouldDrawTrail,
-            boolean trailHasAlpha,
-            double trailLength,
-            double trailResolution,
-            double rotatePrecision,
-            double scalePrecision
-    ) {}
 
 }

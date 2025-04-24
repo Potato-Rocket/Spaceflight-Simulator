@@ -6,8 +6,6 @@ import java.time.Duration;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 
-// TODO: Replace with standard string formatting methods.
-
 /**
  * Class to store methods dealing with text and strings to be displayed on screen.
  */
@@ -39,7 +37,7 @@ public class FormatText {
      *
      * @return Returns the formatted string.
      */
-    public static String formatTime(long amount, TemporalUnit unit) {
+    public static String formatDuration(long amount, TemporalUnit unit) {
         Duration duration = Duration.of(amount, unit);
         long years = duration.toDays() / 365;
         long days = duration.toDays() % 365;
@@ -60,32 +58,45 @@ public class FormatText {
      */
     public static String formatNum(double num, String unit, String kiloUnit) {
         String suffix = unit;
-        if (num >= 10000) {
+        if (Math.abs(num) >= 10000) {
             num /= 1000;
             suffix = kiloUnit;
         }
-        String str;
-        if (num < 1000) {
-            str = String.valueOf((double) Math.round(num * 100) / 100);
-        } else if (num <= Long.MAX_VALUE) {
-            str = String.valueOf((long) num);
-            StringBuilder grouped = new StringBuilder();
-            for (int i = str.length() - 1; i >= 0; i--) {
-                grouped.insert(0, str.charAt(i));
-                if (i > 0 && (str.length() - i) % 3 == 0) {
-                    grouped.insert(0, ",");
-                }
-            }
-            str = grouped.toString();
+        DecimalFormat df;
+        if (Math.abs(num) >= 10000) {
+            df = new DecimalFormat("0.000E0 " + suffix);
         } else {
-            int exp = 1;
-            while (Math.pow(10, exp + 1) < num) {
-                exp++;
-            }
-            num /= Math.pow(10, exp);
-            str = ((double) Math.round(num * 10000) / 10000) + " E" + exp + " ";
+            df = new DecimalFormat("#,##0.00 " + suffix);
         }
-        return str + suffix;
+        return df.format(num);
+    }
+
+    /**
+     * Formats a large number to be more readable. Groups the zeroes if possible, and appends the correct unit. If value
+     * is over 10000, will use the kilo unit and divide the value by 1000. (eg. 10000000 -> 10,000km)
+     *
+     * @param num      number to format
+     * @return Returns the formatted string.
+     */
+    public static String formatScale(Double num, boolean round) {
+        StringBuilder format = new StringBuilder("#,##0");
+
+        int decade = (int) Math.floor(Math.log10(num));
+        int digits = -decade + 2;
+        if (decade >= 0) {
+            digits += 1;
+        }
+        if (digits > 0) {
+            format.append(".");
+            if (round) {
+                format.append("#".repeat(digits));
+            } else {
+                format.append("0".repeat(digits));
+            }
+        }
+
+        DecimalFormat df = new DecimalFormat(format.toString());
+        return df.format(num);
     }
 
 }

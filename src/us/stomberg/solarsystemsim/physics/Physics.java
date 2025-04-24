@@ -8,17 +8,6 @@ import java.util.ArrayList;
  * Static class to handle all body interactions.
  */
 public class Physics {
-
-    /**
-     * Current time scale index.
-     */
-    private static int timeStep = 0;
-
-    /**
-     * Simulation duration in seconds.
-     */
-    private static long duration = 0;
-
     /**
      * The initial max distance of any body from the origin.
      */
@@ -67,7 +56,7 @@ public class Physics {
         }
         // Update each body's position and velocity
         for (Body body : bodyArray) {
-            body.update(timeStep);
+            body.update(Setup.getTimeStep());
         }
         // Handle collisions
         for (int i = 0; i < bodyArray.size(); i++) {
@@ -85,30 +74,7 @@ public class Physics {
             }
         }
 
-        duration += timeStep;
-    }
-
-    /**
-     * Increases or decreases the timescale based on the input. Is bound to a keymap in the
-     * <code>Keymaps</code> class.
-     *
-     * @param increase whether to increase or decrease the timescale
-     */
-    public static void modifyTimeScale(boolean increase) {
-        if (increase) {
-            timeStep++;
-        } else if (timeStep > 0) {
-            timeStep--;
-        }
-    }
-
-    /**
-     * Getter method for the current timescale in milliseconds.
-     *
-     * @return Returns the timescale.
-     */
-    public static int getTimeStep() {
-        return timeStep;
+        TimeManager.incrementDuration();
     }
 
     /**
@@ -128,15 +94,6 @@ public class Physics {
      */
     public static double getInitBounds() {
         return initBounds;
-    }
-
-    /**
-     * Gets the duration of the simulation. This variable is increased each time the physics are updated.
-     *
-     * @return Returns the simulation duration.
-     */
-    public static long getDuration() {
-        return duration;
     }
 
 }
