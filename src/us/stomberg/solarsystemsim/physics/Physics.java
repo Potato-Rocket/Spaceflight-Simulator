@@ -2,22 +2,24 @@ package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.Setup;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Static class to handle all body interactions.
  */
 public class Physics {
 
+    // TODO: Make time scales more programmatic
     /**
      * Array of different time scales to toggle through.
      */
     private static final int[] SPEEDS = {1, 2, 4, 8, 16, 32, 64, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000
             , 100000, 250000, 500000, 1000000};
 
-    private static final int scaleLimit = 7/*SPEEDS.length*/;
+    /**
+     * The index of the fastest timescale allowable.
+     */
+    private static int timeScaleLimit = SPEEDS.length - 1;
 
     /**
      * Current time scale index.
@@ -57,8 +59,9 @@ public class Physics {
         }
     }
 
-    //FIXME: On collision, update focused body if focused is >= to this body.
-
+    // FIXME: On collision, update focused body if focused is >= to this body.
+    // TODO: Comment the update method for more clarity
+    // TODO: Decouple the frames per second from the timescale, parallelize if reasonable
     /**
      * Updates every body in the body array. Runs the update function for each body to update the motion, then updates
      * the gravitational forces between each body and every other body. Finally, it checks for collisions between every
@@ -73,9 +76,9 @@ public class Physics {
         double realMillis = 1000 / fps;
         int reps = (int) (realMillis * SPEEDS[timeScale]);
         double repMillis = 1;
-        if (timeScale > scaleLimit) {
-            reps = (int) (realMillis * SPEEDS[scaleLimit]);
-            repMillis = (double) SPEEDS[timeScale] / SPEEDS[scaleLimit];
+        if (timeScale > timeScaleLimit) {
+            reps = (int) (realMillis * SPEEDS[timeScaleLimit]);
+            repMillis = (double) SPEEDS[timeScale] / SPEEDS[timeScaleLimit];
         }
         while (reps > 0) {
             for (Body body : bodyArray) {
@@ -93,7 +96,7 @@ public class Physics {
                     Body other = bodyArray.get(j);
                     if (body.getId() != other.getId()) {
                         double distance = body.getPosition().distanceTo(other.getPosition());
-                        if (body.getMass() >= other.getMass() && distance < body.getRadius()) {
+                        if (body.getMass() >= other.getMass() && distance < body.getRadius() + other.getRadius()) {
                             body.collision(other);
                             bodyArray.remove(other);
                             j--;
