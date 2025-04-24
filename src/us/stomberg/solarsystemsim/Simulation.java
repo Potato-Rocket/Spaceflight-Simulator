@@ -27,7 +27,7 @@ public class Simulation {
      *
      * @param args command line inputs
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         //Sets up graphical window and timing variables.
         Setup.read();
         Physics.createBodies();
@@ -35,7 +35,7 @@ public class Simulation {
         int frameCap = 1000 / Setup.getFrameLimit();
         int difference = frameCap;
         Instant now = Instant.now();
-        //Main while loop is infinite until window is closed or program interrupted.
+        // Main while loop is infinite until the window is closed or the program is interrupted.
         while (true) {
             long millis = now.toEpochMilli();
             Physics.updateBodies(fps);

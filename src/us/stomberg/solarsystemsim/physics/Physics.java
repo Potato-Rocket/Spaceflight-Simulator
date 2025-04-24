@@ -101,7 +101,7 @@ public class Physics {
                     }
                 }
             }
-            duration += repMillis;
+            duration += (long) repMillis;
             reps--;
         }
     }

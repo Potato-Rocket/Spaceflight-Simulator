@@ -118,7 +118,7 @@ public class Body {
         public static Body createDefaultOuterPlanet() {
             return new Builder()
                     .position(new Vector3D(1500, 0, 0))
-                    .velocity(new Vector3D(-5, 25, 0))
+                    .velocity(new Vector3D(0, 25, -5))
                     .mass(5000.0)
                     .density(5.5)
                     .name("Outer Planet")

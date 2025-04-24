@@ -142,22 +142,22 @@ public class Keymaps {
      * @param component <code>JComponent</code> in which to create the input and action maps
      */
     public Keymaps(JComponent component) {
-        //Creates the inputMap and actionMap.
+        // Creates the inputMap and actionMap.
         InputMap inputMap = component.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = component.getActionMap();
-        //Function key maps.
+        // Function key maps.
         inputMap.put(KeyStroke.getKeyStroke("released F1"), "RESET_VIEW");
         actionMap.put("RESET_VIEW", resetView);
         inputMap.put(KeyStroke.getKeyStroke("released F2"), "TOGGLE_LOG");
         actionMap.put("TOGGLE_LOG", toggleLog);
         inputMap.put(KeyStroke.getKeyStroke("released F3"), "TOGGLE_VERBOSE");
         actionMap.put("TOGGLE_VERBOSE", toggleVerbose);
-        //Q&E keys to change the time scale.
+        // Q&E keys to change the timescale.
         inputMap.put(KeyStroke.getKeyStroke("released Q"), "SLOW_DOWN");
         actionMap.put("SLOW_DOWN", slowDown);
         inputMap.put(KeyStroke.getKeyStroke("released E"), "SPEED_UP");
         actionMap.put("SPEED_UP", speedUp);
-        //Vim keys to control zooming and toggling the focused body.
+        // Vim keys to control zooming and toggling the focused body.
         inputMap.put(KeyStroke.getKeyStroke("J"), "ZOOM_IN");
         actionMap.put("ZOOM_IN", zoomIn);
         inputMap.put(KeyStroke.getKeyStroke("K"), "ZOOM_OUT");
@@ -166,7 +166,7 @@ public class Keymaps {
         actionMap.put("PREV_FOCUS", prevFocus);
         inputMap.put(KeyStroke.getKeyStroke("released L"), "NEXT_FOCUS");
         actionMap.put("NEXT_FOCUS", nextFocus);
-        //WASD keys to rotate the view.
+        // WASD keys to rotate the view.
         inputMap.put(KeyStroke.getKeyStroke("W"), "TILT_UP");
         actionMap.put("TILT_UP", tiltUp);
         inputMap.put(KeyStroke.getKeyStroke("S"), "TILT_DOWN");
