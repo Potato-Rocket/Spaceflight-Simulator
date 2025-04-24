@@ -83,6 +83,7 @@ public class Body {
     public static class Factory {
         /**
          * Creates a default star with Sun-like properties.
+         *
          * @return a new Body instance with Sun-like properties
          */
         public static Body createDefaultStar() {
@@ -98,6 +99,7 @@ public class Body {
     
         /**
          * Creates a default inner planet with Mercury-like properties.
+         *
          * @return a new Body instance with Mercury-like properties
          */
         public static Body createDefaultInnerPlanet() {
@@ -113,6 +115,7 @@ public class Body {
     
         /**
          * Creates a default outer planet with Earth-like properties.
+         *
          * @return a new Body instance with Earth-like properties
          */
         public static Body createDefaultOuterPlanet() {
@@ -211,10 +214,12 @@ public class Body {
      * and generates an id and gravity forces array for the body. Adds another vector to each body's gravity force
      * array.
      *
-     * @param pos  initial position of the body
-     * @param vel  initial velocity of the body
-     * @param mass initial mass of the body
-     * @param name name of the body
+     * @param pos     initial position of the body
+     * @param vel     initial velocity of the body
+     * @param mass    initial mass of the body
+     * @param density density of the body used to calculate radius
+     * @param name    name of the body
+     * @param c       color used for rendering the body
      */
     public Body(Vector3D pos, Vector3D vel, double mass, double density, String name, Color c) {
         this.position = pos;
@@ -272,9 +277,10 @@ public class Body {
      * <p>
      * TODO: Take weighted average of the densities to find the new radius
      *
-     * @param pos  The other body's position.
-     * @param vel  The other body's velocity.
-     * @param mass The other body's mass.     */
+     * @param pos  the other body's position
+     * @param vel  the other body's velocity
+     * @param mass the other body's mass
+     */
     public void collision(Vector3D pos, Vector3D vel, double mass) {
         double scale = mass / this.mass;
         velocity.addVector(vel.scaleVector(scale));
@@ -285,7 +291,7 @@ public class Body {
     /**
      * Getter method for the body's trail data.
      *
-     * @return Returns the <code>ArrayList</code> of trail points.
+     * @return the <code>ArrayList</code> of trail points
      */
     public ArrayList<Vector3D> getTrail() {
         return trail;
@@ -294,7 +300,7 @@ public class Body {
     /**
      * Getter method for the body's position.
      *
-     * @return Returns the body's position.
+     * @return the body's position
      */
     public Vector3D getPosition() {
         return position;
@@ -303,7 +309,7 @@ public class Body {
     /**
      * Getter method for the body's velocity.
      *
-     * @return Returns the body's velocity.
+     * @return the body's velocity
      */
     public Vector3D getVelocity() {
         return velocity;
@@ -312,7 +318,7 @@ public class Body {
     /**
      * Getter method for the body's mass.
      *
-     * @return Returns the body's mass.
+     * @return the body's mass
      */
     public double getMass() {
         return mass;
@@ -321,7 +327,7 @@ public class Body {
     /**
      * Getter method for the body's radius.
      *
-     * @return Returns the body's radius.
+     * @return the body's radius
      */
     public double getRadius() {
         return radius;
@@ -330,7 +336,7 @@ public class Body {
     /**
      * Getter method for the body's identification number.
      *
-     * @return Returns the body's id.
+     * @return the body's id
      */
     public int getId() {
         return id;
@@ -339,7 +345,7 @@ public class Body {
     /**
      * Getter method for the body's name.
      *
-     * @return Returns the body's name.
+     * @return the body's name
      */
     public String getName() {
         return name;
@@ -348,7 +354,7 @@ public class Body {
     /**
      * Getter method for the body's drawing color.
      *
-     * @return Returns the color.
+     * @return the body's color
      */
     public Color getColor() {
         return color;
@@ -357,7 +363,7 @@ public class Body {
     /**
      * Formats the body's attributes into a <code>String[]</code>. Each array item is a line.
      *
-     * @return Returns a string array representing the body's attributes.
+     * @return a string array representing the body's attributes
      */
     public ArrayList<String> toStringArray() {
         ArrayList<String> string = new ArrayList<>();
@@ -374,7 +380,7 @@ public class Body {
      * Runs the <code>toString</code> method with the <code>verbose</code> option set to
      * <code>false</code>.
      *
-     * @return Returns a string representing the body.
+     * @return a string representing the body
      */
     public String toString() {
         return toStringArray().getFirst();

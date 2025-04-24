@@ -18,13 +18,21 @@ import javax.naming.ConfigurationException;
  */
 public class Setup {
 
+    /**
+     * The logger for this class.
+     */
     private static final Logger logger = Logger.getLogger(Setup.class.getName());
-
     /**
      * The file path to the local .config directory.
      */
     private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/solarsystemsim/";
+    /**
+     * The default gravitational constant. Not a realistic value.
+     */
     private static final double DEFAULT_GRAVITY = 1.0;
+    /**
+     * Default graphics configuration for the simulation.
+     */
     private static final GraphicsConfig defaultGraphicsConfig = new GraphicsConfig(
             60,
             true,
@@ -34,32 +42,52 @@ public class Setup {
             1.0,
             1.1
     );
-
     /**
      * The 2D array to store information about how to generate bodies.
      */
     private static final ArrayList<Body> generationData = new ArrayList<>();
+
     /**
      * Universal gravitational constant.
      */
     private static double gravity;
+    /**
+     * The active graphics configuration.
+     */
     private static GraphicsConfig graphicsConfig;
 
+    /**
+     * Represents an exception that occurs during the processing of properties.
+     * This exception serves as a general exception for property-related issues and
+     * provides a base class for more specific property-related exceptions.
+     */
     public static class PropertiesException extends ConfigurationException {
         public PropertiesException(String msg) {
             super(msg);
         }
     }
+
+    /**
+     * Represents an exception that occurs when a property is not found in a properties file.
+     */
     public static class PropertyNotFoundException extends PropertiesException {
         public PropertyNotFoundException(String msg) {
             super(msg);
         }
     }
+
+    /**
+     * Represents an exception that occurs when a property is not formatted correctly.
+     */
     public static class PropertyFormatException extends PropertiesException {
         public PropertyFormatException(String msg) {
             super(msg);
         }
     }
+
+    /**
+     * Represents an exception that occurs when a property file is not found.
+     */
     public static class PropertyFileNotFoundException extends PropertiesException {
         public PropertyFileNotFoundException(String msg) {
             super(msg);
@@ -68,6 +96,9 @@ public class Setup {
 
     /**
      * Reads the setup files and sets the fields accordingly.
+     * If the main configuration file cannot be found or is invalid, default values will be used.
+     * This method catches all exceptions and falls back to default settings when necessary,
+     * ensuring the program can always start with at least basic configuration.
      */
     public static void read() {
         // Sets up a .properties file using InputStream.
@@ -100,7 +131,7 @@ public class Setup {
     /**
      * Getter method for the frames per second limit.
      *
-     * @return Returns the frame limit.
+     * @return the frame limit
      */
     public static int getFrameLimit() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).frameLimit();
@@ -109,7 +140,7 @@ public class Setup {
     /**
      * Getter method for the draw trail <code>boolean</code> value.
      *
-     * @return Returns whether to draw the trail.
+     * @return whether to draw the trail
      */
     public static boolean isDrawingTrail() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).shouldDrawTrail();
@@ -118,7 +149,7 @@ public class Setup {
     /**
      * Getter method for the trail alpha <code>boolean</code> value.
      *
-     * @return Returns whether the trail has transparency.
+     * @return whether the trail has transparency
      */
     public static boolean trailHasAlpha() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailHasAlpha();
@@ -127,7 +158,7 @@ public class Setup {
     /**
      * Getter method for the trail length.
      *
-     * @return Returns the trail length.
+     * @return the trail length
      */
     public static double getTrailLength() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailLength();
@@ -136,7 +167,7 @@ public class Setup {
     /**
      * Getter method for the trail resolution.
      *
-     * @return Returns the trail resolution.
+     * @return the trail resolution
      */
     public static double getTrailResolution() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailResolution();
@@ -145,7 +176,7 @@ public class Setup {
     /**
      * Getter method for the rotation precision.
      *
-     * @return Returns the rotational precision.
+     * @return the rotational precision
      */
     public static double getRotatePrecision() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).rotatePrecision();
@@ -154,7 +185,7 @@ public class Setup {
     /**
      * Getter method for the scaling precision.
      *
-     * @return Returns the scale precision.
+     * @return the scale precision
      */
     public static double getScalePrecision() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).scalePrecision();
@@ -163,7 +194,7 @@ public class Setup {
     /**
      * Getter method for the gravitational constant.
      *
-     * @return Returns the gravity.
+     * @return the gravity value
      */
     public static double getGravity() {
         return gravity;
@@ -172,16 +203,20 @@ public class Setup {
     /**
      * Getter method for the generation data.
      *
-     * @return Returns the generation data.
+     * @return the generation data
      */
     public static ArrayList<Body> getGenerationData() {
         return generationData;
     }
 
     /**
-     * Reads a system setup file and writes info about the bodies to the <code>genData</code> field.
+     * Reads a system setup file and writes info about the bodies to the <code>generationData</code> field.
+     * This method enforces strict validation of the system setup properties.
      *
      * @param fileName name of a system setup file
+     * @throws PropertyFormatException if any property has an invalid format
+     * @throws PropertyNotFoundException if a required property is missing
+     * @throws PropertyFileNotFoundException if the system setup file is missing or cannot be read
      */
     private static void readGeneration(String fileName)
             throws PropertyFormatException, PropertyNotFoundException, PropertyFileNotFoundException {
@@ -216,6 +251,11 @@ public class Setup {
         }
     }
 
+    /**
+     * Sets up a default solar system configuration when the configuration files
+     * cannot be read or contain invalid data. This ensures the simulation can
+     * always start with a basic system of a star and two planets.
+     */
     private static void setDefaultSystem() {
         logger.info("Using default system.");
         generationData.clear();
@@ -231,8 +271,9 @@ public class Setup {
      *
      * @param setup the properties file containing the vector data
      * @param key   the key to read from the properties file
-     * @return a Vector3D object if the input string is valid, or null if the input is null, does not have exactly three
-     * components or contains non-numeric values
+     * @return a Vector3D object containing the parsed vector values
+     * @throws PropertyNotFoundException if the specified key is not found in the properties file
+     * @throws PropertyFormatException if the vector format is invalid (wrong number of elements or non-numeric values)
      */
     private static Vector3D parseVector(Properties setup, String key)
         throws PropertyNotFoundException, PropertyFormatException {
@@ -263,8 +304,9 @@ public class Setup {
      *
      * @param setup the properties file containing the color data
      * @param key   the key to read from the properties file
-     * @return a Color object if the input string is valid, or null if the input is null, does not have exactly three
-     * components or contains non-numeric values
+     * @return a Color object containing the parsed RGB values (clamped to valid range)
+     * @throws PropertyNotFoundException if the specified key is not found in the properties file
+     * @throws PropertyFormatException if the color format is invalid (wrong number of elements or non-numeric values)
      */
     private static Color parseColor(Properties setup, String key)
         throws PropertyFormatException, PropertyNotFoundException {
@@ -297,7 +339,7 @@ public class Setup {
      * @param key          the key to read
      * @param converter    the conversion function
      * @param defaultValue the default value
-     * @return Returns the determined value.
+     * @return the determined value or the default value if parsing fails
      */
     private static <T> T validateProperty(Properties setup, String key, Function<String, T> converter, T defaultValue) {
         String in = setup.getProperty(key);
@@ -316,12 +358,14 @@ public class Setup {
 
     /**
      * Gets a value from a properties file and attempts to convert it using the provided function.
-     * If there is no property matching the key, it returns null.
+     * This method enforces strict validation of property existence and format.
      *
      * @param setup     the properties file
      * @param key       the key to read
-     * @param converter the conversion function
-     * @return Returns the determined value or null if parsing fails.
+     * @param converter the conversion function to apply to the property value
+     * @return the converted property value
+     * @throws PropertyNotFoundException if the specified key is not found in the properties file
+     * @throws PropertyFormatException if the property value cannot be converted using the provided function
      */
     private static <T> T parseProperty(Properties setup, String key, Function<String, T> converter)
             throws PropertyFormatException, PropertyNotFoundException {
@@ -339,13 +383,13 @@ public class Setup {
     /**
      * Stores parameters for the graphics configuration.
      *
-     * @param frameLimit      Stores the artificial frame rate limit.
-     * @param shouldDrawTrail Whether to draw the trail.
-     * @param trailHasAlpha   Stores whether to render the trails with transparency.
-     * @param trailLength     The degrees of revolution the trail should cover.
-     * @param trailResolution The degrees of revolution between trail points.
-     * @param rotatePrecision Stores the view's sensitivity to mouse movements.
-     * @param scalePrecision  Factor to scale by when zooming.
+     * @param frameLimit      the artificial frame rate limit
+     * @param shouldDrawTrail whether to draw the trail
+     * @param trailHasAlpha   whether to render the trails with transparency
+     * @param trailLength     the degrees of revolution the trail should cover
+     * @param trailResolution the degrees of revolution between trail points
+     * @param rotatePrecision the view's sensitivity to mouse movements
+     * @param scalePrecision  the factor to scale by when zooming
      */
     private record GraphicsConfig(
             int frameLimit,
