@@ -1,6 +1,6 @@
 package us.stomberg.solarsystemsim.graphics;
 
-import us.stomberg.solarsystemsim.Simulation;
+import us.stomberg.solarsystemsim.Main;
 import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.elements.Line;
 import us.stomberg.solarsystemsim.graphics.elements.Point;
@@ -9,7 +9,10 @@ import us.stomberg.solarsystemsim.physics.Physics;
 import us.stomberg.solarsystemsim.physics.Vector3D;
 
 import java.awt.*;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Class to create all the drawings and graphics. Runs the 3D transformation code and organises the 3D elements before
@@ -104,7 +107,7 @@ public class Draw {
     }
 
     /**
-     * Modifies the scale of the vie by the scale factor.
+     * Modifies the scale of the view by the scale factor.
      *
      * @param direction Which direction the zooming is going in.
      */
@@ -195,9 +198,10 @@ public class Draw {
         }
         g2d.setColor(Color.WHITE);
         ArrayList<String> bodyInfo = new ArrayList<>();
-        bodyInfo.add("FPS: " + (int) Simulation.getFps() + "fps");
-        bodyInfo.add("Duration: " + FormatText.formatTime(Physics.getDuration()));
-        bodyInfo.add("Time scale: " + Physics.getTimeScale() + "x");
+        bodyInfo.add("FPS: " + Main.getFPS() + FormatText.formatNum(Main.getFPS(), "fps", "kfps"));
+        bodyInfo.add("Duration: " + FormatText.formatTime(Physics.getDuration(), ChronoUnit.SECONDS));
+        bodyInfo.add("Time step: " + Physics.getTimeStep() + "s");
+        bodyInfo.add("Time scale: " + FormatText.formatTime((long)Main.getTimeScale(), ChronoUnit.SECONDS) + " per second");
         if (logScale) {
             bodyInfo.add("Planet scale: Log");
         } else {
@@ -318,9 +322,9 @@ public class Draw {
      * @param body body to draw the trail for
      */
     private void drawTrail(Body body) {
-        ArrayList<Vector3D> trail = body.getTrail();
-        if (trail.size() > 0) {
-            elements.add(new Line(body.getPosition(), trail.get(0), centerPoint, new Color(255, 255, 0)));
+        LinkedList<Vector3D> trail = body.getTrail();
+        if (!trail.isEmpty()) {
+            elements.add(new Line(body.getPosition(), trail.getFirst(), centerPoint, new Color(255, 255, 0)));
         }
         for (int i = 0; i < trail.size() - 1; i++) {
             Color c;

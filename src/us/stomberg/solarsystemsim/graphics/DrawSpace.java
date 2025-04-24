@@ -21,7 +21,7 @@ public class DrawSpace extends JPanel {
     public DrawSpace() {
         JFrame frame = new JFrame();
         frame.add(this);
-        frame.setTitle("Spaceflight Simulator");
+        frame.setTitle("Solar System Simulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(dim.width / 2, dim.height / 2);

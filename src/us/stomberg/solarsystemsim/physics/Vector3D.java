@@ -155,8 +155,7 @@ public class Vector3D {
      */
     public double distanceTo(Vector3D vector) {
         Vector3D compare = compareTo(vector);
-        double horizontal = Math.hypot(compare.getX(), compare.getY());
-        return Math.hypot(horizontal, compare.getZ());
+        return Math.hypot(Math.hypot(compare.getX(), compare.getY()), compare.getZ());
     }
 
     /**
@@ -164,8 +163,8 @@ public class Vector3D {
      *
      * @return Returns the vector's magnitude.
      */
-    public double distanceTo() {
-        return distanceTo(NULL);
+    public double magnitude() {
+        return Math.hypot(Math.hypot(x, y), z);
     }
 
     /**
@@ -188,8 +187,8 @@ public class Vector3D {
      *
      * @return Returns a vector on a unit scale to represent angle.
      */
-    public Vector3D angleTo() {
-        return angleTo(NULL).scaleVector(-1);
+    public Vector3D normalize() {
+        return scaleVector(1 / magnitude());
     }
 
     /**

@@ -4,8 +4,9 @@ import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.FormatText;
 
 import java.awt.*;
-import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.LinkedList;
 
 /**
  * Stores and updates physical information about a body. Updates information such as position and velocity as time
@@ -26,12 +27,14 @@ public class Body {
     /**
      * Vector to store the current gravitational forces acting on the body.
      */
-    public final ArrayList<Vector3D> gravityForces = new ArrayList<>();
+    private final Vector3D gravityForce = new Vector3D();
+
+    private final BitSet updatedBodies = new BitSet();
 
     /**
      * Stores the position vectors to render the trail.
      */
-    private final ArrayList<Vector3D> trail = new ArrayList<>();
+    private final LinkedList<Vector3D> trail = new LinkedList<>();
 
     /**
      * Stores the direction at the previous trail point.
@@ -47,11 +50,6 @@ public class Body {
      * Vector to store the body's velocity.
      */
     private final Vector3D velocity;
-
-    /**
-     * Vector to store the body's total acceleration.
-     */
-    private final Vector3D acceleration = new Vector3D();
 
     /**
      * Stores the color to use when drawing this body.
@@ -321,8 +319,9 @@ public class Body {
         id = count;
         count++;
         updateRadius();
+        resetGravityForce();
 
-        prevTrail = vel.angleTo();
+        prevTrail = vel.normalize();
         trail.add(pos.copy());
     }
 
@@ -351,25 +350,28 @@ public class Body {
      *   point. Scaled to the size of the system.</li>
      * </ul>
      */
-    public void update(double millis) {
-        acceleration.setToZero();
-        for (Vector3D f : gravityForces) {
-            acceleration.addVector(f.scaleVector(1 / mass));
-        }
-        velocity.addVector(acceleration.scaleVector(millis / 1000));
-        position.addVector(velocity.scaleVector(millis / 1000));
-        Vector3D direction = velocity.angleTo();
-        if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() || position.distanceTo(
-                trail.getFirst()) > Physics.getInitBounds() / 10) {
-            if (trail.size() < Setup.getTrailLength() / Setup.getTrailResolution()) {
-                trail.add(new Vector3D());
+    public void update(double seconds) {
+        // Calculate the acceleration of the body
+        Vector3D acceleration = gravityForce.scaleVector(1 / mass);
+        // Update the velocity based on the acceleration
+        velocity.addVector(acceleration.scaleVector(seconds));
+        // Update the position based on the velocity
+        position.addVector(velocity.scaleVector(seconds));
+        // Find the change in direction
+        Vector3D direction = velocity.normalize();
+        // If the direction has changed more than the resolution
+        // Or the body has traveled more than a tenth of the initial bounds
+        if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
+                position.distanceTo(trail.getFirst()) > Physics.getInitBounds() / 10) {
+            // Insert a new point into the trail
+            trail.addFirst(position.copy());
+            // If the trail is too long, remove the last point
+            if (trail.size() > Setup.getTrailLength() / Setup.getTrailResolution()) {
+                trail.removeLast();
             }
-            for (int i = trail.size() - 1; i > 0; i--) {
-                trail.set(i, trail.get(i - 1));
-            }
-            trail.set(0, position.copy());
             prevTrail = direction;
         }
+        resetGravityForce();
     }
 
     /**
@@ -396,11 +398,45 @@ public class Body {
     }
 
     /**
+     * Resets the gravity force vector to zero and clears the set of updated bodies. Also marks this body as updated in
+     * the updatedBodies BitSet. This is called after each physics update to prepare for the next frame's calculations.
+     */
+    private void resetGravityForce() {
+        gravityForce.setToZero();
+        updatedBodies.clear();
+        updatedBodies.set(id);
+    }
+
+    /**
+     * Calculates and adds the gravitational force between this body and another body. Uses Newton's law of universal
+     * gravitation: F = G * (m1 * m2) / r^2 The force is only calculated once per body pair per frame using a BitSet to
+     * track which interactions have already been computed. When calculated, the force is added to both bodies in
+     * opposite directions.
+     *
+     * @param other the other body to calculate gravitational force with
+     */
+    public void addGravityForce(Body other) {
+        if (updatedBodies.get(other.id)) {
+            return;
+        }
+        // Calculate the magnitude of force using Newton's law of universal gravitation
+        double r = position.distanceTo(other.position);
+        double f = Setup.getGravity() * ((mass * other.mass) / Math.pow(r, 2));
+        Vector3D angle = position.angleTo(other.position);
+        // Add the force to each body's gravitational force
+        gravityForce.addVector(angle.scaleVector(f));
+        other.gravityForce.addVector(angle.scaleVector(-f));
+        // Mark the bodies as updated
+        updatedBodies.set(other.id);
+        other.updatedBodies.set(id);
+    }
+
+    /**
      * Getter method for the body's trail data.
      *
      * @return the <code>ArrayList</code> of trail points
      */
-    public ArrayList<Vector3D> getTrail() {
+    public LinkedList<Vector3D> getTrail() {
         return trail;
     }
 
@@ -479,7 +515,6 @@ public class Body {
         string.add("Radius = " + FormatText.formatNum(radius, "m", "km"));
         string.add("Position = " + position.toString("m"));
         string.add("Velocity = " + velocity.toString("m/s"));
-        string.add("Acceleration = " + acceleration.toString("m/s²"));
         return string;
     }
 

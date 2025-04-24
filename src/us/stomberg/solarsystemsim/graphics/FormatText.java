@@ -1,7 +1,12 @@
 package us.stomberg.solarsystemsim.graphics;
 
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+
+// TODO: Replace with standard string formatting methods.
 
 /**
  * Class to store methods dealing with text and strings to be displayed on screen.
@@ -32,19 +37,16 @@ public class FormatText {
      * Formats a time duration into a readable string. Formats milliseconds into years, days, hours, minutes, seconds,
      * and the remainder milliseconds.
      *
-     * @param millis millisecond duration
      * @return Returns the formatted string.
      */
-    public static String formatTime(long millis) {
-        double seconds = (double) millis / 1000;
-        int ms = (int) (double) millis % 1000;
-        int s = (int) (seconds % 60);
-        int m = (int) (seconds / 60) % 60;
-        int h = (int) (seconds / 3600) % 24;
-        int d = (int) (seconds / 86400) % 365;
-        int y = (int) (seconds / 31536000);
-        return fixLength(y) + "y:" + fixLength(d) + "d:" + fixLength(h) + "h:" + fixLength(m) + "m:" + fixLength(
-                s) + "s." + ms + "ms";
+    public static String formatTime(long amount, TemporalUnit unit) {
+        Duration duration = Duration.of(amount, unit);
+        long years = duration.toDays() / 365;
+        long days = duration.toDays() % 365;
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+        return String.format("%dy:%03dd:%02dh:%02dm:%02ds", years, days, hours, minutes, seconds);
     }
 
     /**
@@ -84,21 +86,6 @@ public class FormatText {
             str = ((double) Math.round(num * 10000) / 10000) + " E" + exp + " ";
         }
         return str + suffix;
-    }
-
-    /**
-     * Fixes a number strings length to two digits. If the length is less than two, it inserts a zero at the front of
-     * the <code>String</code>.
-     *
-     * @param num number to format
-     * @return Returns the formatted string.
-     */
-    private static String fixLength(int num) {
-        String str = String.valueOf(num);
-        if (str.length() < 2) {
-            str = "0" + str;
-        }
-        return str;
     }
 
 }

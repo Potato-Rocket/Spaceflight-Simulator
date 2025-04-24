@@ -9,25 +9,13 @@ import java.util.ArrayList;
  */
 public class Physics {
 
-    // TODO: Make time scales more programmatic
-    /**
-     * Array of different time scales to toggle through.
-     */
-    private static final int[] SPEEDS = {1, 2, 4, 8, 16, 32, 64, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000
-            , 100000, 250000, 500000, 1000000};
-
-    /**
-     * The index of the fastest timescale allowable.
-     */
-    private static int timeScaleLimit = SPEEDS.length - 1;
-
     /**
      * Current time scale index.
      */
-    private static int timeScale = 0;
+    private static int timeStep = 0;
 
     /**
-     * Simulation duration in milliseconds.
+     * Simulation duration in seconds.
      */
     private static long duration = 0;
 
@@ -50,7 +38,7 @@ public class Physics {
 
         double[] distances = new double[bodyArray.size()];
         for (int i = 0; i < distances.length; i++) {
-            distances[i] = bodyArray.get(i).getPosition().distanceTo();
+            distances[i] = bodyArray.get(i).getPosition().magnitude();
         }
         for (double dist : distances) {
             if (dist > initBounds) {
@@ -60,8 +48,6 @@ public class Physics {
     }
 
     // FIXME: On collision, update focused body if focused is >= to this body.
-    // TODO: Comment the update method for more clarity
-    // TODO: Decouple the frames per second from the timescale, parallelize if reasonable
     /**
      * Updates every body in the body array. Runs the update function for each body to update the motion, then updates
      * the gravitational forces between each body and every other body. Finally, it checks for collisions between every
@@ -69,44 +55,37 @@ public class Physics {
      * <p>
      * The code to update the physics for every body is run once for every millisecond in the simulation that has passed
      * since the previous frame. That is the real time milliseconds passed times the timescale.
-     *
-     * @param fps current average fps
      */
-    public static void updateBodies(double fps) {
-        double realMillis = 1000 / fps;
-        int reps = (int) (realMillis * SPEEDS[timeScale]);
-        double repMillis = 1;
-        if (timeScale > timeScaleLimit) {
-            reps = (int) (realMillis * SPEEDS[timeScaleLimit]);
-            repMillis = (double) SPEEDS[timeScale] / SPEEDS[timeScaleLimit];
+    public static void updateBodies() {
+        // Calculate the force between each body and every other body
+        for (int i = 0; i < bodyArray.size(); i++) {
+            Body body = bodyArray.get(i);
+            for (int j = i + 1; j < bodyArray.size(); j++) {
+                Body other = bodyArray.get(j);
+                body.addGravityForce(other);
+            }
         }
-        while (reps > 0) {
-            for (Body body : bodyArray) {
-                body.gravityForces.clear();
-                for (Body other : bodyArray) {
-                    body.gravityForces.add(findGravityForce(body, other));
-                }
-            }
-            for (Body body : bodyArray) {
-                body.update(repMillis);
-            }
-            for (int i = 0; i < bodyArray.size(); i++) {
-                Body body = bodyArray.get(i);
-                for (int j = 0; j < bodyArray.size(); j++) {
-                    Body other = bodyArray.get(j);
-                    if (body.getId() != other.getId()) {
-                        double distance = body.getPosition().distanceTo(other.getPosition());
-                        if (body.getMass() >= other.getMass() && distance < body.getRadius() + other.getRadius()) {
-                            body.collision(other);
-                            bodyArray.remove(other);
-                            j--;
-                        }
+        // Update each body's position and velocity
+        for (Body body : bodyArray) {
+            body.update(timeStep);
+        }
+        // Handle collisions
+        for (int i = 0; i < bodyArray.size(); i++) {
+            Body body = bodyArray.get(i);
+            for (int j = 0; j < bodyArray.size(); j++) {
+                Body other = bodyArray.get(j);
+                if (body.getId() != other.getId()) {
+                    double distance = body.getPosition().distanceTo(other.getPosition());
+                    if (body.getMass() >= other.getMass() && distance < body.getRadius() + other.getRadius()) {
+                        body.collision(other);
+                        bodyArray.remove(other);
+                        j--;
                     }
                 }
             }
-            duration += (long) repMillis;
-            reps--;
         }
+
+        duration += timeStep;
     }
 
     /**
@@ -116,10 +95,10 @@ public class Physics {
      * @param increase whether to increase or decrease the timescale
      */
     public static void modifyTimeScale(boolean increase) {
-        if (increase && timeScale < SPEEDS.length - 1) {
-            timeScale++;
-        } else if (!increase && timeScale > 0) {
-            timeScale--;
+        if (increase) {
+            timeStep++;
+        } else if (timeStep > 0) {
+            timeStep--;
         }
     }
 
@@ -128,8 +107,8 @@ public class Physics {
      *
      * @return Returns the timescale.
      */
-    public static int getTimeScale() {
-        return SPEEDS[timeScale];
+    public static int getTimeStep() {
+        return timeStep;
     }
 
     /**
@@ -158,25 +137,6 @@ public class Physics {
      */
     public static long getDuration() {
         return duration;
-    }
-
-    /**
-     * Calculates the gravitational pull between this body and another body. Uses their relative positions and masses as
-     * well as the gravitational constant to calculate this. Does not calculate for a comparison between a body and
-     * itself.
-     *
-     * @param body  main body
-     * @param other other body
-     * @return Returns the gravitational force between the two bodies
-     */
-    private static Vector3D findGravityForce(Body body, Body other) {
-        if (body.getId() != other.getId()) {
-            double r = body.getPosition().distanceTo(other.getPosition());
-            double f = Setup.getGravity() * ((body.getMass() * other.getMass()) / Math.pow(r, 2));
-            Vector3D angle = body.getPosition().angleTo(other.getPosition());
-            return angle.scaleVector(f);
-        }
-        return new Vector3D();
     }
 
 }

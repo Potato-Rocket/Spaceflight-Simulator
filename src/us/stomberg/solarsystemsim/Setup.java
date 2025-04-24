@@ -107,7 +107,7 @@ public class Setup {
             setup.load(input);
             //Gets the values for how to display the simulation.
             graphicsConfig = new GraphicsConfig(
-                    validateProperty(setup, "frameLimit", Integer::parseInt, defaultGraphicsConfig.frameLimit()),
+                    validateProperty(setup, "frameLimit", Double::parseDouble, defaultGraphicsConfig.frameLimit()),
                     validateProperty(setup, "drawTrail", Boolean::parseBoolean, defaultGraphicsConfig.shouldDrawTrail()),
                     validateProperty(setup, "trailAlpha", Boolean::parseBoolean, defaultGraphicsConfig.trailHasAlpha()),
                     validateProperty(setup, "trailLength", Double::parseDouble, defaultGraphicsConfig.trailLength()),
@@ -133,7 +133,7 @@ public class Setup {
      *
      * @return the frame limit
      */
-    public static int getFrameLimit() {
+    public static double getFrameLimit() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).frameLimit();
     }
 
@@ -392,7 +392,7 @@ public class Setup {
      * @param scalePrecision  the factor to scale by when zooming
      */
     private record GraphicsConfig(
-            int frameLimit,
+            double frameLimit,
             boolean shouldDrawTrail,
             boolean trailHasAlpha,
             double trailLength,

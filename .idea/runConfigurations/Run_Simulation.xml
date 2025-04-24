@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Simulation" type="Application" factoryName="Application" activateToolWindowBeforeRun="false">
-    <option name="MAIN_CLASS_NAME" value="us.stomberg.solarsystemsim.Simulation" />
+    <option name="MAIN_CLASS_NAME" value="us.stomberg.solarsystemsim.Main" />
     <module name="Solar System Simulator" />
     <method v="2">
       <option name="Make" enabled="true" />

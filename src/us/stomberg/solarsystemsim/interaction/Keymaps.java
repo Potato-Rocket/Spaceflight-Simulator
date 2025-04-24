@@ -7,6 +7,7 @@ import us.stomberg.solarsystemsim.physics.Physics;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+// TODO: Implement an exit condition for when the window is closed, executable by a shortcut
 /**
  * Class to create and manage keymaps and their corresponding actions.
  */
