@@ -1,15 +1,18 @@
 package us.stomberg.solarsystemsim.graphics;
 
-import us.stomberg.solarsystemsim.Simulation;
 import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.elements.Line;
 import us.stomberg.solarsystemsim.graphics.elements.Point;
 import us.stomberg.solarsystemsim.physics.Body;
 import us.stomberg.solarsystemsim.physics.Physics;
+import us.stomberg.solarsystemsim.physics.TimeManager;
 import us.stomberg.solarsystemsim.physics.Vector3D;
 
 import java.awt.*;
+import java.text.DecimalFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Class to create all the drawings and graphics. Runs the 3D transformation code and organises the 3D elements before
@@ -84,27 +87,29 @@ public class Draw {
         g2d = (Graphics2D) graphics;
         w = width;
         h = height;
-        centerPoint = Physics.getBodyArray().get(focus).getPosition();
-        if (minBounds == 0) {
-            minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+        synchronized (Physics.lock) {
+            centerPoint = Physics.getBodyArray().get(focus).getPosition();
             if (minBounds == 0) {
-                minBounds = 1;
+                minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+                if (minBounds == 0) {
+                    minBounds = 1;
+                }
             }
-        }
-        logMinMax = new double[]{100, 0};
-        for (Body body : Physics.getBodyArray()) {
-            double log = Math.log(body.getRadius());
-            if (log < logMinMax[0]) {
-                logMinMax[0] = log;
-            }
-            if (log > logMinMax[1]) {
-                logMinMax[1] = log;
+            logMinMax = new double[]{100, 0};
+            for (Body body : Physics.getBodyArray()) {
+                double log = Math.log(body.getRadius());
+                if (log < logMinMax[0]) {
+                    logMinMax[0] = log;
+                }
+                if (log > logMinMax[1]) {
+                    logMinMax[1] = log;
+                }
             }
         }
     }
 
     /**
-     * Modifies the scale of the vie by the scale factor.
+     * Modifies the scale of the view by the scale factor.
      *
      * @param direction Which direction the zooming is going in.
      */
@@ -148,6 +153,10 @@ public class Draw {
         }
     }
 
+    public static int getFocus() {
+        return focus;
+    }
+
     public static void toggleLogScale() {
         logScale = !logScale;
     }
@@ -182,8 +191,10 @@ public class Draw {
         scale = min / (minBounds * 2);
         elements.clear();
         drawAxes();
-        for (Body body : Physics.getBodyArray()) {
-            drawBody(body);
+        synchronized (Physics.lock) {
+            for (Body body : Physics.getBodyArray()) {
+                drawBody(body);
+            }
         }
         render();
         drawGuides();
@@ -195,9 +206,24 @@ public class Draw {
         }
         g2d.setColor(Color.WHITE);
         ArrayList<String> bodyInfo = new ArrayList<>();
-        bodyInfo.add("FPS: " + (int) Simulation.getFps() + "fps");
-        bodyInfo.add("Duration: " + FormatText.formatTime(Physics.getDuration()));
-        bodyInfo.add("Time scale: " + Physics.getTimeScale() + "x");
+
+        DecimalFormat fps = new DecimalFormat("0.00 fps");
+        DecimalFormat fpsc = new DecimalFormat("0.## fps");
+        bodyInfo.add("FPS: " + fps.format(TimeManager.getCurrentFPS()) + " (" + fpsc.format(Setup.getFrameLimit()) + ")");
+        bodyInfo.add("Duration: " + FormatText.formatDuration((long) TimeManager.getDuration(), ChronoUnit.SECONDS));
+        bodyInfo.add("Time step: " + FormatText.formatScale(Setup.getTimeStep(), true) + " s");
+        bodyInfo.add("Time scale: " + FormatText.formatScale(TimeManager.getCurrentTimeScale(), false) +
+                             "x (" + FormatText.formatScale(TimeManager.getTimescaleCap(), true) + "x)");
+        double initialKE = Physics.getInitialKineticEnergy();
+        double currentKE = Physics.getKineticEnergy();
+        bodyInfo.add("");
+        bodyInfo.add("System Kinetic Energy:");
+        bodyInfo.add("Initial = " + FormatText.formatValue(initialKE, "J", "kJ"));
+        bodyInfo.add("Current = " + FormatText.formatValue(currentKE, "J", "kJ"));
+        DecimalFormat percent = new DecimalFormat("0.00%");
+        bodyInfo.add("Δ = " + FormatText.formatValue(Math.abs(initialKE - currentKE), "J", "kJ")
+        + " (" + percent.format(Math.abs(initialKE - currentKE) / initialKE) + ")");
+        bodyInfo.add("");
         if (logScale) {
             bodyInfo.add("Planet scale: Log");
         } else {
@@ -250,14 +276,14 @@ public class Draw {
         }
         tickExp--;
         tickDist = (long) (Math.pow(10, tickExp) * scale);
-        for (int x = (int) ((int) (-w / tickDist) * tickDist); x < w; x += tickDist) {
+        for (int x = (int) ((int) (-w / tickDist) * tickDist); x < w; x += (int) tickDist) {
             int len = 10;
             if (Math.round(x / (double) tickDist) % 10 == 0) {
                 len = 20;
             }
             g2d.drawLine(x, h, x, h - len);
         }
-        for (int y = (int) ((int) (-h / tickDist) * tickDist); y < h; y += tickDist) {
+        for (int y = (int) ((int) (-h / tickDist) * tickDist); y < h; y += (int) tickDist) {
             int len = 10;
             if (Math.round(y / (double) tickDist) % 10 == 0) {
                 len = 20;
@@ -267,7 +293,7 @@ public class Draw {
         g2d.setColor(new Color(0, 0, 0, 127));
         g2d.fillRect(-w, h - 50, 200, 30);
         g2d.setColor(Color.WHITE);
-        FormatText.drawText(g2d, "One tick = " + FormatText.formatNum(Math.pow(10, tickExp), "m", "km"), 10 - w,
+        FormatText.drawText(g2d, "One tick = " + FormatText.formatValue(Math.pow(10, tickExp), "m", "km"), 10 - w,
                             h - 40);
     }
 
@@ -318,9 +344,9 @@ public class Draw {
      * @param body body to draw the trail for
      */
     private void drawTrail(Body body) {
-        ArrayList<Vector3D> trail = body.getTrail();
-        if (trail.size() > 0) {
-            elements.add(new Line(body.getPosition(), trail.get(0), centerPoint, new Color(255, 255, 0)));
+        LinkedList<Vector3D> trail = body.getTrail();
+        if (!trail.isEmpty()) {
+            elements.add(new Line(body.getPosition(), trail.getFirst(), centerPoint, new Color(255, 255, 0)));
         }
         for (int i = 0; i < trail.size() - 1; i++) {
             Color c;

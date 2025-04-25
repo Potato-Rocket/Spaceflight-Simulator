@@ -21,7 +21,7 @@ public class DrawSpace extends JPanel {
     public DrawSpace() {
         JFrame frame = new JFrame();
         frame.add(this);
-        frame.setTitle("Spaceflight Simulator");
+        frame.setTitle("Solar System Simulator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setSize(dim.width / 2, dim.height / 2);
@@ -41,6 +41,13 @@ public class DrawSpace extends JPanel {
      * @param g current <code>Graphics</code> object
      */
     public void paint(Graphics g) {
+        // Cast to Graphics2D to access advanced rendering hints
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Enable antialiasing
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+
         g.setFont(new Font("Roboto Mono Thin", Font.PLAIN, 12));
         g.fillRect(0, 0, getWidth(), getHeight());
         Draw draw = new Draw(g, getWidth(), getHeight());

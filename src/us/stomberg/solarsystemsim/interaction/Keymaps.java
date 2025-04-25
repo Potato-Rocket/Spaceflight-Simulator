@@ -2,11 +2,12 @@ package us.stomberg.solarsystemsim.interaction;
 
 import us.stomberg.solarsystemsim.graphics.Draw;
 import us.stomberg.solarsystemsim.graphics.Graphics3D;
-import us.stomberg.solarsystemsim.physics.Physics;
+import us.stomberg.solarsystemsim.physics.TimeManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+// TODO: Implement an exit condition for when the window is closed, executable by a shortcut
 /**
  * Class to create and manage keymaps and their corresponding actions.
  */
@@ -49,21 +50,21 @@ public class Keymaps {
         }
     };
     /**
-     * Speeds up the time scale.
+     * Speeds up the timescale.
      */
     private final Action speedUp = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Physics.modifyTimeScale(true);
+            TimeManager.modifyTimescaleCap(TimeManager.TimeScaleChangeType.INCREMENT);
         }
     };
     /**
-     * Slows down the time scale.
+     * Slows down the timescale.
      */
     private final Action slowDown = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            Physics.modifyTimeScale(false);
+            TimeManager.modifyTimescaleCap(TimeManager.TimeScaleChangeType.DECREMENT);
         }
     };
     /**
