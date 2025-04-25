@@ -4,6 +4,8 @@ import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.Draw;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Vector;
 
 /**
  * Static class to handle all body interactions.
@@ -71,22 +73,30 @@ public class Physics {
                 body.update(Setup.getTimeStep());
             }
             // Handle collisions
+            LinkedList<CollisionEvent> collisions = new LinkedList<>();
             for (int i = 0; i < bodyArray.size(); i++) {
                 Body body = bodyArray.get(i);
-                for (int j = 0; j < bodyArray.size(); j++) {
+                for (int j = i + 1; j < bodyArray.size(); j++) {
                     Body other = bodyArray.get(j);
-                    if (body.getId() != other.getId()) {
-                        double distance = body.getPosition().distanceTo(other.getPosition());
-                        if (body.getMass() >= other.getMass() && distance < body.getRadius() + other.getRadius()) {
-                            body.collision(other);
-                            bodyArray.remove(other);
-                            j--;
-                            if (Draw.getFocus() > body.getId()) {
-                                Draw.modifyFocus(-1);
-                            }
-                        }
+                    double bound = body.getRadius() + other.getRadius();
+                    bound += Setup.getTimeStep() * body.getVelocity().magnitude();
+                    bound += Setup.getTimeStep() * other.getVelocity().magnitude();
+                    if (bound < body.getPosition().compareTo(other.getPosition()).magnitude()) {
+                        continue;  // Skip if bodies are too far apart
+                    }
+                    double t = body.findClosestLinearApproach(other);
+                    if (t > 0 || t < -Setup.getTimeStep()) {
+                        continue;
+                    }
+                    Vector3D bodyPos = body.getPosition().sumVector(body.getVelocity().scaleVector(t));
+                    Vector3D otherPos = other.getPosition().sumVector(other.getVelocity().scaleVector(t));
+                    if (bodyPos.compareTo(otherPos).magnitude() < body.getRadius() + other.getRadius()) {
+                        collisions.add(new CollisionEvent(body, other));
                     }
                 }
+            }
+            while (!collisions.isEmpty()) {
+                collisions.remove().processCollision(bodyArray);
             }
 
         }

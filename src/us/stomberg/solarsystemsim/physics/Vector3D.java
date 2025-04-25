@@ -192,6 +192,16 @@ public class Vector3D {
     }
 
     /**
+     * Calculates the dot product between this vector and another vector.
+     *
+     * @param vector The other vector to calculate dot product with
+     * @return the scalar dot product of the two vectors
+     */
+    public double dotProduct(Vector3D vector) {
+        return x * vector.x + y * vector.y + z * vector.z;
+    }
+
+    /**
      * Create a new <code>Vector3D</code> with identical values.
      *
      * @return Returns the copied vector.

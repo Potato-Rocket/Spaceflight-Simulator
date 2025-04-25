@@ -48,7 +48,7 @@ public class Draw {
     /**
      * Index + 1 of the body the view is currently centered on.
      */
-    private static int focus = 0;
+    private static Body focus;
 
     /**
      * Stores the <code>Graphics2D</code> object used to create all graphics.
@@ -88,7 +88,8 @@ public class Draw {
         w = width;
         h = height;
         synchronized (Physics.lock) {
-            centerPoint = Physics.getBodyArray().get(focus).getPosition();
+            checkFocus();
+            centerPoint = focus.getPosition();
             if (minBounds == 0) {
                 minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
                 if (minBounds == 0) {
@@ -144,17 +145,28 @@ public class Draw {
      * @param change whether to increase or decrease the index
      */
     public static void modifyFocus(int change) {
-        focus += change;
-        if (focus > Physics.getBodyArray().size() - 1) {
-            focus = 0;
-        }
-        if (focus < 0) {
-            focus = Physics.getBodyArray().size() - 1;
+        synchronized (Physics.lock) {
+            if (checkFocus()) {
+                int index = Physics.getBodyArray().indexOf(focus);
+                index += change;
+                if (index < 0) {
+                    index = Physics.getBodyArray().size() - 1;
+                } else if (index >= Physics.getBodyArray().size()) {
+                    index = 0;
+                }
+                focus = Physics.getBodyArray().get(index);
+            }
         }
     }
 
-    public static int getFocus() {
-        return focus;
+    private static boolean checkFocus() {
+        synchronized (Physics.lock) {
+            if (focus == null || !Physics.getBodyArray().contains(focus)) {
+                focus = Physics.getBodyArray().getFirst();
+                return false;
+            }
+            return true;
+        }
     }
 
     public static void toggleLogScale() {
@@ -236,9 +248,11 @@ public class Draw {
             bodyInfo.add("Rotation = " + (int) Math.round(Math.toDegrees(Graphics3D.getYaw())) + "°");
             bodyInfo.add("Tilt = " + (int) Math.round(Math.toDegrees(-Graphics3D.getTilt())) + "°");
             bodyInfo.add("");
-            bodyInfo.addAll(Physics.getBodyArray().get(focus).toStringArray());
+            bodyInfo.addAll(focus.toStringArray());
         } else {
-            bodyInfo.add("Focused body: " + Physics.getBodyArray().get(focus).getName() + " (" + (focus + 1) + ")");
+            synchronized (Physics.lock) {
+                bodyInfo.add("Focused body: " + focus.getName() + " (" + (focus.getId() + 1) + ")");
+            }
         }
         FormatText.drawText(g2d, bodyInfo, -w + 10, -h + 10, 1.5);
     }

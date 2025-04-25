@@ -159,6 +159,28 @@ public class Body {
     }
 
     /**
+     * Calculates the time of the closest linear approach between this body and another body.
+     * This method considers the relative position and velocity of the two bodies
+     * to determine when their separation distance will be minimized assuming linear motion.
+     *
+     * @param other the other body to calculate the closest linear approach with
+     * @return the time of closest approach as a double, or 0 if the relative velocity is negligible
+     */
+    public double findClosestLinearApproach(Body other) {
+        Vector3D relPos = position.compareTo(other.position);
+        Vector3D relVel = velocity.compareTo(other.velocity);
+
+        // Square the dot product of the relative velocity
+        double den = relVel.dotProduct(relVel);
+        // If it is zero, that means that the relative velocity is zero
+        if (den < 1.0e-12) {
+            return 0;
+        }
+        // calculate the time of the closest approach
+        return -relPos.dotProduct(relVel) / den;
+    }
+
+    /**
      * Modifies this body's attributes based on the body colliding with it.
      * Assumes that the other body is smaller and will be removed from the simulation.
      * Combines the masses, positions, and densities of the two bodies based on their relative masses.
@@ -303,14 +325,16 @@ public class Body {
      * @return a string array representing the body's attributes
      */
     public ArrayList<String> toStringArray() {
-        ArrayList<String> string = new ArrayList<>();
-        string.add("Body " + (id + 1) + ": " + name);
-        string.add("Mass = " + FormatText.formatValue(mass, "kg", "t"));
-        string.add("Radius = " + FormatText.formatValue(radius, "m", "km"));
-        string.add("Position = " + position.toString("m"));
-        string.add("Velocity = " + velocity.toString("m/s"));
-        string.add("KE = " + FormatText.formatValue(getKineticEnergy(), "J", "kJ"));
-        return string;
+        synchronized (Physics.lock) {
+            ArrayList<String> string = new ArrayList<>();
+            string.add("Body " + (id + 1) + ": " + name);
+            string.add("Mass = " + FormatText.formatValue(mass, "kg", "t"));
+            string.add("Radius = " + FormatText.formatValue(radius, "m", "km"));
+            string.add("Position = " + position.toString("m"));
+            string.add("Velocity = " + velocity.toString("m/s"));
+            string.add("KE = " + FormatText.formatValue(getKineticEnergy(), "J", "kJ"));
+            return string;
+        }
     }
 
     /**
@@ -319,8 +343,17 @@ public class Body {
      *
      * @return a string representing the body
      */
+    @Override
     public String toString() {
         return toStringArray().getFirst();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Body) {
+            return ((Body) o).id == id;
+        }
+        return false;
     }
 
 }
