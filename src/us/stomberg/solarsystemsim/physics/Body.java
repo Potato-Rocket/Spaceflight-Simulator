@@ -42,14 +42,11 @@ public class Body {
     private Vector3D prevTrail;
 
     /**
-     * Vector to store the body's position.
+     * Stores the current and historical body state.
      */
-    private final Vector3D position;
+    private LinkedList<BodyState> stateHistory = new LinkedList<>();
 
-    /**
-     * Vector to store the body's velocity.
-     */
-    private final Vector3D velocity;
+    private static final int STATE_HISTORY_SIZE = 2;
 
     /**
      * Stores the color to use when drawing this body.
@@ -93,8 +90,7 @@ public class Body {
      * @param c       color used for rendering the body
      */
     public Body(Vector3D pos, Vector3D vel, double mass, double density, String name, Color c) {
-        this.position = pos;
-        this.velocity = vel;
+        updateState(new BodyState(pos, vel, null, -1));
         this.mass = mass;
         this.density = density;
         this.name = name;
@@ -225,12 +221,6 @@ public class Body {
         if (updatedBodies.get(other.id)) {
             return;
         }
-        // Calculate the magnitude of force using Newton's law of universal gravitation
-        double r = position.distanceTo(other.position);
-        double f = Setup.getGravity() * ((mass * other.mass) / Math.pow(r, 2));
-        Vector3D angle = position.angleTo(other.position);
-        // Add the force to each body's gravitational force
-        gravityForce.addVector(angle.scaleVector(f));
         other.gravityForce.addVector(angle.scaleVector(-f));
         // Mark the bodies as updated
         updatedBodies.set(other.id);
@@ -244,7 +234,7 @@ public class Body {
      * @return the kinetic energy of the body as a double
      */
     public double getKineticEnergy() {
-        return Math.pow(velocity.magnitude(), 2) * mass * 0.5;
+        return Math.pow(getState().velocity().magnitude(), 2) * mass * 0.5;
     }
 
     /**
@@ -256,22 +246,30 @@ public class Body {
         return trail;
     }
 
-    /**
-     * Getter method for the body's position.
-     *
-     * @return the body's position
-     */
-    public Vector3D getPosition() {
-        return position;
+    public BodyState getState() {
+        return stateHistory.isEmpty() ? null : stateHistory.getFirst();
     }
 
-    /**
-     * Getter method for the body's velocity.
-     *
-     * @return the body's velocity
-     */
-    public Vector3D getVelocity() {
-        return velocity;
+    public BodyState getState(int history) {
+        if (stateHistory.isEmpty()) {
+            return null;
+        } else if (history >= 0 && history < stateHistory.size()) {
+            return stateHistory.get(history);
+        } else {
+            return null;
+        }
+    }
+
+    public void updateState(BodyState newState) {
+        stateHistory.addFirst(newState);
+        if (stateHistory.size() > STATE_HISTORY_SIZE) {
+            stateHistory.removeLast();
+        }
+    }
+
+    public void swapState(BodyState newState) {
+        stateHistory.removeFirst();
+        stateHistory.addFirst(newState);
     }
 
     /**
@@ -330,8 +328,8 @@ public class Body {
             string.add("Body " + (id + 1) + ": " + name);
             string.add("Mass = " + FormatText.formatValue(mass, "kg", "t"));
             string.add("Radius = " + FormatText.formatValue(radius, "m", "km"));
-            string.add("Position = " + position.toString("m"));
-            string.add("Velocity = " + velocity.toString("m/s"));
+            string.add("Position = " + state.position().toString("m"));
+            string.add("Velocity = " + state.velocity().toString("m/s"));
             string.add("KE = " + FormatText.formatValue(getKineticEnergy(), "J", "kJ"));
             return string;
         }

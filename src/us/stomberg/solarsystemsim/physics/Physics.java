@@ -4,6 +4,7 @@ import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.Draw;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -23,6 +24,8 @@ public class Physics {
      * The array of all bodies.
      */
     private static ArrayList<Body> bodyArray;
+
+    private static HashMap<Body, Vector3D> gravityForces;
 
     private static double initialKineticEnergy = 0;
 
