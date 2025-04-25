@@ -56,14 +56,14 @@ public class FormatText {
      * @param kiloUnit unit 1000x base unit
      * @return Returns the formatted string.
      */
-    public static String formatNum(double num, String unit, String kiloUnit) {
+    public static String formatValue(double num, String unit, String kiloUnit) {
         String suffix = unit;
         if (Math.abs(num) >= 10000) {
             num /= 1000;
             suffix = kiloUnit;
         }
         DecimalFormat df;
-        if (Math.abs(num) >= 10000) {
+        if (Math.abs(num) >= 100000) {
             df = new DecimalFormat("0.000E0 " + suffix);
         } else {
             df = new DecimalFormat("#,##0.00 " + suffix);

@@ -81,17 +81,15 @@ public class TimeManager {
     }
 
     public static boolean shouldRenderFrame() {
+        return System.nanoTime() - prevFrame >= (long) (1.0E9 / Setup.getFrameLimit());
+    }
+
+    public static void updateFPS() {
         long time = System.nanoTime();
-        if (prevFrame == -1) {
-            prevFrame = time;
-        }
-        boolean retVal = false;
-        if (time - prevFrame >= (long) (1.0E9 / Setup.getFrameLimit())) {
+        if (prevFrame != -1) {
             currentFPS = 1.0E9 / (time - prevFrame);
-            prevFrame = time;
-            retVal = true;
         }
-        return retVal;
+        prevFrame = time;
     }
 
     /**

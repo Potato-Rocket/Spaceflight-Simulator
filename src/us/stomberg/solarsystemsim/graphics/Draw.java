@@ -1,6 +1,5 @@
 package us.stomberg.solarsystemsim.graphics;
 
-import us.stomberg.solarsystemsim.Main;
 import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.elements.Line;
 import us.stomberg.solarsystemsim.graphics.elements.Point;
@@ -88,21 +87,23 @@ public class Draw {
         g2d = (Graphics2D) graphics;
         w = width;
         h = height;
-        centerPoint = Physics.getBodyArray().get(focus).getPosition();
-        if (minBounds == 0) {
-            minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+        synchronized (Physics.lock) {
+            centerPoint = Physics.getBodyArray().get(focus).getPosition();
             if (minBounds == 0) {
-                minBounds = 1;
+                minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+                if (minBounds == 0) {
+                    minBounds = 1;
+                }
             }
-        }
-        logMinMax = new double[]{100, 0};
-        for (Body body : Physics.getBodyArray()) {
-            double log = Math.log(body.getRadius());
-            if (log < logMinMax[0]) {
-                logMinMax[0] = log;
-            }
-            if (log > logMinMax[1]) {
-                logMinMax[1] = log;
+            logMinMax = new double[]{100, 0};
+            for (Body body : Physics.getBodyArray()) {
+                double log = Math.log(body.getRadius());
+                if (log < logMinMax[0]) {
+                    logMinMax[0] = log;
+                }
+                if (log > logMinMax[1]) {
+                    logMinMax[1] = log;
+                }
             }
         }
     }
@@ -152,6 +153,10 @@ public class Draw {
         }
     }
 
+    public static int getFocus() {
+        return focus;
+    }
+
     public static void toggleLogScale() {
         logScale = !logScale;
     }
@@ -186,7 +191,7 @@ public class Draw {
         scale = min / (minBounds * 2);
         elements.clear();
         drawAxes();
-        synchronized (Main.lock) {
+        synchronized (Physics.lock) {
             for (Body body : Physics.getBodyArray()) {
                 drawBody(body);
             }
@@ -209,6 +214,16 @@ public class Draw {
         bodyInfo.add("Time step: " + FormatText.formatScale(Setup.getTimeStep(), true) + " s");
         bodyInfo.add("Time scale: " + FormatText.formatScale(TimeManager.getCurrentTimeScale(), false) +
                              "x (" + FormatText.formatScale(TimeManager.getTimescaleCap(), true) + "x)");
+        double initialKE = Physics.getInitialKineticEnergy();
+        double currentKE = Physics.getKineticEnergy();
+        bodyInfo.add("");
+        bodyInfo.add("System Kinetic Energy:");
+        bodyInfo.add("Initial = " + FormatText.formatValue(initialKE, "J", "kJ"));
+        bodyInfo.add("Current = " + FormatText.formatValue(currentKE, "J", "kJ"));
+        DecimalFormat percent = new DecimalFormat("0.00%");
+        bodyInfo.add("Δ = " + FormatText.formatValue(Math.abs(initialKE - currentKE), "J", "kJ")
+        + " (" + percent.format(Math.abs(initialKE - currentKE) / initialKE) + ")");
+        bodyInfo.add("");
         if (logScale) {
             bodyInfo.add("Planet scale: Log");
         } else {
@@ -278,7 +293,7 @@ public class Draw {
         g2d.setColor(new Color(0, 0, 0, 127));
         g2d.fillRect(-w, h - 50, 200, 30);
         g2d.setColor(Color.WHITE);
-        FormatText.drawText(g2d, "One tick = " + FormatText.formatNum(Math.pow(10, tickExp), "m", "km"), 10 - w,
+        FormatText.drawText(g2d, "One tick = " + FormatText.formatValue(Math.pow(10, tickExp), "m", "km"), 10 - w,
                             h - 40);
     }
 

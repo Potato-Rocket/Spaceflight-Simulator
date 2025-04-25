@@ -216,6 +216,16 @@ public class Body {
     }
 
     /**
+     * Calculates the kinetic energy of the body using the formula:
+     * KE = 0.5 * mass * velocity^2.
+     *
+     * @return the kinetic energy of the body as a double
+     */
+    public double getKineticEnergy() {
+        return Math.pow(velocity.magnitude(), 2) * mass * 0.5;
+    }
+
+    /**
      * Getter method for the body's trail data.
      *
      * @return the <code>ArrayList</code> of trail points
@@ -295,10 +305,11 @@ public class Body {
     public ArrayList<String> toStringArray() {
         ArrayList<String> string = new ArrayList<>();
         string.add("Body " + (id + 1) + ": " + name);
-        string.add("Mass = " + FormatText.formatNum(mass, "kg", "t"));
-        string.add("Radius = " + FormatText.formatNum(radius, "m", "km"));
+        string.add("Mass = " + FormatText.formatValue(mass, "kg", "t"));
+        string.add("Radius = " + FormatText.formatValue(radius, "m", "km"));
         string.add("Position = " + position.toString("m"));
         string.add("Velocity = " + velocity.toString("m/s"));
+        string.add("KE = " + FormatText.formatValue(getKineticEnergy(), "J", "kJ"));
         return string;
     }
 

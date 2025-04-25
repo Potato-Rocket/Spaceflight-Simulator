@@ -4,15 +4,11 @@ import us.stomberg.solarsystemsim.graphics.DrawSpace;
 import us.stomberg.solarsystemsim.physics.Physics;
 import us.stomberg.solarsystemsim.physics.TimeManager;
 
-import java.util.concurrent.locks.LockSupport;
-import java.util.logging.Logger;
-
 /**
  * Top level runner class. Dictates initial body creation as well as physics updates and graphics renderings
  */
 public class Main {
 
-    public static final Object lock = new Object();
     private static volatile boolean running = true;
 
     /**
@@ -34,6 +30,7 @@ public class Main {
         while (running) {
             if (TimeManager.shouldRenderFrame()) {
                 drawSpace.repaint();
+                TimeManager.updateFPS();
             }
         }
     }
@@ -45,9 +42,7 @@ public class Main {
             while (running) {
 
                 if (TimeManager.shouldUpdatePhysics()) {
-                    synchronized (lock) {
-                        Physics.updateBodies();
-                    }
+                    Physics.updateBodies();
                 }
 
             }

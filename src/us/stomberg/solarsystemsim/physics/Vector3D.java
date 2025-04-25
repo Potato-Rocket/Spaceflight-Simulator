@@ -208,9 +208,9 @@ public class Vector3D {
      * @return Returns a string expressing the vector.
      */
     public String toString(String unit) {
-        String string = "Vector3D(x=" + FormatText.formatNum(x, unit, "k" + unit);
-        string += ", y=" + FormatText.formatNum(y, unit, "k" + unit);
-        string += ", z=" + FormatText.formatNum(z, unit, "k" + unit);
+        String string = "Vector3D(x=" + FormatText.formatValue(x, unit, "k" + unit);
+        string += ", y=" + FormatText.formatValue(y, unit, "k" + unit);
+        string += ", z=" + FormatText.formatValue(z, unit, "k" + unit);
         return string + ")";
     }
 
