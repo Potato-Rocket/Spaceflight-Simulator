@@ -36,8 +36,8 @@ public class Line {
      * @param c      color of the line
      */
     public Line(Vector3D point1, Vector3D point2, Vector3D focus, Color c) {
-        converted1 = Graphics3D.convertPoint(point1, focus).scaleVector(Draw.getScale());
-        converted2 = Graphics3D.convertPoint(point2, focus).scaleVector(Draw.getScale());
+        converted1 = Graphics3D.convertPoint(point1, focus).scale(Draw.getScale());
+        converted2 = Graphics3D.convertPoint(point2, focus).scale(Draw.getScale());
         color = c;
     }
 

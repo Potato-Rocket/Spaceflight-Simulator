@@ -1,12 +1,9 @@
 package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.Setup;
-import us.stomberg.solarsystemsim.graphics.Draw;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Vector;
 
 /**
  * Static class to handle all body interactions.
@@ -25,9 +22,13 @@ public class Physics {
      */
     private static ArrayList<Body> bodyArray;
 
-    private static HashMap<Body, Vector3D> gravityForces;
-
     private static double initialKineticEnergy = 0;
+
+    private static final Integrator integrator = new ExplicitEulerIntegrator();
+
+    private static final GravityCalculator gravityCalculator = new GravityCalculator();
+
+    // private static final CollisionDetector collisionDetector = new CollisionDetector();
 
     /**
      * Populates the array of bodies based on the generation data. After generating the bodies, gets the max initial
@@ -36,14 +37,21 @@ public class Physics {
     public static void createBodies() {
         synchronized (lock) {
 
+            // Import the bodies from the generation data
             bodyArray = Setup.getGenerationData();
+            // Calculate the kinetic energy of the system at initialization
             initialKineticEnergy = getKineticEnergy();
-
-            double[] distances = new double[bodyArray.size()];
-            for (int i = 0; i < distances.length; i++) {
-                distances[i] = bodyArray.get(i).getPosition().magnitude();
+            // Make sure each body starts with the proper history and initial state
+            HashMap<Body, Vector3D> forces = gravityCalculator.updateForces(bodyArray);
+            BodyHistory state;
+            for (Body body : bodyArray) {
+                state = body.getState();
+                state.getAcceleration().addInPlace(forces.get(body).scaleInPlace(1.0 / body.getMass()));
+                state.updateHistory();
             }
-            for (double dist : distances) {
+            // Calculate the max initial distance of any one body from the origin
+            for (Body body : bodyArray) {
+                double dist = body.getState().getPosition().magnitude();
                 if (dist > initBounds) {
                     initBounds = dist;
                 }
@@ -62,46 +70,20 @@ public class Physics {
      */
     public static void updateBodies() {
         synchronized (lock) {
-
-            // Calculate the force between each body and every other body
-            for (int i = 0; i < bodyArray.size(); i++) {
-                Body body = bodyArray.get(i);
-                for (int j = i + 1; j < bodyArray.size(); j++) {
-                    Body other = bodyArray.get(j);
-                    body.addGravityForce(other);
-                }
-            }
-            // Update each body's position and velocity
+            // Make the initial position prediction for each body
             for (Body body : bodyArray) {
-                body.update(Setup.getTimeStep());
+                integrator.setPrediction(body, Setup.getTimeStep());
             }
-            // Handle collisions
-            LinkedList<CollisionEvent> collisions = new LinkedList<>();
-            for (int i = 0; i < bodyArray.size(); i++) {
-                Body body = bodyArray.get(i);
-                for (int j = i + 1; j < bodyArray.size(); j++) {
-                    Body other = bodyArray.get(j);
-                    double bound = body.getRadius() + other.getRadius();
-                    bound += Setup.getTimeStep() * body.getVelocity().magnitude();
-                    bound += Setup.getTimeStep() * other.getVelocity().magnitude();
-                    if (bound < body.getPosition().compareTo(other.getPosition()).magnitude()) {
-                        continue;  // Skip if bodies are too far apart
-                    }
-                    double t = body.findClosestLinearApproach(other);
-                    if (t > 0 || t < -Setup.getTimeStep()) {
-                        continue;
-                    }
-                    Vector3D bodyPos = body.getPosition().sumVector(body.getVelocity().scaleVector(t));
-                    Vector3D otherPos = other.getPosition().sumVector(other.getVelocity().scaleVector(t));
-                    if (bodyPos.compareTo(otherPos).magnitude() < body.getRadius() + other.getRadius()) {
-                        collisions.add(new CollisionEvent(body, other));
-                    }
-                }
+            // Calculate the force between each body and every other body
+            HashMap<Body, Vector3D> forces = gravityCalculator.updateForces(bodyArray);
+            // Update each body's final state based on the acceleration
+            for (Body body : bodyArray) {
+                integrator.update(body, forces.get(body), Setup.getTimeStep());
             }
-            while (!collisions.isEmpty()) {
-                collisions.remove().processCollision(bodyArray);
+            // Update each body's trail
+            for (Body body : bodyArray) {
+                body.updateTrail(Setup.getTimeStep());
             }
-
         }
 
         TimeManager.incrementDuration();

@@ -89,7 +89,7 @@ public class Draw {
         h = height;
         synchronized (Physics.lock) {
             checkFocus();
-            centerPoint = focus.getPosition();
+            centerPoint = focus.getState().getPosition();
             if (minBounds == 0) {
                 minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
                 if (minBounds == 0) {
@@ -262,17 +262,17 @@ public class Draw {
      * appear brighter than their negative sections. Translates it to the current focus point.
      */
     private void drawAxes() {
-        elements.add(new Line(new Vector3D(minBounds / 2, 0, 0).sumVector(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(new Vector3D(minBounds / 2, 0, 0).add(centerPoint), centerPoint, centerPoint,
                               new Color(255, 0, 0)));
-        elements.add(new Line(new Vector3D(minBounds / -2, 0, 0).sumVector(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(new Vector3D(minBounds / -2, 0, 0).add(centerPoint), centerPoint, centerPoint,
                               new Color(63, 0, 0)));
-        elements.add(new Line(new Vector3D(0, minBounds / 2, 0).sumVector(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(new Vector3D(0, minBounds / 2, 0).add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 255, 0)));
-        elements.add(new Line(new Vector3D(0, minBounds / -2, 0).sumVector(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(new Vector3D(0, minBounds / -2, 0).add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 63, 0)));
-        elements.add(new Line(new Vector3D(0, 0, minBounds / 2).sumVector(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(new Vector3D(0, 0, minBounds / 2).add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 0, 255)));
-        elements.add(new Line(new Vector3D(0, 0, minBounds / -2).sumVector(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(new Vector3D(0, 0, minBounds / -2).add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 0, 127)));
     }
 
@@ -348,7 +348,7 @@ public class Draw {
                 size = 2;
             }
         }
-        elements.add(new Point(body.getPosition(), centerPoint, body.getColor(), (int) size));
+        elements.add(new Point(body.getState().getPosition(), centerPoint, body.getColor(), (int) size));
     }
 
     /**
@@ -360,7 +360,7 @@ public class Draw {
     private void drawTrail(Body body) {
         LinkedList<Vector3D> trail = body.getTrail();
         if (!trail.isEmpty()) {
-            elements.add(new Line(body.getPosition(), trail.getFirst(), centerPoint, new Color(255, 255, 0)));
+            elements.add(new Line(body.getState().getPosition(), trail.getFirst(), centerPoint, new Color(255, 255, 0)));
         }
         for (int i = 0; i < trail.size() - 1; i++) {
             Color c;

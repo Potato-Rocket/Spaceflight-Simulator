@@ -6,13 +6,15 @@ public class CollisionEvent {
 
     private final Body a;
     private final Body b;
+    private final double t;
 
-    public CollisionEvent(Body a, Body b) {
+    public CollisionEvent(Body a, Body b, double t) {
         this.a = a;
         this.b = b;
+        this.t = t;
     }
 
-    public void processCollision(ArrayList<Body> bodies) {
+    public void processCollision(ArrayList<Body> bodies, Integrator integrator) {
         Body destroy;
         Body keep;
         if (a.getMass() < b.getMass()) {
@@ -22,8 +24,18 @@ public class CollisionEvent {
             destroy = b;
             keep = a;
         }
+        BodyHistory keepState = keep.getState();
+        BodyHistory destroyState = destroy.getState();
+
+        // Find the ratio of masses
+        double scale = destroy.getMass() / keep.getMass();
+        // Find the resultant velocity by conservation of momentum
+        keepState.getVelocity().addInPlace(destroyState.getVelocity().scale(scale));
+        // Average the position of the bodies, weighted by the relative masses
+        keepState.getPosition().addInPlace(destroyState.getPosition().subtract(keepState.getPosition()).scale(scale));
+
+        keep.merge(destroy);
         bodies.remove(destroy);
-        keep.collision(destroy);
     }
 
     @Override

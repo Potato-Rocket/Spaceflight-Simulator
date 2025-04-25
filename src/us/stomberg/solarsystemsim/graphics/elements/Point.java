@@ -35,7 +35,7 @@ public class Point {
      * @param size     size of the point
      */
     public Point(Vector3D position, Vector3D focus, Color c, int size) {
-        this.converted = Graphics3D.convertPoint(position, focus).scaleVector(Draw.getScale());
+        this.converted = Graphics3D.convertPoint(position, focus).scale(Draw.getScale());
         this.color = c;
         this.size = size;
     }

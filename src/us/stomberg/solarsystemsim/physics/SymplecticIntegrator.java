@@ -1,14 +1,14 @@
 package us.stomberg.solarsystemsim.physics;
 
-public class ExplicitEulerIntegrator implements Integrator {
+public class SymplecticIntegrator implements Integrator {
 
     @Override
     public void setPrediction(Body body, double dt) {
         BodyHistory state = body.getState();
-        // First set x_{n+1} = x_n + v_n * dt
-        state.getPosition().addInPlace(state.getVelocity().scale(dt));
         // Then set v_{n+1} = v_n + a_n * dt
         state.getVelocity().addInPlace(state.getAcceleration().scale(dt));
+        // First set x_{n+1} = x_n + v_{n+1} * dt
+        state.getPosition().addInPlace(state.getVelocity().scale(dt));
     }
 
     @Override

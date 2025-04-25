@@ -2,8 +2,8 @@ package us.stomberg.solarsystemsim.physics;
 
 public interface Integrator {
 
-    int getRequiredHistory();
+    void setPrediction(Body body, double dt);
 
-    void update(Body body, double timeStep);
+    void update(Body body, Vector3D f, double dt);
 
 }

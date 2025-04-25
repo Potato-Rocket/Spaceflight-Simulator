@@ -5,7 +5,6 @@ import us.stomberg.solarsystemsim.graphics.FormatText;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.LinkedList;
 
 /**
@@ -25,13 +24,6 @@ public class Body {
     private static int count = 0;
 
     /**
-     * Vector to store the current gravitational forces acting on the body.
-     */
-    private final Vector3D gravityForce = new Vector3D();
-
-    private final BitSet updatedBodies = new BitSet();
-
-    /**
      * Stores the position vectors to render the trail.
      */
     private final LinkedList<Vector3D> trail = new LinkedList<>();
@@ -44,9 +36,7 @@ public class Body {
     /**
      * Stores the current and historical body state.
      */
-    private LinkedList<BodyState> stateHistory = new LinkedList<>();
-
-    private static final int STATE_HISTORY_SIZE = 2;
+    private final BodyHistory state;
 
     /**
      * Stores the color to use when drawing this body.
@@ -90,16 +80,16 @@ public class Body {
      * @param c       color used for rendering the body
      */
     public Body(Vector3D pos, Vector3D vel, double mass, double density, String name, Color c) {
-        updateState(new BodyState(pos, vel, null, -1));
         this.mass = mass;
         this.density = density;
         this.name = name;
         this.color = c;
 
+        state = new BodyHistory(pos, vel);
+
         id = count;
         count++;
         updateRadius();
-        resetGravityForce();
 
         prevTrail = vel.normalize();
         trail.add(pos.copy());
@@ -117,6 +107,20 @@ public class Body {
     }
 
     /**
+     * Merges the specified body into this body by summing the masses, averaging the densities, and updating the radius.
+     *
+     * @param other the other body to merge into this body
+     */
+    public void merge(Body other) {
+        // Average the densities of the bodies, weighted by the relative masses
+        density = ((mass * density) + (other.mass * other.density)) / (mass + other.mass);
+        // Add the masses together
+        mass += other.mass;
+        // Update the radius now that the mass and density have changed
+        updateRadius();
+    }
+
+    /**
      * Updates the body's physical motion vectors. Resets the acceleration factor and sets it based on the mass and the
      * gravity forces currently acting on the body. The velocity is updated based on the acceleration and the position
      * is updated based on the velocity.
@@ -130,101 +134,21 @@ public class Body {
      *   point. Scaled to the size of the system.</li>
      * </ul>
      */
-    public void update(double seconds) {
-        // Calculate the acceleration of the body
-        Vector3D acceleration = gravityForce.scaleVector(1 / mass);
-        // Update the velocity based on the acceleration
-        velocity.addVector(acceleration.scaleVector(seconds));
-        // Update the position based on the velocity
-        position.addVector(velocity.scaleVector(seconds));
+    public void updateTrail(double seconds) {
         // Find the change in direction
-        Vector3D direction = velocity.normalize();
+        Vector3D direction = state.getVelocity().normalize();
         // If the direction has changed more than the resolution
         // Or the body has traveled more than a tenth of the initial bounds
-        if (direction.distanceTo(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
-                position.distanceTo(trail.getFirst()) > Physics.getInitBounds() / 10) {
+        if (direction.distance(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
+                state.getPosition().distance(trail.getFirst()) > Physics.getInitBounds() / 10) {
             // Insert a new point into the trail
-            trail.addFirst(position.copy());
+            trail.addFirst(state.getPosition().copy());
             // If the trail is too long, remove the last point
             if (trail.size() > Setup.getTrailLength() / Setup.getTrailResolution()) {
                 trail.removeLast();
             }
             prevTrail = direction;
         }
-        resetGravityForce();
-    }
-
-    /**
-     * Calculates the time of the closest linear approach between this body and another body.
-     * This method considers the relative position and velocity of the two bodies
-     * to determine when their separation distance will be minimized assuming linear motion.
-     *
-     * @param other the other body to calculate the closest linear approach with
-     * @return the time of closest approach as a double, or 0 if the relative velocity is negligible
-     */
-    public double findClosestLinearApproach(Body other) {
-        Vector3D relPos = position.compareTo(other.position);
-        Vector3D relVel = velocity.compareTo(other.velocity);
-
-        // Square the dot product of the relative velocity
-        double den = relVel.dotProduct(relVel);
-        // If it is zero, that means that the relative velocity is zero
-        if (den < 1.0e-12) {
-            return 0;
-        }
-        // calculate the time of the closest approach
-        return -relPos.dotProduct(relVel) / den;
-    }
-
-    /**
-     * Modifies this body's attributes based on the body colliding with it.
-     * Assumes that the other body is smaller and will be removed from the simulation.
-     * Combines the masses, positions, and densities of the two bodies based on their relative masses.
-     * The resultant velocity is based on conservation of momentum, and the radius is updated based on the new mass and
-     * density.
-     *
-     * @param other the other body
-     */
-    public void collision(Body other) {
-        // Find the ratio of masses
-        double scale = other.mass / mass;
-        // Find the resultant velocity by conservation of momentum
-        velocity.addVector(other.velocity.scaleVector(scale));
-        // Average the position of the bodies, weighted by the relative masses
-        position.addVector(position.compareTo(other.position).scaleVector(scale * 0.5));
-        // Average the densities of the bodies, weighted by the relative masses
-        density = ((mass * density) + (other.mass * other.density)) / (mass + other.mass);
-        // Add the masses together
-        mass += other.mass;
-        updateRadius();
-    }
-
-    /**
-     * Resets the gravity force vector to zero and clears the set of updated bodies. Also marks this body as updated in
-     * the updatedBodies BitSet. This is called after each physics update to prepare for the next frame's calculations.
-     */
-    private void resetGravityForce() {
-        gravityForce.setToZero();
-        updatedBodies.clear();
-        updatedBodies.set(id);
-    }
-
-    /**
-     * Calculates and adds the gravitational force between this body and another body. Uses Newton's law of universal
-     * gravitation: F = G * (m1 * m2) / r^2 The force is only calculated once per body pair per frame using a BitSet to
-     * track which interactions have already been computed. When calculated, the force is added to both bodies in
-     * opposite directions.
-     *
-     * @param other the other body to calculate gravitational force with
-     */
-    public void addGravityForce(Body other) {
-        if (updatedBodies.get(other.id)) {
-            return;
-        }
-        other.gravityForce.addVector(angle.scaleVector(-f));
-        // Mark the bodies as updated
-        updatedBodies.set(other.id);
-        other.updatedBodies.set(id);
     }
 
     /**
@@ -234,7 +158,7 @@ public class Body {
      * @return the kinetic energy of the body as a double
      */
     public double getKineticEnergy() {
-        return Math.pow(getState().velocity().magnitude(), 2) * mass * 0.5;
+        return Math.pow(getState().getVelocity().magnitude(), 2) * mass * 0.5;
     }
 
     /**
@@ -246,30 +170,8 @@ public class Body {
         return trail;
     }
 
-    public BodyState getState() {
-        return stateHistory.isEmpty() ? null : stateHistory.getFirst();
-    }
-
-    public BodyState getState(int history) {
-        if (stateHistory.isEmpty()) {
-            return null;
-        } else if (history >= 0 && history < stateHistory.size()) {
-            return stateHistory.get(history);
-        } else {
-            return null;
-        }
-    }
-
-    public void updateState(BodyState newState) {
-        stateHistory.addFirst(newState);
-        if (stateHistory.size() > STATE_HISTORY_SIZE) {
-            stateHistory.removeLast();
-        }
-    }
-
-    public void swapState(BodyState newState) {
-        stateHistory.removeFirst();
-        stateHistory.addFirst(newState);
+    public BodyHistory getState() {
+        return state;
     }
 
     /**
@@ -328,8 +230,8 @@ public class Body {
             string.add("Body " + (id + 1) + ": " + name);
             string.add("Mass = " + FormatText.formatValue(mass, "kg", "t"));
             string.add("Radius = " + FormatText.formatValue(radius, "m", "km"));
-            string.add("Position = " + state.position().toString("m"));
-            string.add("Velocity = " + state.velocity().toString("m/s"));
+            string.add("Position = " + state.getPosition().toString("m"));
+            string.add("Velocity = " + state.getVelocity().toString("m/s"));
             string.add("KE = " + FormatText.formatValue(getKineticEnergy(), "J", "kJ"));
             return string;
         }
