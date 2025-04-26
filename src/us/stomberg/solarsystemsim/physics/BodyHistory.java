@@ -7,7 +7,7 @@ public class BodyHistory {
     public record State(Vector3D position, Vector3D velocity, Vector3D acceleration, double timestamp) {
 
         public boolean isSynchronous(State other) {
-            return Math.abs(timestamp - other.timestamp) < 1E-10;
+            return Math.abs(timestamp - other.timestamp) < 1e-12;
         }
 
     }

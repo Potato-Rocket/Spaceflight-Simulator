@@ -24,7 +24,7 @@ public class Physics {
 
     private static double initialKineticEnergy = 0;
 
-    private static final Integrator integrator = new ExplicitEulerIntegrator();
+    private static final Integrator integrator = new VerletIntegrator();
 
     private static final GravityCalculator gravityCalculator = new GravityCalculator();
 

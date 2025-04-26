@@ -5,9 +5,9 @@ public class SymplecticIntegrator implements Integrator {
     @Override
     public void setPrediction(Body body, double dt) {
         BodyHistory state = body.getState();
-        // Then set v_{n+1} = v_n + a_n * dt
+        // First set v_{n+1} = v_n + a_n * dt
         state.getVelocity().addInPlace(state.getAcceleration().scale(dt));
-        // First set x_{n+1} = x_n + v_{n+1} * dt
+        // Then set x_{n+1} = x_n + v_{n+1} * dt
         state.getPosition().addInPlace(state.getVelocity().scale(dt));
     }
 
