@@ -72,7 +72,7 @@ public class Graphics3D {
      * @return Returns the transformed point.
      */
     public static Vector3D convertPoint(Vector3D point, Vector3D pivot) {
-        Vector3D pos = point.copy().sumVector(pivot.copy().scaleVector(-1));
+        Vector3D pos = point.copy().add(pivot.copy().scale(-1));
         //Transforms the point based on the yaw angle.
         double x = pos.getX() * Math.cos(yaw) - pos.getY() * Math.sin(yaw);
         double y = pos.getX() * Math.sin(yaw) + pos.getY() * Math.cos(yaw);

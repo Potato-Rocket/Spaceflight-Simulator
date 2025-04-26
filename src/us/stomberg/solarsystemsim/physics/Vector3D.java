@@ -2,16 +2,12 @@ package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.graphics.FormatText;
 
-import java.util.Arrays;
-
 /**
- * Stores a 3D vector, containing an <b>x</b> component,  a <b>y</b> component, and a <b>z</b> component. Each component
+ * Stores a 3D vector, containing an <b>x</b> component, a <b>y</b> component, and a <b>z</b> component. Each component
  * can be accessed individually through their getter methods. However, the power of this class lies in its methods for
  * comparing one vector to another.
  */
 public class Vector3D {
-
-    private static final Vector3D NULL = new Vector3D();
 
     /**
      * <b>x</b> component of the vector.
@@ -39,19 +35,6 @@ public class Vector3D {
         this.x = x;
         this.y = y;
         this.z = z;
-    }
-
-    public Vector3D(String x, String y, String z) {
-        try {
-            this.x = Double.parseDouble(x);
-            this.y = Double.parseDouble(y);
-            this.z = Double.parseDouble(z);
-        } catch (NumberFormatException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-            this.x = 0;
-            this.y = 0;
-            this.z = 0;
-        }
     }
 
     /**
@@ -91,24 +74,13 @@ public class Vector3D {
     }
 
     /**
-     * Adds another vector to this vector. This is an elementwise operation.
-     *
-     * @param vector The other vector.
+     * Sets all values to those of another vector.
      */
-    public void addVector(Vector3D vector) {
-        x += vector.x;
-        y += vector.y;
-        z += vector.z;
-    }
-
-    /**
-     * Resets the vector's components to default values of 0.
-     * This operation sets the x, y, and z components of the vector to 0.
-     */
-    public void setToZero() {
-        x = 0;
-        y = 0;
-        z = 0;
+    public Vector3D copyFrom(Vector3D vector) {
+        x = vector.x;
+        y = vector.y;
+        z = vector.z;
+        return this;
     }
 
     /**
@@ -118,8 +90,20 @@ public class Vector3D {
      * @param vector The second vector.
      * @return The sum of both vectors.
      */
-    public Vector3D sumVector(Vector3D vector) {
+    public Vector3D add(Vector3D vector) {
         return new Vector3D(x + vector.x, y + vector.y, z + vector.z);
+    }
+
+    /**
+     * Adds another vector to this vector. This is an elementwise operation.
+     *
+     * @param vector The other vector.
+     */
+    public Vector3D addInPlace(Vector3D vector) {
+        x += vector.x;
+        y += vector.y;
+        z += vector.z;
+        return this;
     }
 
     /**
@@ -129,8 +113,33 @@ public class Vector3D {
      * @param factor The factor by which to scale the vector.
      * @return The scaled vector.
      */
-    public Vector3D scaleVector(double factor) {
+    public Vector3D scale(double factor) {
         return new Vector3D(x * factor, y * factor, z * factor);
+    }
+
+    /**
+     * Multiplies a vector with another number. This value multiplies each component. This function is used to
+     * scale a vector.
+     *
+     * @param factor The factor by which to scale the vector.
+     * @return The scaled vector.
+     */
+    public Vector3D scaleInPlace(double factor) {
+        x *= factor;
+        y *= factor;
+        z *= factor;
+        return this;
+    }
+
+    public Vector3D negate() {
+        return new Vector3D(-x, -y, -z);
+    }
+
+    public Vector3D negateInPlace() {
+        x = -x;
+        y = -y;
+        z = -z;
+        return this;
     }
 
     /**
@@ -140,8 +149,22 @@ public class Vector3D {
      * @param vector The second vector.
      * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
      */
-    public Vector3D compareTo(Vector3D vector) {
+    public Vector3D subtract(Vector3D vector) {
         return new Vector3D(vector.x - x, vector.y - y, vector.z - z);
+    }
+
+    /**
+     * Gets the differences between the corresponding components of two vectors. Subtracts the second vector from the
+     * first vector. Returned as an array of values.
+     *
+     * @param vector The second vector.
+     * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
+     */
+    public Vector3D subtractInPlace(Vector3D vector) {
+        x -= vector.x;
+        y -= vector.y;
+        z -= vector.z;
+        return this;
     }
 
     /**
@@ -153,8 +176,8 @@ public class Vector3D {
      * @param vector The second vector.
      * @return Returns the 3D distance between the two vectors.
      */
-    public double distanceTo(Vector3D vector) {
-        Vector3D compare = compareTo(vector);
+    public double distance(Vector3D vector) {
+        Vector3D compare = subtract(vector);
         return Math.hypot(Math.hypot(compare.getX(), compare.getY()), compare.getZ());
     }
 
@@ -177,9 +200,7 @@ public class Vector3D {
      * @return Returns a vector on a unit scale to representing a direction.
      */
     public Vector3D angleTo(Vector3D vector) {
-        double hypotenuse = distanceTo(vector);
-        Vector3D nonScaled = compareTo(vector);
-        return nonScaled.scaleVector(1 / hypotenuse);
+        return subtract(vector).normalizeInPlace();
     }
 
     /**
@@ -188,7 +209,37 @@ public class Vector3D {
      * @return Returns a vector on a unit scale to represent angle.
      */
     public Vector3D normalize() {
-        return scaleVector(1 / magnitude());
+        return scale(1 / magnitude());
+    }
+
+    /**
+     * Gets a vector representing only the vector's direction, its angle to (0, 0, 0).
+     *
+     * @return Returns a vector on a unit scale to represent angle.
+     */
+    public Vector3D normalizeInPlace() {
+        return scaleInPlace(1 / magnitude());
+    }
+
+    public Vector3D interpolate(Vector3D other, double p) {
+        return new Vector3D(x + (other.x - x) * p, y + (other.y - y) * p, z + (other.z - z) * p);
+    }
+
+    public Vector3D interpolateInPlace(Vector3D other, double p) {
+        x += (other.x - x) * p;
+        y += (other.y - y) * p;
+        z += (other.z - z) * p;
+        return this;
+    }
+
+    /**
+     * Calculates the dot product between this vector and another vector.
+     *
+     * @param vector The other vector to calculate dot product with
+     * @return the scalar dot product of the two vectors
+     */
+    public double dotProduct(Vector3D vector) {
+        return x * vector.x + y * vector.y + z * vector.z;
     }
 
     /**
