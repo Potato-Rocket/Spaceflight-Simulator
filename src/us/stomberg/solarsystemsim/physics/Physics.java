@@ -82,12 +82,14 @@ public class Physics {
                 for (Body body : bodyArray) {
                     integrator.setPrediction(body, timeStep.getRemaining());
                 }
-                List<CollisionEvent> collisions = collisionDetector.detectCollisions(bodyArray, timeStep);
                 double t = timeStep.getRemaining();
-                if (!collisions.isEmpty()) {
-                    CollisionEvent collision = Collections.min(collisions);
-                    collision.processCollision(bodyArray, timeStep, integrator);
-                    t = collision.getT();
+                if (Setup.shouldCheckCollisions()) {
+                    List<CollisionEvent> collisions = collisionDetector.detectCollisions(bodyArray, timeStep);
+                    if (!collisions.isEmpty()) {
+                        CollisionEvent collision = Collections.min(collisions);
+                        collision.processCollision(bodyArray, timeStep, integrator);
+                        t = collision.getT();
+                    }
                 }
                 timeStep.update(t);
                 TimeManager.incrementDuration(t);

@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         //Sets up graphical window and timing variables.
         Setup.read();
-        physics = new Physics(new ExplicitEulerIntegrator());
+        physics = new Physics(new VerletIntegrator());
         DrawSpace drawSpace = new DrawSpace();
 
         Thread simulation = new Thread(new Simulation());

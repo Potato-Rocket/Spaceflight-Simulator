@@ -35,6 +35,7 @@ public class Setup {
             double frameLimit,
             boolean shouldDrawTrail,
             boolean trailHasAlpha,
+            boolean collisions,
             double trailLength,
             double trailResolution,
             double rotatePrecision,
@@ -62,6 +63,7 @@ public class Setup {
     private static final GraphicsConfig defaultGraphicsConfig = new GraphicsConfig(
             60,
             true,
+            false,
             false,
             180,
             1.0,
@@ -139,6 +141,7 @@ public class Setup {
                     validateProperty(setup, "frameLimit", Double::parseDouble, defaultGraphicsConfig.frameLimit()),
                     validateProperty(setup, "drawTrail", Boolean::parseBoolean, defaultGraphicsConfig.shouldDrawTrail()),
                     validateProperty(setup, "trailAlpha", Boolean::parseBoolean, defaultGraphicsConfig.trailHasAlpha()),
+                    validateProperty(setup, "collisions", Boolean::parseBoolean, defaultGraphicsConfig.collisions()),
                     validateProperty(setup, "trailLength", Double::parseDouble, defaultGraphicsConfig.trailLength()),
                     validateProperty(setup, "trailResolution", Double::parseDouble, defaultGraphicsConfig.trailResolution()),
                     validateProperty(setup, "rotatePrecision", Double::parseDouble, defaultGraphicsConfig.rotatePrecision()),
@@ -182,6 +185,15 @@ public class Setup {
      */
     public static boolean trailHasAlpha() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailHasAlpha();
+    }
+
+    /**
+     * Getter method for the collisions <code>boolean</code> value.
+     *
+     * @return whether to check for collisions
+     */
+    public static boolean shouldCheckCollisions() {
+        return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).collisions();
     }
 
     /**

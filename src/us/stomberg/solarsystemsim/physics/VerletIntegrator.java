@@ -30,12 +30,11 @@ public class VerletIntegrator implements Integrator {
     public void update(Body body, Vector3D f, double dt) {
         BodyHistory state = body.getState();
         // Find a_{n+1} = f(x_{n+1}) / m
-        f.scaleInPlace(1.0 / body.getMass());
-        // Add acceleration to force vector
-        f.addInPlace(state.getHistory().acceleration());
         // Set v_{n+1} = v_n + (a_{n+1} + a_n) / 2 * dt
         state.getVelocity().copyFrom(state.getHistory().velocity())
-             .interpolateInPlace(f, 0.5 * dt);
+             .addInPlace(f.scaleInPlace(1.0 / body.getMass())
+                          .addInPlace(state.getHistory().acceleration())
+                          .scaleInPlace(0.5 * dt));
         // Now that all x, v, a have been updated, we can move the state to history
         state.updateHistory(f);
     }
