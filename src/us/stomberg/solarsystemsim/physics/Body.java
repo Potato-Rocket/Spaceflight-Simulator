@@ -18,54 +18,44 @@ public class Body {
      * Stores the distance between points one degree apart on a unit circle.
      */
     private static final double ONE_DEGREE = Math.PI * 2 / 360;
-
     /**
      * The number of bodies that have been generated.
      */
     private static int count = 0;
-
     /**
      * Stores the position vectors to render the trail.
      */
     private final LinkedList<Vector3D> trail = new LinkedList<>();
-
     /**
      * Stores the direction at the previous trail point.
      */
     private Vector3D prevTrail;
-
     /**
      * Stores the current and historical body state.
      */
     private final BodyHistory state;
-
     /**
      * Stores the color to use when drawing this body.
      */
     private final Color color;
-
     /**
      * The body's mass.
      */
     private double mass;
-
     /**
      * The body's radius.
      */
     private double density;
-
     /**
      * The body's radius.
      */
     private double radius;
-
     /**
      * The body's name.
      */
     private final String name;
-
     /**
-     * The body's identification number.
+     * The body's unique identification number.
      */
     private final int id;
 
@@ -73,12 +63,12 @@ public class Body {
      * Class constructor with all values specified by the user. Assigns specified values to their corresponding fields
      * and generates an id and initializes the trail.
      *
-     * @param pos     initial position of the body
-     * @param vel     initial velocity of the body
-     * @param mass    initial mass of the body
-     * @param density density of the body used to calculate radius
-     * @param name    name of the body
-     * @param c       color used for rendering the body
+     * @param pos     Initial position of the body
+     * @param vel     Initial velocity of the body
+     * @param mass    Initial mass of the body
+     * @param density Density of the body used to calculate radius
+     * @param name    Name of the body
+     * @param c       Color used for rendering the body
      */
     public Body(Vector3D pos, Vector3D vel, double mass, double density, String name, Color c) {
         this.mass = mass;
@@ -110,7 +100,7 @@ public class Body {
     /**
      * Merges the specified body into this body by summing the masses, averaging the densities, and updating the radius.
      *
-     * @param other the other body to merge into this body
+     * @param other The other body to merge into this body
      */
     public void merge(Body other) {
         // Average the densities of the bodies, weighted by the relative masses
@@ -121,19 +111,15 @@ public class Body {
         updateRadius();
     }
 
+    // TODO: Make a trail graphical element class, and link it to a body - destruction of a body should not destroy the trail
     /**
-     * Updates the body's physical motion vectors. Resets the acceleration factor and sets it based on the mass and the
-     * gravity forces currently acting on the body. The velocity is updated based on the acceleration, and the position
-     * is updated based on the velocity.
-     * <p>
-     * The trail is updated based on both direction change and distance traveled. It will add a point to the trail if
-     * either:
+     * Updates the body's trail if:
      * <ul>
-     *   <li>The direction of the body's velocity has changed more than [trail resolution] degrees
-     *   from the direction of velocity at the previous trail point.</li>
-     *   <li>THe body has traveled more than a predetermined distance since the previous trail
-     *   point. Scaled to the size of the system.</li>
+     *     <li>The direction of the body's velocity has changed by at least the trail resolution
+     *     <li>The body has traversed at least one-tenth of the initial simulation bounds
      * </ul>
+     * Adds the body's current position to the list of trail vectors and removes the oldest trail element if
+     * the trail is at its max length.
      */
     public void updateTrail() {
         // Find the change in direction
@@ -156,7 +142,7 @@ public class Body {
      * Calculates the kinetic energy of the body using the formula:
      * KE = 0.5 * mass * velocity^2.
      *
-     * @return the kinetic energy of the body as a double
+     * @return The kinetic energy of the body as a double
      */
     public double getKineticEnergy() {
         return Math.pow(getState().getVelocity().magnitude(), 2) * mass * 0.5;
@@ -165,12 +151,17 @@ public class Body {
     /**
      * Getter method for the body's trail data.
      *
-     * @return the <code>ArrayList</code> of trail points
+     * @return The <code>ArrayList</code> of trail points
      */
     public LinkedList<Vector3D> getTrail() {
         return trail;
     }
 
+    /**
+     * Retrieves the current state of the body represented by a <code>BodyHistory</code> object.
+     *
+     * @return The current state of the body as a <code>BodyHistory</code> instance
+     */
     public BodyHistory getState() {
         return state;
     }
@@ -178,7 +169,7 @@ public class Body {
     /**
      * Getter method for the body's mass.
      *
-     * @return the body's mass
+     * @return The body's mass
      */
     public double getMass() {
         return mass;
@@ -187,16 +178,16 @@ public class Body {
     /**
      * Getter method for the body's radius.
      *
-     * @return the body's radius
+     * @return The body's radius
      */
     public double getRadius() {
         return radius;
     }
 
     /**
-     * Getter method for the body's identification number.
+     * Getter method for the body's unique identification number.
      *
-     * @return the body's id
+     * @return The body's id
      */
     public int getId() {
         return id;
@@ -205,7 +196,7 @@ public class Body {
     /**
      * Getter method for the body's name.
      *
-     * @return the body's name
+     * @return The body's name
      */
     public String getName() {
         return name;
@@ -214,16 +205,16 @@ public class Body {
     /**
      * Getter method for the body's drawing color.
      *
-     * @return the body's color
+     * @return The body's color
      */
     public Color getColor() {
         return color;
     }
 
     /**
-     * Formats the body's attributes into a <code>String[]</code>. Each array item is a line.
+     * Formats the body's attributes into a string list. Each array item is a line.
      *
-     * @return a string array representing the body's attributes
+     * @return A string array representing the body's attributes
      */
     public ArrayList<String> toStringArray() {
         synchronized (Main.getPhysics().lock) {
@@ -239,16 +230,21 @@ public class Body {
     }
 
     /**
-     * Runs the <code>toString</code> method with the <code>verbose</code> option set to
-     * <code>false</code>.
+     * Formats the body's name with its id in parentheses next to it.
      *
-     * @return a string representing the body
+     * @return A representative string
      */
     @Override
     public String toString() {
         return name + " (" + id + ")";
     }
 
+    /**
+     * Two bodies are identical if they share the same unique id.
+     *
+     * @param o The other object to compare
+     * @return Whether the other object is equal to this one
+     */
     @Override
     public boolean equals(Object o) {
         if (o instanceof Body) {

@@ -2,6 +2,7 @@ package us.stomberg.solarsystemsim.graphics;
 
 import us.stomberg.solarsystemsim.physics.Vector3D;
 
+// TODO: Implement perspective toggling, based on the implementation in StarMap game
 /**
  * Static class to handle conversion between 3D and 2D graphics. Stores the current yaw and tilt of the view, which is
  * later used to transform the coordinates of a point so it can be rendered correctly.
@@ -12,7 +13,6 @@ public class Graphics3D {
      * Stores the yaw, or rotation, of the current view.
      */
     private static double yaw;
-
     /**
      * Stores the tilt, or inclination, of the current view.
      */

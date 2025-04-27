@@ -9,7 +9,7 @@ import java.awt.event.MouseMotionListener;
 /**
  * Class to handle user interaction through mouse movement and dragging.
  */
-public class Rotation implements MouseMotionListener {
+public class MouseRotation implements MouseMotionListener {
 
     /**
      * Stores the coordinates of the mouse in the frame.
