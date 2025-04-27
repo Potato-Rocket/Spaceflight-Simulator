@@ -16,20 +16,31 @@ import us.stomberg.solarsystemsim.physics.Vector3D;
 import javax.naming.ConfigurationException;
 
 /**
- * Class to load and store all settings relating to the simulation.
+ * The Setup class manages configuration and initialization for the simulation.
+ * It handles loading settings from properties files, parsing configuration values,
+ * and providing default configurations when necessary.
+ * <p>
+ * This class is responsible for reading graphics settings, physics parameters,
+ * and celestial body definitions. It provides access to these settings through
+ * various getter methods.
  */
 public class Setup {
 
     /**
-     * Stores parameters for the graphics configuration.
+     * Stores parameters for controlling the visual aspects of the simulation.
+     * <p>
+     * This record encapsulates settings related to rendering performance,
+     * visual elements like body trails, and user interaction preferences
+     * for camera movement and zooming.
      *
-     * @param frameLimit      the artificial frame rate limit
-     * @param shouldDrawTrail whether to draw the trail
-     * @param trailHasAlpha   whether to render the trails with transparency
-     * @param trailLength     the degrees of revolution the trail should cover
-     * @param trailResolution the degrees of revolution between trail points
-     * @param rotatePrecision the view's sensitivity to mouse movements
-     * @param scalePrecision  the factor to scale by when zooming
+     * @param frameLimit      The maximum number of frames to render per second
+     * @param shouldDrawTrail Whether to draw trajectory trails behind bodies
+     * @param trailHasAlpha   Whether the trails should have transparency (fade out)
+     * @param collisions      Whether to enable collision detection between bodies
+     * @param trailLength     The length of trails in degrees of revolution
+     * @param trailResolution The spacing between trail points in degrees of revolution
+     * @param rotatePrecision The sensitivity factor for camera rotation
+     * @param scalePrecision  The zoom factor applied when scaling the view
      */
     private record GraphicsConfig(
             double frameLimit,
@@ -42,23 +53,36 @@ public class Setup {
             double scalePrecision
     ) {}
     /**
-     * Stores parameters for the simulation mechanics.
+     * Stores parameters for the physical simulation engine.
+     * <p>
+     * This record encapsulates fundamental physics settings that control
+     * how the simulation calculates gravitational forces and how time
+     * advances during each update cycle.
      *
-     * @param gravity  the universal gravitational constant
-     * @param timeStep the simulation time step
+     * @param gravity  The universal gravitational constant value for the simulation
+     * @param timeStep The size of each physics update step in simulation seconds
      */
     private record SimulationConfig(double gravity, double timeStep) {}
 
     /**
-     * The logger for this class.
+     * The logger instance for recording configuration events and errors.
+     * <p>
+     * This logger captures information about configuration loading,
+     * parsing errors, and fallback to default settings.
      */
     private static final Logger logger = Logger.getLogger(Setup.class.getName());
     /**
-     * The file path to the local .config directory.
+     * The path to the application's configuration directory.
+     * <p>
+     * This directory is located in the user's home folder and contains
+     * the properties files for simulation settings and celestial body definitions.
      */
     private static final String CONFIG_DIR = System.getProperty("user.home") + "/.config/solarsystemsim/";
     /**
-     * Default graphics configuration for the simulation.
+     * Default graphics configuration used when settings cannot be loaded.
+     * <p>
+     * These values provide a reasonable starting point for visual settings
+     * and ensure the application can run even without a configuration file.
      */
     private static final GraphicsConfig defaultGraphicsConfig = new GraphicsConfig(
             60,
@@ -71,19 +95,31 @@ public class Setup {
             1.1
     );
     /**
-     * Default simulation physics configuration.
+     * Default physics configuration used when settings cannot be loaded.
+     * <p>
+     * These values provide stable simulation parameters that work well
+     * with the default celestial body configurations.
      */
     private static final SimulationConfig defaultSimulationConfig = new SimulationConfig(1.0, 0.004);
     /**
-     * The 2D array to store information about how to generate bodies.
+     * The collection of celestial bodies defined for the simulation.
+     * <p>
+     * This list contains all the bodies (stars, planets, etc.) that will be
+     * created in the physics engine when the simulation starts.
      */
     private static final ArrayList<Body> generationData = new ArrayList<>();
     /**
-     * The active graphics configuration.
+     * The currently active graphics configuration.
+     * <p>
+     * This configuration is loaded from the setup file or set to default values
+     * if the file cannot be read or contains invalid settings.
      */
     private static GraphicsConfig graphicsConfig;
     /**
-     * The active graphics configuration.
+     * The currently active physics simulation configuration.
+     * <p>
+     * This configuration controls the physical behavior of the simulation
+     * and is loaded from the system setup file.
      */
     private static SimulationConfig simulationConfig;
 
@@ -126,10 +162,15 @@ public class Setup {
     }
 
     /**
-     * Reads the setup files and sets the fields accordingly.
-     * If the main configuration file cannot be found or is invalid, default values will be used.
-     * This method catches all exceptions and falls back to default settings when necessary,
-     * ensuring the program can always start with at least basic configuration.
+     * Loads all simulation configuration from setup files.
+     * <p>
+     * This method attempts to read the main configuration file and the
+     * celestial body definitions file. If either file is missing or contains
+     * invalid data, the method falls back to appropriate default values.
+     * <p>
+     * All exceptions are caught and handled internally, ensuring that the
+     * simulation can always start even with configuration issues. Warning
+     * messages are logged to help diagnose configuration problems.
      */
     public static void read() {
         // Sets up a .properties file using InputStream.
@@ -161,112 +202,157 @@ public class Setup {
     }
 
     /**
-     * Getter method for the frames per second limit.
+     * Gets the maximum frames per second for rendering.
+     * <p>
+     * This value limits the rendering rate to prevent excessive
+     * CPU usage when rendering at very high frame rates.
      *
-     * @return the frame limit
+     * @return The maximum frames per second setting
      */
     public static double getFrameLimit() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).frameLimit();
     }
 
     /**
-     * Getter method for the draw trail <code>boolean</code> value.
+     * Checks whether body trajectory trails should be displayed.
+     * <p>
+     * When enabled, each celestial body will display a trail showing
+     * its recent path through the simulation space.
      *
-     * @return whether to draw the trail
+     * @return True if trails should be drawn, false otherwise
      */
     public static boolean isDrawingTrail() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).shouldDrawTrail();
     }
 
     /**
-     * Getter method for the trail alpha <code>boolean</code> value.
+     * Checks whether body trails should use transparency effects.
+     * <p>
+     * When enabled, the trails will fade out gradually rather than
+     * having uniform color throughout their length.
      *
-     * @return whether the trail has transparency
+     * @return True if trails should use transparency, false otherwise
      */
     public static boolean trailHasAlpha() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailHasAlpha();
     }
 
     /**
-     * Getter method for the collisions <code>boolean</code> value.
+     * Checks whether collision detection is enabled.
+     * <p>
+     * When enabled, the simulation will detect and handle collisions
+     * between celestial bodies, which may result in merged bodies or
+     * altered trajectories.
      *
-     * @return whether to check for collisions
+     * @return True if collision detection is enabled, false otherwise
      */
     public static boolean shouldCheckCollisions() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).collisions();
     }
 
     /**
-     * Getter method for the trail length.
+     * Gets the length of body trajectory trails.
+     * <p>
+     * This value determines how far back in time the trails will
+     * extend, measured in degrees of revolution.
      *
-     * @return the trail length
+     * @return The trail length in degrees
      */
     public static double getTrailLength() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailLength();
     }
 
     /**
-     * Getter method for the trail resolution.
+     * Gets the resolution of body trajectory trails.
+     * <p>
+     * This value determines the spacing between points in the trail,
+     * measured in degrees of revolution. Lower values create smoother
+     * trails but may impact performance.
      *
-     * @return the trail resolution
+     * @return The trail resolution in degrees
      */
     public static double getTrailResolution() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).trailResolution();
     }
 
     /**
-     * Getter method for the rotation precision.
+     * Gets the sensitivity factor for camera rotation.
+     * <p>
+     * This value controls how quickly the camera rotates in response
+     * to mouse movements. Higher values result in faster rotation.
      *
-     * @return the rotational precision
+     * @return The rotation sensitivity factor
      */
     public static double getRotatePrecision() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).rotatePrecision();
     }
 
     /**
-     * Getter method for the scaling precision.
+     * Gets the zoom factor for camera scaling.
+     * <p>
+     * This value determines how quickly the view zooms in or out
+     * in response to scroll-wheel movements. Values are typically
+     * slightly above 1.0, with higher values causing faster zooming.
      *
-     * @return the scale precision
+     * @return The zoom factor for each step of scaling
      */
     public static double getScalePrecision() {
         return Objects.requireNonNullElse(graphicsConfig, defaultGraphicsConfig).scalePrecision();
     }
 
     /**
-     * Getter method for the gravitational constant.
+     * Gets the universal gravitational constant for the simulation.
+     * <p>
+     * This value determines the strength of gravitational attraction
+     * between celestial bodies. It is a fundamental parameter that
+     * affects all gravitational calculations in the physics engine.
      *
-     * @return the gravity value
+     * @return The gravitational constant value
      */
     public static double getGravity() {
         return Objects.requireNonNullElse(simulationConfig, defaultSimulationConfig).gravity();
     }
 
     /**
-     * Getter method for the simulation time step.
+     * Gets the simulation time step interval.
+     * <p>
+     * This value determines how much simulation time passes during each
+     * physics update cycle. Smaller values provide more accurate simulation
+     * but require more computational resources.
      *
-     * @return the time step
+     * @return The time step in simulation seconds
      */
     public static double getTimeStep() {
         return Objects.requireNonNullElse(simulationConfig, defaultSimulationConfig).timeStep();
     }
 
     /**
-     * Getter method for the generation data.
+     * Gets the collection of celestial bodies for the simulation.
+     * <p>
+     * This method provides access to the list of bodies that have been
+     * loaded from the system setup file or created as default bodies.
+     * The physics engine uses this collection to initialize the simulation.
      *
-     * @return the generation data
+     * @return The list of celestial bodies
      */
     public static ArrayList<Body> getGenerationData() {
         return generationData;
     }
 
     /**
-     * Reads a system setup file and writes info about the bodies to the <code>generationData</code> field.
-     * This method enforces strict validation of the system setup properties.
+     * Reads the celestial body definitions from a system setup file.
+     * <p>
+     * This method parses the specified properties file to extract definitions
+     * for all celestial bodies in the simulation. It creates Body objects with
+     * the specified properties and adds them to the generationData collection.
+     * <p>
+     * Unlike the main read method, this method enforces strict validation of
+     * properties and will throw exceptions for missing or invalid configuration.
      *
-     * @param fileName name of a system setup file
-     * @throws PropertyFormatException if any property has an invalid format
-     * @throws PropertyNotFoundException if a required property is missing
-     * @throws PropertyFileNotFoundException if the system setup file is missing or cannot be read
+     * @param fileName Name of the system setup file to read
+     * @throws PropertyFormatException If any property has an invalid format
+     * @throws PropertyNotFoundException If a required property is missing
+     * @throws PropertyFileNotFoundException If the system setup file is missing or cannot be read
      */
     private static void readGeneration(String fileName)
             throws PropertyFormatException, PropertyNotFoundException, PropertyFileNotFoundException {
@@ -305,9 +391,15 @@ public class Setup {
     }
 
     /**
-     * Sets up a default solar system configuration when the configuration files
-     * cannot be read or contain invalid data. This ensures the simulation can
-     * always start with a basic system of a star and two planets.
+     * Creates a basic default solar system when configuration files cannot be loaded.
+     * <p>
+     * This method is called when the system setup file is missing or contains
+     * critical errors. It creates a simple system with one star and two planets,
+     * ensuring that the simulation always has something to display even when
+     * configuration is unavailable.
+     * <p>
+     * It also sets physics parameters to their default values to ensure
+     * appropriate simulation behavior for the default bodies.
      */
     private static void setDefaultSystem() {
         logger.info("Using default system.");
@@ -319,14 +411,18 @@ public class Setup {
     }
 
     /**
-     * Parses a string representation of a 3D vector and returns a corresponding Vector3D object. The input string
-     * should be in the format "x,y,z", where x, y, and z are numeric values.
+     * Parses a string representation of a 3D vector into a Vector3D object.
+     * <p>
+     * This method extracts a vector from a properties file where the vector
+     * is stored in the format "x,y,z" with x, y, and z being numeric values.
+     * It performs strict validation of the property's existence
+     * and the format of the vector representation.
      *
-     * @param setup the properties file containing the vector data
-     * @param key   the key to read from the properties file
-     * @return a Vector3D object containing the parsed vector values
-     * @throws PropertyNotFoundException if the specified key is not found in the properties file
-     * @throws PropertyFormatException if the vector format is invalid (wrong number of elements or non-numeric values)
+     * @param setup The properties file containing the vector data
+     * @param key   The key identifying the vector property
+     * @return A Vector3D object containing the parsed vector components
+     * @throws PropertyNotFoundException If the specified key is not found in the properties file
+     * @throws PropertyFormatException If the vector format is invalid (wrong number of elements or non-numeric values)
      */
     private static Vector3D parseVector(Properties setup, String key)
         throws PropertyNotFoundException, PropertyFormatException {
@@ -352,14 +448,21 @@ public class Setup {
     }
 
     /**
-     * Parses a string representation of RGB color values and returns a corresponding Color object. The input string
-     * should be in the format "r,g,b", where r, g, and b are integer values. Values are clamped between 0 and 255.
+     * Parses a string representation of RGB color values into a Color object.
+     * <p>
+     * This method extracts color information from a properties file where colors
+     * are stored in the format "r,g,b" with r, g, and b being integer values
+     * between 0 and 255. If values are outside this range, they are automatically
+     * clamped to ensure valid color representation.
+     * <p>
+     * It performs strict validation of the property's existence
+     * and the format of the vector representation.
      *
-     * @param setup the properties file containing the color data
-     * @param key   the key to read from the properties file
-     * @return a Color object containing the parsed RGB values (clamped to valid range)
-     * @throws PropertyNotFoundException if the specified key is not found in the properties file
-     * @throws PropertyFormatException if the color format is invalid (wrong number of elements or non-numeric values)
+     * @param setup The properties file containing the color data
+     * @param key   The key identifying the color property
+     * @return A Color object containing the parsed RGB values (clamped to valid range)
+     * @throws PropertyNotFoundException If the specified key is not found in the properties file
+     * @throws PropertyFormatException If the color format is invalid (wrong number of elements or non-numeric values)
      */
     private static Color parseColor(Properties setup, String key)
         throws PropertyFormatException, PropertyNotFoundException {
@@ -385,14 +488,22 @@ public class Setup {
     }
 
     /**
-     * Gets a value from a properties file and attempts to convert it using the provided function.
-     * If there is no property matching the key, it returns a default value.
+     * Safely extracts and converts a property value with fallback to a default.
+     * <p>
+     * This method attempts to read a property value and convert it to the desired type.
+     * If the property is missing or cannot be converted, it falls back to the provided
+     * default value. This approach is used for non-critical configuration properties
+     * where using a default is acceptable.
+     * <p>
+     * The method logs warnings when falling back to defaults to help diagnose
+     * configuration issues.
      *
-     * @param setup        the properties file
-     * @param key          the key to read
-     * @param converter    the conversion function
-     * @param defaultValue the default value
-     * @return the determined value or the default value if parsing fails
+     * @param <T>          The target type for the converted property
+     * @param setup        The properties file to read from
+     * @param key          The key identifying the property
+     * @param converter    The function to convert from string to target type
+     * @param defaultValue The default value to use if conversion fails
+     * @return The converted property value or the default value if unavailable/invalid
      */
     private static <T> T validateProperty(Properties setup, String key, Function<String, T> converter, T defaultValue) {
         String in = setup.getProperty(key);
@@ -410,15 +521,23 @@ public class Setup {
     }
 
     /**
-     * Gets a value from a properties file and attempts to convert it using the provided function.
-     * This method enforces strict validation of property existence and format.
+     * Extracts and converts a required property value with strict validation.
+     * <p>
+     * This method attempts to read a property value and convert it to the desired type.
+     * Unlike validateProperty, this method throws exceptions when properties are missing
+     * or invalid rather than falling back to defaults. It is used for critical
+     * configuration properties where defaults are not acceptable.
+     * <p>
+     * The method performs strict validation of both the existence of the property
+     * and the format of its value.
      *
-     * @param setup     the properties file
-     * @param key       the key to read
-     * @param converter the conversion function to apply to the property value
-     * @return the converted property value
-     * @throws PropertyNotFoundException if the specified key is not found in the properties file
-     * @throws PropertyFormatException if the property value cannot be converted using the provided function
+     * @param <T>       The target type for the converted property
+     * @param setup     The properties file to read from
+     * @param key       The key identifying the property
+     * @param converter The function to convert from string to target type
+     * @return The converted property value
+     * @throws PropertyNotFoundException If the specified key is not found in the properties file
+     * @throws PropertyFormatException If the property value cannot be converted using the provided function
      */
     private static <T> T parseProperty(Properties setup, String key, Function<String, T> converter)
             throws PropertyFormatException, PropertyNotFoundException {

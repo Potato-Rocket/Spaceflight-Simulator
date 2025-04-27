@@ -8,35 +8,51 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Class to handle all body interactions.
+ * The Physics class manages all physical interactions between celestial bodies in the simulation.
+ * It handles gravitational forces, collisions, numerical integration of motion equations,
+ * and maintains the state of all bodies in the system.
+ * <p>
+ * This class is thread-safe with synchronization on the lock object when accessing shared state.
  */
 public class Physics {
 
     public final Object lock = new Object();
-
     /**
      * The initial max distance of any body from the origin.
      */
     private double initBounds = 0;
-
     /**
      * The array of all bodies.
      */
     private final List<Body> bodyArray;
-
+    /**
+     * The total kinetic energy of all bodies at system initialization.
+     * Used as a reference point for energy conservation checks.
+     */
     private final double initialKineticEnergy;
-
+    /**
+     * The numerical integration algorithm used to update body positions and velocities.
+     */
     private final Integrator integrator;
-
+    /**
+     * Manages the simulation time step intervals and subdivision for collision handling.
+     */
     private final TimeStep timeStep;
-
+    /**
+     * Calculates gravitational forces between all bodies in the system.
+     */
     private final GravityCalculator gravityCalculator;
-
+    /**
+     * Detects potential collisions between bodies in the system.
+     */
     private final CollisionDetector collisionDetector = new CollisionDetector();
 
     /**
      * Constructor for the Physics class.
      * Populates the array of bodies based on the generation data and initializes the physics system.
+     *
+     * @param integrator The numerical integrator to use for updating body positions and velocities.
+     *                   Different integrators provide varying levels of accuracy and performance
      */
     public Physics(Integrator integrator) {
         timeStep = new TimeStep(Setup.getTimeStep());
@@ -66,41 +82,71 @@ public class Physics {
     }
 
     /**
-     * Updates every body in the body array. Runs the update function for each body to update the motion, then updates
-     * the gravitational forces between each body and every other body. Finally, it checks for collisions between every
-     * body. If two bodies have collided, it runs the collision function on the larger one and removes the smaller one.
+     * Updates the state of all bodies in the simulation for the current time step.
      * <p>
-     * The code to update the physics for every body is run once for every millisecond in the simulation that has passed
-     * since the previous frame. That is the real time milliseconds passed times the timescale.
+     * This method performs the following operations:
+     * <ol>
+     *     <li>Makes position predictions for all bodies using the integrator
+     *     <li>Detects potential collisions between bodies (if collision checking is enabled)
+     *     <li>Handles any collisions by adjusting positions, velocities, and possibly merging bodies
+     *     <li>Calculates gravitational forces between all bodies
+     *     <li>Finalizes the position and velocity updates using the numerical integrator
+     *     <li>Updates visualization data like body trails
+     * </ol>
+     * The physics updates are performed within the timeStep interval, which may be subdivided
+     * if collisions are detected, to ensure accurate collision handling at the precise
+     * moment of collision.
+     * <p>
+     * This method is synchronized on the lock object to ensure thread safety.
      */
     public void updateBodies() {
         timeStep.reset();
         synchronized (lock) {
-            // Recursively update the bodies until there are no collisions
+            // Process the physics updates until the full timestep is completed
             while (!timeStep.isFinished()) {
-                // Make the initial position prediction for each body
+                // Make initial position predictions for each body using the integrator
                 for (Body body : bodyArray) {
                     integrator.setPrediction(body, timeStep.getRemaining());
                 }
+                // Start with the full remaining time step
                 double t = timeStep.getRemaining();
+
+                // Check for collisions if enabled in the simulation settings
                 if (Setup.shouldCheckCollisions()) {
+                    // Get all potential collisions within the current time step
                     List<CollisionEvent> collisions = collisionDetector.detectCollisions(bodyArray, timeStep);
+
+                    // If collisions are detected, handle the earliest one first
                     if (!collisions.isEmpty()) {
+                        // Find the earliest collision by comparing timestamps
                         CollisionEvent collision = Collections.min(collisions);
+
+                        // Process the collision, which may merge bodies or modify velocities
                         collision.processCollision(bodyArray, timeStep, integrator);
+
+                        // Adjust the time step to process only up to the collision point
                         t = collision.getT();
                     }
                 }
+                // Update the time step counter with the time actually processed
                 timeStep.update(t);
+
+                // Increment the global simulation duration
                 TimeManager.incrementDuration(t);
-                // Calculate the force between each body and every other body
+
+                // Calculate gravitational forces between all bodies
                 ArrayList<Vector3D> forces = gravityCalculator.updateForces(bodyArray);
-                // Update each body's final state based on the acceleration
+
+                // Apply the calculated forces to update each body's position and velocity
                 for (int i = 0; i < bodyArray.size(); i++) {
                     integrator.update(bodyArray.get(i), forces.get(i), t);
                 }
             }
-            // Update each body's trail
+
+            // Increment the global simulation duration
+            TimeManager.incrementDuration(timeStep.getDt());
+
+            // Update visualization data after all physics calculations are complete
             for (Body body : bodyArray) {
                 body.updateTrail();
             }
@@ -108,9 +154,13 @@ public class Physics {
     }
 
     /**
-     * Getter method for the <code>ArrayList</code> of bodies.
+     * Returns the list of all celestial bodies in the simulation.
+     * <p>
+     * Note: While this returns a direct reference to the internal body list,
+     * operations on the list should be synchronized using the lock object
+     * to maintain thread safety.
      *
-     * @return Returns the <code>ArrayList</code> of bodies.
+     * @return The list of all bodies in the simulation
      */
     public List<Body> getBodyArray() {
         return bodyArray;
@@ -120,16 +170,20 @@ public class Physics {
      * Gets the initial boundaries for the simulation view. Equal to the furthest distance from the origin any one
      * body starts at.
      *
-     * @return Returns the initial boundaries for the view.
+     * @return The initial boundaries for the view
      */
     public double getInitBounds() {
         return initBounds;
     }
 
     /**
-     * Retrieves the total kinetic energy of the system.
+     * Calculates and returns the current total kinetic energy of the system.
+     * <p>
+     * This method sums the kinetic energy of all bodies in the simulation.
+     * The calculation is performed in a thread-safe manner by synchronizing
+     * on the lock object.
      *
-     * @return The total kinetic energy value as a double.
+     * @return The total kinetic energy of the system in the simulation's energy units
      */
     public double getKineticEnergy() {
         double sum = 0;
@@ -143,8 +197,11 @@ public class Physics {
 
     /**
      * Returns the total kinetic energy of the system at initialization.
+     * <p>
+     * This value can be used as a reference to check energy conservation
+     * throughout the simulation.
      *
-     * @return The initial kinetic energy value as a double.
+     * @return The initial kinetic energy value in the simulation's energy units
      */
     public double getInitialKineticEnergy() {
         synchronized (lock) {
