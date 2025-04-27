@@ -16,15 +16,14 @@ This program allows both the graphical parameters and the initial conditions of 
 
 The simulator requires configuration files to be placed in a specific location:
 
-1. Create a configuration directory:
-   - **Linux/macOS**: Create a folder named `solarsystemsim` inside your `~/.config/` directory:
-     ```
-     mkdir -p ~/.config/solarsystemsim
-     ```
-   - **Windows**: Create a folder named `solarsystemsim` inside your user home directory's `.config` folder:
-     ```
-     mkdir %USERPROFILE%\.config\solarsystemsim
-     ```
+- **Linux/macOS**: Create a folder named `solarsystemsim` inside your `~/.config/` directory:
+  ```
+  mkdir -p ~/.config/solarsystemsim
+  ```
+- **Windows**: Create a folder named `solarsystemsim` inside your user home directory's `.config` folder:
+  ```
+  mkdir %USERPROFILE%\.config\solarsystemsim
+  ```
 
 ### Automatic Configuration Setup
 
