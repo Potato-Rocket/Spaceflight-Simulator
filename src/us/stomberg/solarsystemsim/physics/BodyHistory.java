@@ -35,9 +35,8 @@ public class BodyHistory {
         if (size == 0) {
             return velocity.copy();
         }
-
         State prev = history[headIndex];
-        return prev.position().add(position).scaleInPlace(1.0 / step.getRemaining());
+        return position.subtract(prev.position()).scaleInPlace(1.0 / step.getRemaining());
     }
 
     public State getHistory() {

@@ -166,7 +166,7 @@ public class Vector3D {
      * @return Returns the <b>x</b>, <b>y</b>, and <b>z</b> difference.
      */
     public Vector3D subtract(Vector3D vector) {
-        return new Vector3D(vector.x - x, vector.y - y, vector.z - z);
+        return new Vector3D(x - vector.x, y - vector.y, z - vector.z);
     }
 
     /**
@@ -218,7 +218,7 @@ public class Vector3D {
      * @return Returns a vector on a unit scale to representing a direction.
      */
     public Vector3D angleTo(Vector3D vector) {
-        return subtract(vector).normalizeInPlace();
+        return vector.subtract(this).normalizeInPlace();
     }
 
     /**
@@ -227,6 +227,10 @@ public class Vector3D {
      * @return Returns a vector on a unit scale to represent angle.
      */
     public Vector3D normalize() {
+        double magnitude = magnitude();
+        if (magnitude == 0) {
+            return new Vector3D(0, 0, 0);
+        }
         return scale(1 / magnitude());
     }
 
@@ -236,7 +240,11 @@ public class Vector3D {
      * @return Returns a vector on a unit scale to represent angle.
      */
     public Vector3D normalizeInPlace() {
-        return scaleInPlace(1 / magnitude());
+        double magnitude = magnitude();
+        if (magnitude == 0) {
+            return this;
+        }
+        return scaleInPlace(1 / magnitude);
     }
 
     public Vector3D interpolate(Vector3D other, double p) {
