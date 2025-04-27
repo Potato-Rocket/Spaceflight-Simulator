@@ -14,6 +14,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+// TODO: Make this class non-static, and better segmented
+// TODO: Allow for graphical elements to persist and be tied to the objects which they represent
 /**
  * Class to create all the drawings and graphics. Runs the 3D transformation code and organises the 3D elements before
  * drawing them.

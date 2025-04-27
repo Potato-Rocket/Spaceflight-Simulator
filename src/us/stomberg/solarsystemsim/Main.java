@@ -52,13 +52,14 @@ public class Main {
         // Initialize simulation configuration and components
         Setup.read();
         physics = new Physics(new VerletIntegrator());
+        // TODO: Set up graphics window first, and show a loading indicator until everything is loaded
         DrawSpace drawSpace = new DrawSpace();
 
         // Start the physics simulation in a separate thread
         Thread simulation = new Thread(new Simulation());
         simulation.start();
 
-        // Main rendering loop - continues until the program is explicitly terminated
+        // The Main rendering loop continues until the program is explicitly terminated
         while (running) {
             if (TimeManager.shouldRenderFrame()) {
                 drawSpace.repaint();

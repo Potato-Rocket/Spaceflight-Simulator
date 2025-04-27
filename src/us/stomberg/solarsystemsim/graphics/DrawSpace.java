@@ -1,8 +1,8 @@
 package us.stomberg.solarsystemsim.graphics;
 
-import us.stomberg.solarsystemsim.interaction.EnterRotation;
+import us.stomberg.solarsystemsim.interaction.MouseRotationListener;
 import us.stomberg.solarsystemsim.interaction.Keymaps;
-import us.stomberg.solarsystemsim.interaction.Rotation;
+import us.stomberg.solarsystemsim.interaction.MouseRotation;
 import us.stomberg.solarsystemsim.interaction.Zooming;
 
 import javax.swing.*;
@@ -28,8 +28,8 @@ public class DrawSpace extends JPanel {
         frame.setLocation(dim.width / 4, dim.height / 4);
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
-        addMouseListener(new EnterRotation());
-        addMouseMotionListener(new Rotation());
+        addMouseListener(new MouseRotationListener());
+        addMouseMotionListener(new MouseRotation());
         addMouseWheelListener(new Zooming());
         new Keymaps(this);
     }

@@ -111,6 +111,7 @@ public class Body {
         updateRadius();
     }
 
+    // TODO: Make a trail graphical element class, and link it to a body - destruction of a body should not destroy the trail
     /**
      * Updates the body's trail if:
      * <ul>

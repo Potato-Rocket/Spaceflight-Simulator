@@ -6,7 +6,7 @@ import java.awt.event.MouseListener;
 /**
  * Class to handle user interaction through clicking the mouse, relating to rotation movements.
  */
-public class EnterRotation implements MouseListener {
+public class MouseRotationListener implements MouseListener {
 
     /**
      * Executes when the mouse is pressed, then released. Does not contain any code.
@@ -27,14 +27,14 @@ public class EnterRotation implements MouseListener {
     }
 
     /**
-     * Executes when the mouse is released. Currently resets the <code>Rotation</code> class' stored mouse position to
+     * Executes when the mouse is released. Currently resets the <code>MouseRotation</code> class' stored mouse position to
      * allow the view to be dragged and released indefinitely..
      *
      * @param e mouse event
      */
     @Override
     public void mouseReleased(MouseEvent e) {
-        Rotation.setMousePos(new int[2]);
+        MouseRotation.setMousePos(new int[2]);
     }
 
     /**

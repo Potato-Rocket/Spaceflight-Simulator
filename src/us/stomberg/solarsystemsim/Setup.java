@@ -161,6 +161,7 @@ public class Setup {
         }
     }
 
+    // TODO: Make the integration method configurable
     /**
      * Loads all simulation configuration from setup files.
      * <p>

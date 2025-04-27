@@ -60,6 +60,7 @@ public class Physics {
 
         synchronized (lock) {
             // Import the bodies from the generation data
+            // TODO: Copy rather than reference, for better encapsulation and thread safety
             bodyArray = Setup.getGenerationData();
             gravityCalculator = new GravityCalculator(bodyArray);
 
