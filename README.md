@@ -35,7 +35,7 @@ For your convenience, we provide scripts to automatically set up the configurati
   ```
 - **Windows**: Run the `autoconfig.bat` script:
   ```
-  autoconfig.bat
+  ./autoconfig.bat
   ```
 
 These scripts will create the necessary directory structure and copy the example configuration files for you.
