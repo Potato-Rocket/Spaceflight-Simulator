@@ -1,29 +1,23 @@
 package us.stomberg.solarsystemsim.physics;
 
+import us.stomberg.solarsystemsim.TimeManager;
+
 import java.util.LinkedList;
 
 public class BodyHistory {
 
-    public record State(Vector3D position, Vector3D velocity, Vector3D acceleration, double timestamp) {
-
-        public boolean isSynchronous(State other) {
-            return Math.abs(timestamp - other.timestamp) < 1e-12;
-        }
-
-    }
+    public record State(Vector3D position, Vector3D velocity, Vector3D acceleration, double timestamp) {}
 
     public static final int historyLength = 2;
 
     private final Vector3D position;
     private final Vector3D velocity;
-    private final Vector3D acceleration;
 
     private final LinkedList<State> history = new LinkedList<>();
 
     public BodyHistory(Vector3D position, Vector3D velocity) {
         this.position = position;
         this.velocity = velocity;
-        this.acceleration = new Vector3D();
     }
 
     public Vector3D getPosition() {
@@ -34,8 +28,16 @@ public class BodyHistory {
         return velocity;
     }
 
-    public Vector3D getAcceleration() {
-        return acceleration;
+    public Vector3D findLinearVelocity(TimeStep step) {
+        if (history.isEmpty()) {
+            return velocity.copy();
+        }
+        State prev = history.getFirst();
+        return prev.position().addAndScaleInPlace(position, 1.0 / step.getRemaining());
+    }
+
+    public State getHistory() {
+        return history.isEmpty() ? null : history.getFirst();
     }
 
     public State getHistory(int steps) {
@@ -45,7 +47,7 @@ public class BodyHistory {
         return history.get(steps);
     }
 
-    public void updateHistory() {
+    public void updateHistory(Vector3D acceleration) {
         State state = new State(position.copy(), velocity.copy(), acceleration.copy(), TimeManager.getDuration());
         history.addFirst(state);
         if (history.size() >= historyLength) {

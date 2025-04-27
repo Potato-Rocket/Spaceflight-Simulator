@@ -1,44 +1,53 @@
 package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.Setup;
+import us.stomberg.solarsystemsim.TimeManager;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.HashMap;
 
 /**
- * Static class to handle all body interactions.
+ * Class to handle all body interactions.
  */
 public class Physics {
 
-    public static final Object lock = new Object();
+    public final Object lock = new Object();
 
     /**
      * The initial max distance of any body from the origin.
      */
-    private static double initBounds = 0;
+    private double initBounds = 0;
 
     /**
      * The array of all bodies.
      */
-    private static ArrayList<Body> bodyArray;
+    private final List<Body> bodyArray;
 
-    private static double initialKineticEnergy = 0;
+    private final double initialKineticEnergy;
 
-    private static final Integrator integrator = new VerletIntegrator();
+    private final Integrator integrator;
 
-    private static final GravityCalculator gravityCalculator = new GravityCalculator();
+    private final TimeStep timeStep;
 
-    // private static final CollisionDetector collisionDetector = new CollisionDetector();
+    private final GravityCalculator gravityCalculator;
+
+    private final CollisionDetector collisionDetector = new CollisionDetector();
 
     /**
-     * Populates the array of bodies based on the generation data. After generating the bodies, gets the max initial
-     * distance of any one body from the origin.
+     * Constructor for the Physics class.
+     * Populates the array of bodies based on the generation data and initializes the physics system.
      */
-    public static void createBodies() {
+    public Physics(Integrator integrator) {
+        timeStep = new TimeStep(Setup.getTimeStep());
+        this.integrator = integrator;
+
         synchronized (lock) {
 
             // Import the bodies from the generation data
             bodyArray = Setup.getGenerationData();
+            gravityCalculator = new GravityCalculator(bodyArray);
+
             // Calculate the kinetic energy of the system at initialization
             initialKineticEnergy = getKineticEnergy();
             // Make sure each body starts with the proper history and initial state
@@ -46,8 +55,7 @@ public class Physics {
             BodyHistory state;
             for (Body body : bodyArray) {
                 state = body.getState();
-                state.getAcceleration().addInPlace(forces.get(body).scaleInPlace(1.0 / body.getMass()));
-                state.updateHistory();
+                state.updateHistory(forces.get(body).scaleInPlace(1.0 / body.getMass()));
             }
             // Calculate the max initial distance of any one body from the origin
             for (Body body : bodyArray) {
@@ -56,7 +64,6 @@ public class Physics {
                     initBounds = dist;
                 }
             }
-
         }
     }
 
@@ -68,25 +75,36 @@ public class Physics {
      * The code to update the physics for every body is run once for every millisecond in the simulation that has passed
      * since the previous frame. That is the real time milliseconds passed times the timescale.
      */
-    public static void updateBodies() {
+    public void updateBodies() {
+        timeStep.reset();
         synchronized (lock) {
-            // Make the initial position prediction for each body
-            for (Body body : bodyArray) {
-                integrator.setPrediction(body, Setup.getTimeStep());
-            }
-            // Calculate the force between each body and every other body
-            HashMap<Body, Vector3D> forces = gravityCalculator.updateForces(bodyArray);
-            // Update each body's final state based on the acceleration
-            for (Body body : bodyArray) {
-                integrator.update(body, forces.get(body), Setup.getTimeStep());
+            // Recursively update the bodies until there are no collisions
+            while (!timeStep.isFinished()) {
+                // Make the initial position prediction for each body
+                for (Body body : bodyArray) {
+                    integrator.setPrediction(body, timeStep.getRemaining());
+                }
+                List<CollisionEvent> collisions = collisionDetector.detectCollisions(bodyArray, timeStep, integrator);
+                double t = timeStep.getRemaining();
+                if (!collisions.isEmpty()) {
+                    CollisionEvent collision = Collections.min(collisions);
+                    collision.processCollision(bodyArray, timeStep, integrator);
+                    t = collision.getT();
+                }
+                timeStep.update(t);
+                TimeManager.incrementDuration(t);
+                // Calculate the force between each body and every other body
+                HashMap<Body, Vector3D> forces = gravityCalculator.updateForces(bodyArray);
+                // Update each body's final state based on the acceleration
+                for (Body body : bodyArray) {
+                    integrator.update(body, forces.get(body), t);
+                }
             }
             // Update each body's trail
             for (Body body : bodyArray) {
                 body.updateTrail(Setup.getTimeStep());
             }
         }
-
-        TimeManager.incrementDuration();
     }
 
     /**
@@ -94,17 +112,17 @@ public class Physics {
      *
      * @return Returns the <code>ArrayList</code> of bodies.
      */
-    public static ArrayList<Body> getBodyArray() {
+    public List<Body> getBodyArray() {
         return bodyArray;
     }
 
     /**
-     * Gets the initial boundaries for the simulation view. Equal th=o the furthest distance from the origin any one
+     * Gets the initial boundaries for the simulation view. Equal to the furthest distance from the origin any one
      * body starts at.
      *
      * @return Returns the initial boundaries for the view.
      */
-    public static double getInitBounds() {
+    public double getInitBounds() {
         return initBounds;
     }
 
@@ -113,13 +131,12 @@ public class Physics {
      *
      * @return The total kinetic energy value as a double.
      */
-    public static double getKineticEnergy() {
+    public double getKineticEnergy() {
         double sum = 0;
         synchronized (lock) {
             for (Body body : bodyArray) {
                 sum += body.getKineticEnergy();
             }
-
         }
         return sum;
     }
@@ -129,10 +146,9 @@ public class Physics {
      *
      * @return The initial kinetic energy value as a double.
      */
-    public static double getInitialKineticEnergy() {
+    public double getInitialKineticEnergy() {
         synchronized (lock) {
             return initialKineticEnergy;
         }
     }
-
 }

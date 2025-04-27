@@ -2,6 +2,9 @@ package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.graphics.FormatText;
 
+import java.lang.annotation.Documented;
+import java.text.DecimalFormat;
+
 /**
  * Stores a 3D vector, containing an <b>x</b> component, a <b>y</b> component, and a <b>z</b> component. Each component
  * can be accessed individually through their getter methods. However, the power of this class lies in its methods for
@@ -131,6 +134,20 @@ public class Vector3D {
         return this;
     }
 
+    public Vector3D addAndScaleInPlace(Vector3D vector, double factor) {
+        x += vector.x * factor;
+        y += vector.y * factor;
+        z += vector.z * factor;
+        return this;
+    }
+
+    public Vector3D setToZero() {
+        x = 0;
+        y = 0;
+        z = 0;
+        return this;
+    }
+
     public Vector3D negate() {
         return new Vector3D(-x, -y, -z);
     }
@@ -177,8 +194,10 @@ public class Vector3D {
      * @return Returns the 3D distance between the two vectors.
      */
     public double distance(Vector3D vector) {
-        Vector3D compare = subtract(vector);
-        return Math.hypot(Math.hypot(compare.getX(), compare.getY()), compare.getZ());
+        double dx = x - vector.x;
+        double dy = y - vector.y;
+        double dz = z - vector.z;
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     /**
@@ -187,7 +206,7 @@ public class Vector3D {
      * @return Returns the vector's magnitude.
      */
     public double magnitude() {
-        return Math.hypot(Math.hypot(x, y), z);
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     /**
@@ -262,6 +281,22 @@ public class Vector3D {
         String string = "Vector3D(x=" + FormatText.formatValue(x, unit, "k" + unit);
         string += ", y=" + FormatText.formatValue(y, unit, "k" + unit);
         string += ", z=" + FormatText.formatValue(z, unit, "k" + unit);
+        return string + ")";
+    }
+
+    /**
+     * Formats the vector into a <code>String</code>.
+     * <p>
+     * eg. <code>"Vector3D(x=0.00, y=0.00, z=0.00)"</code>
+     *
+     * @return Returns a string expressing the vector.
+     */
+    @Override
+    public String toString() {
+        DecimalFormat df = new DecimalFormat("#,###.00");
+        String string = "Vector3D(x=" + df.format(x);
+        string += ", y=" + df.format(y);
+        string += ", z=" + df.format(z);
         return string + ")";
     }
 

@@ -9,35 +9,49 @@ public class GravityCalculator {
 
     private final HashMap<Body, Vector3D> gravitationalForces = new HashMap<>();
 
+    // Reusable vector to reduce object creation
+    private final Vector3D force = new Vector3D();
+
+    public GravityCalculator(List<Body> bodies) {
+        for (Body body : bodies) {
+            gravitationalForces.put(body, new Vector3D());
+        }
+    }
+
     public HashMap<Body, Vector3D> updateForces(List<Body> bodies) {
         // For each body, calculate the force between it and every other body
+        for (Body value : bodies) {
+            gravitationalForces.get(value).setToZero();
+        }
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
             for (int j = i + 1; j < bodies.size(); j++) {
                 Body other = bodies.get(j);
                 // Find the force between the two bodies
-                Vector3D force = calculateForce(body, other);
+                calculateForce(body, other);
                 // Add the force to the first body
-                Vector3D total = gravitationalForces.getOrDefault(body, new Vector3D()).addInPlace(force);
-                gravitationalForces.putIfAbsent(body, total);
+                gravitationalForces.get(body).addInPlace(force);
                 // Subtract the force from the second body
-                total = gravitationalForces.getOrDefault(other, new Vector3D()).subtractInPlace(force);
-                gravitationalForces.putIfAbsent(other, total);
+                gravitationalForces.get(other).subtractInPlace(force);
             }
         }
         // Return the calculated forces
         return gravitationalForces;
     }
 
-    private Vector3D calculateForce(Body body, Body other) {
+    private void calculateForce(Body body, Body other) {
         // Get both bodies' current state
         BodyHistory stateFirst = body.getState();
         BodyHistory stateSecond = other.getState();
         // Calculate gravity using newton's law of universal gravitation
-        double r = stateFirst.getPosition().distance(stateSecond.getPosition());
-        double f = Setup.getGravity() * ((body.getMass() * other.getMass()) / (r * r));
+        // Reuse tempVector to avoid creating new objects
+        force.copyFrom(stateSecond.getPosition())
+             .subtractInPlace(stateFirst.getPosition());
+        double dist = force.magnitude();
         // Combine the direction vector with the magnitude of the force
-        return stateFirst.getPosition().angleTo(stateSecond.getPosition()).scaleInPlace(f);
+        force.scaleInPlace(Setup.getGravity() *
+                           ((body.getMass() * other.getMass()) /
+                           (dist * dist * dist)));
     }
 
 }
