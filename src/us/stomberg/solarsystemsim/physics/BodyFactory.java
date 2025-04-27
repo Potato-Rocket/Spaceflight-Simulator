@@ -6,10 +6,11 @@ import java.awt.*;
  * Factory class that provides default celestial bodies with realistic properties.
  */
 public class BodyFactory {
+
     /**
      * Creates a default star with Sun-like properties.
      *
-     * @return a new Body instance with Sun-like properties
+     * @return A new Body instance with Sun-like properties
      */
     public static Body createDefaultStar() {
         return new BodyBuilder()
@@ -25,7 +26,7 @@ public class BodyFactory {
     /**
      * Creates a default inner planet with Mercury-like properties.
      *
-     * @return a new Body instance with Mercury-like properties
+     * @return A new Body instance with Mercury-like properties
      */
     public static Body createDefaultInnerPlanet() {
         return new BodyBuilder()
@@ -41,7 +42,7 @@ public class BodyFactory {
     /**
      * Creates a default outer planet with Earth-like properties.
      *
-     * @return a new Body instance with Earth-like properties
+     * @return A new Body instance with Earth-like properties
      */
     public static Body createDefaultOuterPlanet() {
         return new BodyBuilder()

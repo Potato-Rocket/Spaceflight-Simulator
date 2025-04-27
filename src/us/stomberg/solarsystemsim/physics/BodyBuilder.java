@@ -7,57 +7,45 @@ import java.awt.*;
  * step-by-step configuration of the Body's attributes before creating the object.
  */
 public class BodyBuilder {
+
     /**
      * The initial position vector of the body being built. Default is a zero vector (0,0,0).
      */
     private Vector3D pos = new Vector3D();
-
     /**
      * The initial velocity vector of the body being built. Default is a zero vector (0,0,0).
      */
     private Vector3D vel = new Vector3D();
-
     /**
      * The mass of the body being built. Default is 1.0.
      */
     private double mass = 1.0;
-
     /**
      * The density of the body being built. Default is 1.0.
      */
     private double density = 1.0;
-
     /**
-     * The name of the body being built. Default is null, which will be replaced with "Body N" during build.
+     * The name of the body being built. Default is "Unnamed".
      */
-    private String name;
-
+    private String name = "Unnamed";
     /**
      * The color used for rendering the body. Default is white.
      */
     private Color c = Color.WHITE;
-
     /**
      * Tracks if all properties are still at default values.
      */
     private boolean isDefault = true;
-
     /**
      * Prevents the builder from being reused after building a body.
      */
     private boolean isBuilt = false;
 
     /**
-     * Creates a new builder instance with default values.
-     */
-    public BodyBuilder() {
-    }
-
-    /**
      * Sets the position vector for the body.
      *
-     * @param pos the position vector to use; if null, the default position is retained
-     * @return this builder instance for method chaining
+     * @param pos The position vector to use; if null, the default position is retained
+     * @return This builder instance for method chaining
      */
     public BodyBuilder position(Vector3D pos) {
         if (pos != null) {
@@ -70,8 +58,8 @@ public class BodyBuilder {
     /**
      * Sets the velocity vector for the body.
      *
-     * @param vel the velocity vector to use; if null, the default velocity is retained
-     * @return this builder instance for method chaining
+     * @param vel The velocity vector to use; if null, the default velocity is retained
+     * @return This builder instance for method chaining
      */
     public BodyBuilder velocity(Vector3D vel) {
         if (vel != null) {
@@ -84,8 +72,8 @@ public class BodyBuilder {
     /**
      * Sets the mass for the body. Mass must be positive.
      *
-     * @param mass the mass to use in kg; if null or non-positive, the default mass is retained
-     * @return this builder instance for method chaining
+     * @param mass The mass to use in kg; if null or non-positive, the default mass is retained
+     * @return This builder instance for method chaining
      */
     public BodyBuilder mass(Double mass) {
         if (mass != null && mass > 0) {
@@ -99,8 +87,8 @@ public class BodyBuilder {
      * Sets the density for the body. Density must be positive. Density is used to calculate the body's radius based on
      * its mass.
      *
-     * @param density the density to use in kg/m³; if null or non-positive, the default density is retained
-     * @return this builder instance for method chaining
+     * @param density The density to use in kg/m³; if null or non-positive, the default density is retained
+     * @return This builder instance for method chaining
      */
     public BodyBuilder density(Double density) {
         if (density != null && density > 0) {
@@ -113,8 +101,8 @@ public class BodyBuilder {
     /**
      * Sets the name for the body.
      *
-     * @param name the name to use; if null, a default name will be generated during build
-     * @return this builder instance for method chaining
+     * @param name The name to use; if null, a the default name is retained
+     * @return This builder instance for method chaining
      */
     public BodyBuilder name(String name) {
         if (name != null) {
@@ -127,8 +115,8 @@ public class BodyBuilder {
     /**
      * Sets the color for rendering the body.
      *
-     * @param c the color to use; if null, the default color (white) is retained
-     * @return this builder instance for method chaining
+     * @param c The color to use; if null, the default color (white) is retained
+     * @return This builder instance for method chaining
      */
     public BodyBuilder color(Color c) {
         if (c != null) {
@@ -139,16 +127,13 @@ public class BodyBuilder {
     }
 
     /**
-     * Builds a new Body instance with the configured properties. If no name was specified, a default name is generated.
-     * If no parameters were specified, null is returned. This builder can only be used once; subsequent calls will
-     * return null.
+     * Builds a new Body instance with the configured properties.
+     * If no parameters were specified, null is returned.
+     * This builder can only be used once; subsequent calls will return null.
      *
-     * @return a new Body instance, or null if the builder was already used or no parameters were specified
+     * @return A new Body instance, or null if the builder was already used or no parameters were specified
      */
     public Body build() {
-        if (name == null) {
-            name = "Unnamed";
-        }
         if (isBuilt || isDefault) {
             return null;
         }
