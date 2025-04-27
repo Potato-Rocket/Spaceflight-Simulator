@@ -1,15 +1,16 @@
 package us.stomberg.solarsystemsim.physics;
 
-import us.stomberg.solarsystemsim.Setup;
-
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class CollisionDetector {
 
-    private static final LinkedList<CollisionEvent> collisions = new LinkedList<>();
+    private static final Logger logger = Logger.getLogger(CollisionDetector.class.getName());
 
-    public List<CollisionEvent> detectCollisions(List<Body> bodies) {
+    private static final ArrayList<CollisionEvent> collisions = new ArrayList<>();
+
+    public List<CollisionEvent> detectCollisions(List<Body> bodies, TimeStep timeStep) {
         // Clear the collision list of any previous collisions
         collisions.clear();
         // For each body, determine whether there has been a collision with another body
@@ -17,77 +18,92 @@ public class CollisionDetector {
             Body body = bodies.get(i);
             for (int j = i + 1; j < bodies.size(); j++) {
                 Body other = bodies.get(j);
-                // Check whether the distance between the bodies reaches a minimum during the time step
-                double t = findClosestLinearApproach(body, other);
-                if (t < 0 || t >= -Setup.getTimeStep()) {
+                relPos.copyFrom(other.getState().getHistory().position()
+                                     .subtract(body.getState().getHistory().position()));
+
+                relVel.copyFrom(other.getState().findLinearVelocity(timeStep)
+                                     .subtract(body.getState().findLinearVelocity(timeStep)));
+
+                if (!bboxCheck(body, other, timeStep)) {
                     continue;
                 }
-                // Refine the collision of time
-                t = findEarliestLinearApproach(body, other);
+
+                // Find the collision time
+                double t = findEarliestLinearApproach(body, other);
                 // NaN if the bodies do not intersect
-                if (Double.isNaN(t) || t < 0 || t >= -Setup.getTimeStep()) {
+                if (Double.isNaN(t) || t < -timeStep.getElapsed() || t >= timeStep.getRemaining()) {
                     continue;
                 }
+                logger.info("Collision detected between " + body + " and " + other);
                 collisions.add(new CollisionEvent(body, other, t));
             }
         }
         return collisions;
     }
 
-    /**
-     * Calculates the time of the closest linear approach between this body and another body.
-     * This method considers the relative position and velocity of the two bodies
-     * to determine when their separation distance will be minimized assuming linear motion.
-     *
-     * @param a the first body
-     * @param b the second body
-     * @return the time of closest approach as a double, or 0 if the relative velocity is negligible
-     */
-    private double findClosestLinearApproach(Body a, Body b) {
-        BodyHistory stateA = a.getState();
-        BodyHistory stateB = b.getState();
+    private static final Vector3D relPos = new Vector3D();
+    private static final Vector3D relVel = new Vector3D();
 
-        // Suppose for a body p(t) = r_p_0 + v_p_0 * t.
-        // Then if r = r_p2_0 - r_p1_0, v = v_p2_0 - v_p1_0,
-        // the distance between the bodies will be r(t) = || r + v * t || at time t.
-        // To find the minimum of this, we can solve the derivative of this,
-        // giving t = -(r * v) / (v * v).
-        Vector3D relPos = stateB.getPosition().subtract(stateA.getPosition());
-        Vector3D relVel = stateB.getVelocity().subtract(stateA.getVelocity());
+    private boolean bboxCheck(Body a, Body b, TimeStep timeStep) {
+        double dt = timeStep.getRemaining();
+        double threshold = a.getRadius() + b.getRadius();
 
-        // If the denominator is zero, that means that the relative velocity is zero
-        double den = relVel.dotProduct(relVel);
-        if (Math.abs(den) < 1.0e-12) {
-            return 0;
+        // Check X axis
+        if (Math.abs(relPos.getX()) > threshold) {
+            if (relPos.getX() * relVel.getX() >= 0) {
+                return false; // Not approaching
+            }
+            if (Math.abs(relPos.getX()) - threshold > Math.abs(relVel.getX()) * dt) {
+                return false;
+            }
         }
-        // calculate the time of the closest approach
-        return -relPos.dotProduct(relVel) / den;
+
+        if (Math.abs(relPos.getY()) > threshold) {
+            if (relPos.getY() * relVel.getY() >= 0) {
+                return false; // Not approaching
+            }
+            if (Math.abs(relPos.getY()) - threshold > Math.abs(relVel.getY()) * dt) {
+                return false;
+            }
+        }
+
+        if (Math.abs(relPos.getZ()) > threshold) {
+            if (relPos.getZ() * relVel.getX() >= 0) {
+                return false; // Not approaching
+            }
+            if (Math.abs(relPos.getZ()) - threshold > Math.abs(relVel.getZ()) * dt) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private double findEarliestLinearApproach(Body a, Body b) {
-        BodyHistory stateA = a.getState();
-        BodyHistory stateB = b.getState();
+        // Suppose for a body p(t) = r_p_0 + v_p_0 * t.
+        // Then if r = r_p2_0 - r_p1_0, v = v_p2_0 - v_p1_0,
+        // the distance between the bodies will be r(t) = || r + v * t || at time t.
+        // To find the instant of collision, we must solve for r(t) = r_1 + r_2, the radii of the bodies.
+        // Squaring both sides, the equation becomes
+        // r^2 + 2 * r * v * t + v^2 * t^2 = (r_1 + r_2)^2
 
-        Vector3D posA = stateA.getHistory(0).position();
-        Vector3D posB = stateB.getHistory(0).position();
-        // FIXME: This will not hold up if adaptive or recursive timesteps are used
-        Vector3D velA = posA.subtract(stateA.getPosition()).scaleInPlace(1.0 / Setup.getTimeStep());
-        Vector3D velB = posB.subtract(stateB.getPosition()).scaleInPlace(1.0 / Setup.getTimeStep());
-
-        Vector3D relPos = posB.subtract(posA);
-        Vector3D relVel = velB.subtract(velA);
-
-        // Find coefficients of the quadratic equation a*x^2 + b*x + c = 0
-        double qc = relPos.dotProduct(relPos) - a.getRadius() - b.getRadius();
-        double qb = 2 * relPos.dotProduct(relVel);
+        // Now we can solve this as a standard quadratic with
+        // a = v^2
+        // b = 2 * r * v
+        // c = r^2 - r_1 - r_2
+        double threshold = a.getRadius() + b.getRadius();
         double qa = relVel.dotProduct(relVel);
+        double qb = 2 * relPos.dotProduct(relVel);
+        double qc = relPos.dotProduct(relPos) - threshold * threshold;
 
+        // Find the discriminant and check for real roots
         double discriminant = qb * qb - 4 * qa * qc;
         if (discriminant < 0) {
             return Double.NaN;
         } else if (discriminant == 0) {
+            // Don't bother computing a square root if not necessary
             return (-qb) / (2 * qa);
         } else {
+            // We want the earliest intersection
             return (-qb - Math.sqrt(discriminant)) / (2 * qa);
         }
 

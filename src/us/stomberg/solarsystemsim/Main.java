@@ -2,7 +2,9 @@ package us.stomberg.solarsystemsim;
 
 import us.stomberg.solarsystemsim.graphics.DrawSpace;
 import us.stomberg.solarsystemsim.physics.Physics;
-import us.stomberg.solarsystemsim.physics.TimeManager;
+import us.stomberg.solarsystemsim.physics.ExplicitEulerIntegrator;
+import us.stomberg.solarsystemsim.physics.SymplecticIntegrator;
+import us.stomberg.solarsystemsim.physics.VerletIntegrator;
 
 /**
  * Top level runner class. Dictates initial body creation as well as physics updates and graphics renderings
@@ -10,6 +12,7 @@ import us.stomberg.solarsystemsim.physics.TimeManager;
 public class Main {
 
     private static volatile boolean running = true;
+    private static Physics physics;
 
     /**
      * Main method. Manages lower level classes and their processes and contains the main loop for the simulation.
@@ -17,10 +20,10 @@ public class Main {
      *
      * @param args command line inputs
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //Sets up graphical window and timing variables.
         Setup.read();
-        Physics.createBodies();
+        physics = new Physics(new ExplicitEulerIntegrator());
         DrawSpace drawSpace = new DrawSpace();
 
         Thread simulation = new Thread(new Simulation());
@@ -33,6 +36,9 @@ public class Main {
                 TimeManager.updateFPS();
             }
         }
+
+        simulation.join();
+        System.exit(0);
     }
 
     private static class Simulation implements Runnable {
@@ -42,12 +48,28 @@ public class Main {
             while (running) {
 
                 if (TimeManager.shouldUpdatePhysics()) {
-                    Physics.updateBodies();
+                    physics.updateBodies();
                 }
 
             }
         }
 
+    }
+
+    /**
+     * Gets the physics instance.
+     *
+     * @return The physics instance.
+     */
+    public static Physics getPhysics() {
+        return physics;
+    }
+
+    /**
+     * Stops the simulation from running.
+     */
+    public static void stopRunning() {
+        running = false;
     }
 
 }

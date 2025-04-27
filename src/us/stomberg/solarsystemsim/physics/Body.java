@@ -1,5 +1,6 @@
 package us.stomberg.solarsystemsim.physics;
 
+import us.stomberg.solarsystemsim.Main;
 import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.FormatText;
 
@@ -122,7 +123,7 @@ public class Body {
 
     /**
      * Updates the body's physical motion vectors. Resets the acceleration factor and sets it based on the mass and the
-     * gravity forces currently acting on the body. The velocity is updated based on the acceleration and the position
+     * gravity forces currently acting on the body. The velocity is updated based on the acceleration, and the position
      * is updated based on the velocity.
      * <p>
      * The trail is updated based on both direction change and distance traveled. It will add a point to the trail if
@@ -134,13 +135,13 @@ public class Body {
      *   point. Scaled to the size of the system.</li>
      * </ul>
      */
-    public void updateTrail(double seconds) {
+    public void updateTrail() {
         // Find the change in direction
         Vector3D direction = state.getVelocity().normalize();
         // If the direction has changed more than the resolution
         // Or the body has traveled more than a tenth of the initial bounds
         if (direction.distance(prevTrail) > ONE_DEGREE * Setup.getTrailResolution() ||
-                state.getPosition().distance(trail.getFirst()) > Physics.getInitBounds() / 10) {
+                state.getPosition().distance(trail.getFirst()) > Main.getPhysics().getInitBounds() / 10) {
             // Insert a new point into the trail
             trail.addFirst(state.getPosition().copy());
             // If the trail is too long, remove the last point
@@ -225,7 +226,7 @@ public class Body {
      * @return a string array representing the body's attributes
      */
     public ArrayList<String> toStringArray() {
-        synchronized (Physics.lock) {
+        synchronized (Main.getPhysics().lock) {
             ArrayList<String> string = new ArrayList<>();
             string.add("Body " + (id + 1) + ": " + name);
             string.add("Mass = " + FormatText.formatValue(mass, "kg", "t"));
@@ -245,7 +246,7 @@ public class Body {
      */
     @Override
     public String toString() {
-        return toStringArray().getFirst();
+        return name + " (" + id + ")";
     }
 
     @Override

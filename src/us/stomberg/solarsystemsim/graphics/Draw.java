@@ -1,11 +1,11 @@
 package us.stomberg.solarsystemsim.graphics;
 
+import us.stomberg.solarsystemsim.Main;
 import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.graphics.elements.Line;
 import us.stomberg.solarsystemsim.graphics.elements.Point;
+import us.stomberg.solarsystemsim.TimeManager;
 import us.stomberg.solarsystemsim.physics.Body;
-import us.stomberg.solarsystemsim.physics.Physics;
-import us.stomberg.solarsystemsim.physics.TimeManager;
 import us.stomberg.solarsystemsim.physics.Vector3D;
 
 import java.awt.*;
@@ -87,17 +87,17 @@ public class Draw {
         g2d = (Graphics2D) graphics;
         w = width;
         h = height;
-        synchronized (Physics.lock) {
+        synchronized (Main.getPhysics().lock) {
             checkFocus();
             centerPoint = focus.getState().getPosition();
             if (minBounds == 0) {
-                minBounds = Physics.getInitBounds() * Setup.getScalePrecision();
+                minBounds = Main.getPhysics().getInitBounds() * Setup.getScalePrecision();
                 if (minBounds == 0) {
                     minBounds = 1;
                 }
             }
             logMinMax = new double[]{100, 0};
-            for (Body body : Physics.getBodyArray()) {
+            for (Body body : Main.getPhysics().getBodyArray()) {
                 double log = Math.log(body.getRadius());
                 if (log < logMinMax[0]) {
                     logMinMax[0] = log;
@@ -126,7 +126,7 @@ public class Draw {
      * Resets the view scale to the initial view scale.
      */
     public static void resetBounds() {
-        minBounds = Physics.getInitBounds();
+        minBounds = Main.getPhysics().getInitBounds();
     }
 
     /**
@@ -145,24 +145,24 @@ public class Draw {
      * @param change whether to increase or decrease the index
      */
     public static void modifyFocus(int change) {
-        synchronized (Physics.lock) {
+        synchronized (Main.getPhysics().lock) {
             if (checkFocus()) {
-                int index = Physics.getBodyArray().indexOf(focus);
+                int index = Main.getPhysics().getBodyArray().indexOf(focus);
                 index += change;
                 if (index < 0) {
-                    index = Physics.getBodyArray().size() - 1;
-                } else if (index >= Physics.getBodyArray().size()) {
+                    index = Main.getPhysics().getBodyArray().size() - 1;
+                } else if (index >= Main.getPhysics().getBodyArray().size()) {
                     index = 0;
                 }
-                focus = Physics.getBodyArray().get(index);
+                focus = Main.getPhysics().getBodyArray().get(index);
             }
         }
     }
 
     private static boolean checkFocus() {
-        synchronized (Physics.lock) {
-            if (focus == null || !Physics.getBodyArray().contains(focus)) {
-                focus = Physics.getBodyArray().getFirst();
+        synchronized (Main.getPhysics().lock) {
+            if (focus == null || !Main.getPhysics().getBodyArray().contains(focus)) {
+                focus = Main.getPhysics().getBodyArray().getFirst();
                 return false;
             }
             return true;
@@ -203,8 +203,8 @@ public class Draw {
         scale = min / (minBounds * 2);
         elements.clear();
         drawAxes();
-        synchronized (Physics.lock) {
-            for (Body body : Physics.getBodyArray()) {
+        synchronized (Main.getPhysics().lock) {
+            for (Body body : Main.getPhysics().getBodyArray()) {
                 drawBody(body);
             }
         }
@@ -226,8 +226,8 @@ public class Draw {
         bodyInfo.add("Time step: " + FormatText.formatScale(Setup.getTimeStep(), true) + " s");
         bodyInfo.add("Time scale: " + FormatText.formatScale(TimeManager.getCurrentTimeScale(), false) +
                              "x (" + FormatText.formatScale(TimeManager.getTimescaleCap(), true) + "x)");
-        double initialKE = Physics.getInitialKineticEnergy();
-        double currentKE = Physics.getKineticEnergy();
+        double initialKE = Main.getPhysics().getInitialKineticEnergy();
+        double currentKE = Main.getPhysics().getKineticEnergy();
         bodyInfo.add("");
         bodyInfo.add("System Kinetic Energy:");
         bodyInfo.add("Initial = " + FormatText.formatValue(initialKE, "J", "kJ"));
@@ -241,7 +241,7 @@ public class Draw {
         } else {
             bodyInfo.add("Planet scale: Realistic");
         }
-        bodyInfo.add("Body count: " + Physics.getBodyArray().size());
+        bodyInfo.add("Body count: " + Main.getPhysics().getBodyArray().size());
         if (verbose) {
             bodyInfo.add("");
             bodyInfo.add("Viewing angle:");
@@ -250,7 +250,7 @@ public class Draw {
             bodyInfo.add("");
             bodyInfo.addAll(focus.toStringArray());
         } else {
-            synchronized (Physics.lock) {
+            synchronized (Main.getPhysics().lock) {
                 bodyInfo.add("Focused body: " + focus.getName() + " (" + (focus.getId() + 1) + ")");
             }
         }
@@ -262,17 +262,24 @@ public class Draw {
      * appear brighter than their negative sections. Translates it to the current focus point.
      */
     private void drawAxes() {
-        elements.add(new Line(new Vector3D(minBounds / 2, 0, 0).add(centerPoint), centerPoint, centerPoint,
+        Vector3D v1 = new Vector3D(minBounds / 2, 0, 0);
+        Vector3D v2 = new Vector3D(minBounds / -2, 0, 0);
+        Vector3D v3 = new Vector3D(0, minBounds / 2, 0);
+        Vector3D v4 = new Vector3D(0, minBounds / -2, 0);
+        Vector3D v5 = new Vector3D(0, 0, minBounds / 2);
+        Vector3D v6 = new Vector3D(0, 0, minBounds / -2);
+
+        elements.add(new Line(v1.add(centerPoint), centerPoint, centerPoint,
                               new Color(255, 0, 0)));
-        elements.add(new Line(new Vector3D(minBounds / -2, 0, 0).add(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(v2.add(centerPoint), centerPoint, centerPoint,
                               new Color(63, 0, 0)));
-        elements.add(new Line(new Vector3D(0, minBounds / 2, 0).add(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(v3.add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 255, 0)));
-        elements.add(new Line(new Vector3D(0, minBounds / -2, 0).add(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(v4.add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 63, 0)));
-        elements.add(new Line(new Vector3D(0, 0, minBounds / 2).add(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(v5.add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 0, 255)));
-        elements.add(new Line(new Vector3D(0, 0, minBounds / -2).add(centerPoint), centerPoint, centerPoint,
+        elements.add(new Line(v6.add(centerPoint), centerPoint, centerPoint,
                               new Color(0, 0, 127)));
     }
 

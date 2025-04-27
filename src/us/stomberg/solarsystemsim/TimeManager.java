@@ -1,8 +1,4 @@
-package us.stomberg.solarsystemsim.physics;
-
-import us.stomberg.solarsystemsim.Setup;
-
-import java.util.logging.Logger;
+package us.stomberg.solarsystemsim;
 
 public class TimeManager {
 
@@ -40,10 +36,10 @@ public class TimeManager {
     /**
      * Increments the simulation time by one time step, as specified in the setup file.
      */
-    public static void incrementDuration() {
+    public static void incrementDuration(double dt) {
         synchronized (lock) {
-            duration += Setup.getTimeStep();
-            timescaleDuration += Setup.getTimeStep();
+            duration += dt;
+            timescaleDuration += dt;
             currentTimeScale = timescaleDuration / getTimescaleSeconds();
         }
     }

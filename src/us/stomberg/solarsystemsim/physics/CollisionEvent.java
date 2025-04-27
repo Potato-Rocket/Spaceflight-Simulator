@@ -1,10 +1,11 @@
 package us.stomberg.solarsystemsim.physics;
 
-import us.stomberg.solarsystemsim.Setup;
-
-import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class CollisionEvent implements Comparable<CollisionEvent> {
+
+    private static final Logger logger = Logger.getLogger(CollisionEvent.class.getName());
 
     private final Body a;
     private final Body b;
@@ -16,7 +17,7 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
         this.t = t;
     }
 
-    public void processCollision(ArrayList<Body> bodies, Integrator integrator) {
+    public void processCollision(List<Body> bodies, TimeStep timeStep, Integrator integrator) {
         Body destroy;
         Body keep;
         if (a.getMass() < b.getMass()) {
@@ -28,24 +29,37 @@ public class CollisionEvent implements Comparable<CollisionEvent> {
         }
         BodyHistory keepState = keep.getState();
         BodyHistory destroyState = destroy.getState();
-        // Find the old positions of each body
-        Vector3D posKeep = keepState.getHistory(0).position().copy();
-        Vector3D posDestroy = destroyState.getHistory(0).position().copy();
-        // Find the velocities of each body
-        Vector3D velKeep = posKeep.subtract(keepState.getPosition()).scale(1.0 / Setup.getTimeStep());
-        Vector3D velDestroy = posDestroy.subtract(destroyState.getPosition()).scale(1.0 / Setup.getTimeStep());
-        // Find the bodies' position at the collision time
-        posKeep.addInPlace(velKeep.scale(t));
-        posDestroy.addInPlace(velDestroy.scale(t));
-        // Find the ratio of masses
-        double scale = destroy.getMass() / keep.getMass();
-        // Average the position of the bodies, weighted by the relative masses
-        keepState.getPosition().copyFrom(posKeep.interpolateInPlace(posDestroy, scale));
-        // Find the resultant velocity by conservation of momentum
-        keepState.getVelocity().copyFrom(velKeep.interpolateInPlace(velDestroy, scale));
 
+        logger.info("Collision processed between " + a + " and " + b);
+        logger.info(destroy + " will be consumed by " + keep + " at time " + (timeStep.getElapsed() + t));
+
+        double rollBack = timeStep.getRemaining() - t;
+        for (Body body : bodies) {
+            integrator.rollBack(body, rollBack);
+        }
+
+        double totalMass = keep.getMass() + destroy.getMass();
+        // Average the position of the bodies, weighted by the relative masses
+        keepState.getPosition()
+                 .interpolateInPlace(destroyState.getPosition(), destroy.getMass() / totalMass);
+
+        // Find the resultant velocity by conservation of momentum
+        keepState.getVelocity()
+                 .scaleInPlace(keep.getMass() / totalMass)
+                 .addInPlace(destroyState.getVelocity()
+                                         .scale(destroy.getMass() / totalMass));
+
+        // Update the history of the body now to avoid overwriting the velocity
+        BodyHistory.State prev = keepState.getHistory();
+        keep.getState().updateHistory((prev == null) ? new Vector3D() : prev.acceleration());
+
+        // Combine mass, density, and radius
         keep.merge(destroy);
         bodies.remove(destroy);
+    }
+
+    public double getT() {
+        return t;
     }
 
     @Override

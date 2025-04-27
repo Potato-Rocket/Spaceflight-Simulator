@@ -2,12 +2,13 @@ package us.stomberg.solarsystemsim.interaction;
 
 import us.stomberg.solarsystemsim.graphics.Draw;
 import us.stomberg.solarsystemsim.graphics.Graphics3D;
-import us.stomberg.solarsystemsim.physics.TimeManager;
+import us.stomberg.solarsystemsim.TimeManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-// TODO: Implement an exit condition for when the window is closed, executable by a shortcut
+import us.stomberg.solarsystemsim.Main;
+
 /**
  * Class to create and manage keymaps and their corresponding actions.
  */
@@ -22,6 +23,7 @@ public class Keymaps {
             Graphics3D.changeTilt(Math.PI / -36);
         }
     };
+
     /**
      * Tilts the view down.
      */
@@ -31,6 +33,7 @@ public class Keymaps {
             Graphics3D.changeTilt(Math.PI / 36);
         }
     };
+
     /**
      * Spins the view left.
      */
@@ -40,6 +43,7 @@ public class Keymaps {
             Graphics3D.changeYaw(Math.PI / -36);
         }
     };
+
     /**
      * Spins the view right.
      */
@@ -49,6 +53,7 @@ public class Keymaps {
             Graphics3D.changeYaw(Math.PI / 36);
         }
     };
+
     /**
      * Speeds up the timescale.
      */
@@ -58,6 +63,7 @@ public class Keymaps {
             TimeManager.modifyTimescaleCap(TimeManager.TimeScaleChangeType.INCREMENT);
         }
     };
+
     /**
      * Slows down the timescale.
      */
@@ -67,6 +73,7 @@ public class Keymaps {
             TimeManager.modifyTimescaleCap(TimeManager.TimeScaleChangeType.DECREMENT);
         }
     };
+
     /**
      * Zooms in the view.
      */
@@ -78,6 +85,7 @@ public class Keymaps {
             }
         }
     };
+
     /**
      * Zooms out the view.
      */
@@ -89,6 +97,7 @@ public class Keymaps {
             }
         }
     };
+
     /**
      * Toggles the focus to the previous body.
      */
@@ -98,6 +107,7 @@ public class Keymaps {
             Draw.modifyFocus(-1);
         }
     };
+
     /**
      * Toggles the focus to the next body.
      */
@@ -107,6 +117,7 @@ public class Keymaps {
             Draw.modifyFocus(1);
         }
     };
+
     /**
      * Resets the view scaling and rotation.
      */
@@ -117,6 +128,7 @@ public class Keymaps {
             Graphics3D.resetView();
         }
     };
+
     /**
      * Toggles whether to draw planet size to scale or in a lgo scale for visibility.
      */
@@ -126,6 +138,7 @@ public class Keymaps {
             Draw.toggleLogScale();
         }
     };
+
     /**
      * Toggles whether to draw planet size to scale or in a lgo scale for visibility.
      */
@@ -133,6 +146,16 @@ public class Keymaps {
         @Override
         public void actionPerformed(ActionEvent e) {
             Draw.toggleVerboseOut();
+        }
+    };
+
+    /**
+     * Exits the program when Escape key is pressed.
+     */
+    private final Action exitProgram = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Main.stopRunning();
         }
     };
 
@@ -176,6 +199,9 @@ public class Keymaps {
         actionMap.put("YAW_LEFT", yawLeft);
         inputMap.put(KeyStroke.getKeyStroke("D"), "YAW_RIGHT");
         actionMap.put("YAW_RIGHT", yawRight);
+        // Exit program with Escape key
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "EXIT_PROGRAM");
+        actionMap.put("EXIT_PROGRAM", exitProgram);
     }
 
 }
