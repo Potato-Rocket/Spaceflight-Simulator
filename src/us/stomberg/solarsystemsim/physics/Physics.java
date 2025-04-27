@@ -3,9 +3,9 @@ package us.stomberg.solarsystemsim.physics;
 import us.stomberg.solarsystemsim.Setup;
 import us.stomberg.solarsystemsim.TimeManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.HashMap;
 
 /**
  * Class to handle all body interactions.
@@ -43,7 +43,6 @@ public class Physics {
         this.integrator = integrator;
 
         synchronized (lock) {
-
             // Import the bodies from the generation data
             bodyArray = Setup.getGenerationData();
             gravityCalculator = new GravityCalculator(bodyArray);
@@ -51,11 +50,10 @@ public class Physics {
             // Calculate the kinetic energy of the system at initialization
             initialKineticEnergy = getKineticEnergy();
             // Make sure each body starts with the proper history and initial state
-            HashMap<Body, Vector3D> forces = gravityCalculator.updateForces(bodyArray);
-            BodyHistory state;
-            for (Body body : bodyArray) {
-                state = body.getState();
-                state.updateHistory(forces.get(body).scaleInPlace(1.0 / body.getMass()));
+            ArrayList<Vector3D> forces = gravityCalculator.updateForces(bodyArray);
+            for (int i = 0; i < bodyArray.size(); i++) {
+                Body body = bodyArray.get(i);
+                body.getState().updateHistory(forces.get(i).scaleInPlace(1.0 / body.getMass()));
             }
             // Calculate the max initial distance of any one body from the origin
             for (Body body : bodyArray) {
@@ -84,7 +82,7 @@ public class Physics {
                 for (Body body : bodyArray) {
                     integrator.setPrediction(body, timeStep.getRemaining());
                 }
-                List<CollisionEvent> collisions = collisionDetector.detectCollisions(bodyArray, timeStep, integrator);
+                List<CollisionEvent> collisions = collisionDetector.detectCollisions(bodyArray, timeStep);
                 double t = timeStep.getRemaining();
                 if (!collisions.isEmpty()) {
                     CollisionEvent collision = Collections.min(collisions);
@@ -94,15 +92,15 @@ public class Physics {
                 timeStep.update(t);
                 TimeManager.incrementDuration(t);
                 // Calculate the force between each body and every other body
-                HashMap<Body, Vector3D> forces = gravityCalculator.updateForces(bodyArray);
+                ArrayList<Vector3D> forces = gravityCalculator.updateForces(bodyArray);
                 // Update each body's final state based on the acceleration
-                for (Body body : bodyArray) {
-                    integrator.update(body, forces.get(body), t);
+                for (int i = 0; i < bodyArray.size(); i++) {
+                    integrator.update(bodyArray.get(i), forces.get(i), t);
                 }
             }
             // Update each body's trail
             for (Body body : bodyArray) {
-                body.updateTrail(Setup.getTimeStep());
+                body.updateTrail();
             }
         }
     }

@@ -135,7 +135,7 @@ public class Body {
      *   point. Scaled to the size of the system.</li>
      * </ul>
      */
-    public void updateTrail(double seconds) {
+    public void updateTrail() {
         // Find the change in direction
         Vector3D direction = state.getVelocity().normalize();
         // If the direction has changed more than the resolution

@@ -2,26 +2,26 @@ package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.Setup;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GravityCalculator {
 
-    private final HashMap<Body, Vector3D> gravitationalForces = new HashMap<>();
+    private final ArrayList<Vector3D> gravitationalForces = new ArrayList<>();
 
     // Reusable vector to reduce object creation
     private final Vector3D force = new Vector3D();
 
     public GravityCalculator(List<Body> bodies) {
-        for (Body body : bodies) {
-            gravitationalForces.put(body, new Vector3D());
+        for (int i = 0; i < bodies.size(); i++) {
+            gravitationalForces.add(new Vector3D());
         }
     }
 
-    public HashMap<Body, Vector3D> updateForces(List<Body> bodies) {
+    public ArrayList<Vector3D> updateForces(List<Body> bodies) {
         // For each body, calculate the force between it and every other body
-        for (Body value : bodies) {
-            gravitationalForces.get(value).setToZero();
+        for (int i = 0; i < bodies.size(); i++) {
+            gravitationalForces.get(i).setToZero();
         }
         for (int i = 0; i < bodies.size(); i++) {
             Body body = bodies.get(i);
@@ -30,9 +30,9 @@ public class GravityCalculator {
                 // Find the force between the two bodies
                 calculateForce(body, other);
                 // Add the force to the first body
-                gravitationalForces.get(body).addInPlace(force);
+                gravitationalForces.get(i).addInPlace(force);
                 // Subtract the force from the second body
-                gravitationalForces.get(other).subtractInPlace(force);
+                gravitationalForces.get(j).subtractInPlace(force);
             }
         }
         // Return the calculated forces

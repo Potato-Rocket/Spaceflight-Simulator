@@ -2,7 +2,6 @@ package us.stomberg.solarsystemsim.physics;
 
 import us.stomberg.solarsystemsim.graphics.FormatText;
 
-import java.lang.annotation.Documented;
 import java.text.DecimalFormat;
 
 /**

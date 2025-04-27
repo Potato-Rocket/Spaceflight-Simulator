@@ -1,7 +1,5 @@
 package us.stomberg.solarsystemsim;
 
-import us.stomberg.solarsystemsim.physics.TimeStep;
-
 public class TimeManager {
 
     private static final Object lock = new Object();

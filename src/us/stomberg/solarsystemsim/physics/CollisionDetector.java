@@ -10,7 +10,7 @@ public class CollisionDetector {
 
     private static final ArrayList<CollisionEvent> collisions = new ArrayList<>();
 
-    public List<CollisionEvent> detectCollisions(List<Body> bodies, TimeStep timeStep, Integrator integrator) {
+    public List<CollisionEvent> detectCollisions(List<Body> bodies, TimeStep timeStep) {
         // Clear the collision list of any previous collisions
         collisions.clear();
         // For each body, determine whether there has been a collision with another body
@@ -18,8 +18,18 @@ public class CollisionDetector {
             Body body = bodies.get(i);
             for (int j = i + 1; j < bodies.size(); j++) {
                 Body other = bodies.get(j);
+                relPos.copyFrom(other.getState().getHistory().position()
+                                     .subtract(body.getState().getHistory().position()));
+
+                relVel.copyFrom(other.getState().findLinearVelocity(timeStep)
+                                     .subtract(body.getState().findLinearVelocity(timeStep)));
+
+                if (!bboxCheck(body, other, timeStep)) {
+                    continue;
+                }
+
                 // Find the collision time
-                double t = findEarliestLinearApproach(body, other, timeStep);
+                double t = findEarliestLinearApproach(body, other);
                 // NaN if the bodies do not intersect
                 if (Double.isNaN(t) || t < -timeStep.getElapsed() || t >= timeStep.getRemaining()) {
                     continue;
@@ -31,16 +41,44 @@ public class CollisionDetector {
         return collisions;
     }
 
-    private double findEarliestLinearApproach(Body a, Body b, TimeStep timeStep) {
-        BodyHistory stateA = a.getState();
-        BodyHistory stateB = b.getState();
+    private static final Vector3D relPos = new Vector3D();
+    private static final Vector3D relVel = new Vector3D();
 
-        Vector3D relPos = stateB.getHistory().position()
-                                .subtract(stateA.getHistory().position());
+    private boolean bboxCheck(Body a, Body b, TimeStep timeStep) {
+        double dt = timeStep.getRemaining();
+        double threshold = a.getRadius() + b.getRadius();
 
-        Vector3D relVel = stateB.findLinearVelocity(timeStep)
-                                .subtract(stateA.findLinearVelocity(timeStep));
+        // Check X axis
+        if (Math.abs(relPos.getX()) > threshold) {
+            if (relPos.getX() * relVel.getX() >= 0) {
+                return false; // Not approaching
+            }
+            if (Math.abs(relPos.getX()) - threshold > Math.abs(relVel.getX()) * dt) {
+                return false;
+            }
+        }
 
+        if (Math.abs(relPos.getY()) > threshold) {
+            if (relPos.getY() * relVel.getY() >= 0) {
+                return false; // Not approaching
+            }
+            if (Math.abs(relPos.getY()) - threshold > Math.abs(relVel.getY()) * dt) {
+                return false;
+            }
+        }
+
+        if (Math.abs(relPos.getZ()) > threshold) {
+            if (relPos.getZ() * relVel.getX() >= 0) {
+                return false; // Not approaching
+            }
+            if (Math.abs(relPos.getZ()) - threshold > Math.abs(relVel.getZ()) * dt) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private double findEarliestLinearApproach(Body a, Body b) {
         // Suppose for a body p(t) = r_p_0 + v_p_0 * t.
         // Then if r = r_p2_0 - r_p1_0, v = v_p2_0 - v_p1_0,
         // the distance between the bodies will be r(t) = || r + v * t || at time t.

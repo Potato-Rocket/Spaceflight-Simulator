@@ -1,8 +1,8 @@
 package us.stomberg.solarsystemsim;
 
 import us.stomberg.solarsystemsim.graphics.DrawSpace;
-import us.stomberg.solarsystemsim.physics.ExplicitEulerIntegrator;
 import us.stomberg.solarsystemsim.physics.Physics;
+import us.stomberg.solarsystemsim.physics.ExplicitEulerIntegrator;
 import us.stomberg.solarsystemsim.physics.SymplecticIntegrator;
 import us.stomberg.solarsystemsim.physics.VerletIntegrator;
 
