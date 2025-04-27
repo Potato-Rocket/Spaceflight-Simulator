@@ -111,7 +111,7 @@ def main():
     system_config = generate_bodies(n_bodies)
     
     # Save to file
-    with open('random_system.properties', 'w') as f:
+    with open('out/random_system.properties', 'w') as f:
         f.write(system_config)
     
     # Create visualization
