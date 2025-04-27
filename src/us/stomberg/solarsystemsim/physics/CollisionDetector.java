@@ -8,7 +8,7 @@ public class CollisionDetector {
 
     private static final Logger logger = Logger.getLogger(CollisionDetector.class.getName());
 
-    private static final ArrayList<CollisionEvent> collisions = new ArrayList<>();
+    private final ArrayList<CollisionEvent> collisions = new ArrayList<>();
 
     public List<CollisionEvent> detectCollisions(List<Body> bodies, TimeStep timeStep) {
         // Clear the collision list of any previous collisions
@@ -20,7 +20,6 @@ public class CollisionDetector {
                 Body other = bodies.get(j);
                 relPos.copyFrom(other.getState().getHistory().position()
                                      .subtract(body.getState().getHistory().position()));
-
                 relVel.copyFrom(other.getState().findLinearVelocity(timeStep)
                                      .subtract(body.getState().findLinearVelocity(timeStep)));
 
@@ -48,31 +47,33 @@ public class CollisionDetector {
         double dt = timeStep.getRemaining();
         double threshold = a.getRadius() + b.getRadius();
 
-        // Check X axis
+        // Check that not intersecting on X axis
         if (Math.abs(relPos.getX()) > threshold) {
             if (relPos.getX() * relVel.getX() >= 0) {
                 return false; // Not approaching
             }
             if (Math.abs(relPos.getX()) - threshold > Math.abs(relVel.getX()) * dt) {
-                return false;
+                return false;  // Not moving fast enough to collide
             }
         }
 
+        // Check that not intersecting on Y axis
         if (Math.abs(relPos.getY()) > threshold) {
             if (relPos.getY() * relVel.getY() >= 0) {
                 return false; // Not approaching
             }
             if (Math.abs(relPos.getY()) - threshold > Math.abs(relVel.getY()) * dt) {
-                return false;
+                return false; // Not moving fast enough to collide
             }
         }
 
+        // Check that not intersecting on Z axis
         if (Math.abs(relPos.getZ()) > threshold) {
-            if (relPos.getZ() * relVel.getX() >= 0) {
+            if (relPos.getZ() * relVel.getZ() >= 0) {
                 return false; // Not approaching
             }
             if (Math.abs(relPos.getZ()) - threshold > Math.abs(relVel.getZ()) * dt) {
-                return false;
+                return false;  // Not moving fast enough to collide
             }
         }
         return true;
