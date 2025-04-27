@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Solar System Simulator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/JAR</output-path>
+    <root id="archive" name="solar_system_simulator.jar">
+      <element id="module-output" name="Solar System Simulator" />
+    </root>
+  </artifact>
+</component>
